@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>招待URL管理 | ストレスチェック管理</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;600&display=swap');
+:root{--ink:#1a1a2e;--ink2:#4a4a6a;--paper:#faf9f6;--warm:#f3f0e8;--green:#2d6a4f;--green2:#52b788;--green3:#d8f3dc;--warn:#c77c3e;--warn2:#fff3e0;--border:#d6d0c4;--red:#b5373a;--sh:rgba(26,26,46,0.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+.hd{background:var(--ink);color:#fff;padding:16px 32px;display:flex;align-items:center;gap:20px}
+.hd-logo{font-family:'Shippori Mincho',serif;font-size:1.2rem;font-weight:600;flex:1}.hd-logo span{color:var(--green2)}
+.hd-nav a{color:rgba(255,255,255,.7);text-decoration:none;font-size:.82rem;margin-left:20px;transition:color .2s}
+.hd-nav a:hover,.hd-nav a.active{color:#fff}
+.hd-user{font-size:.78rem;color:rgba(255,255,255,.6);margin-left:20px}
+.btn-logout{background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);padding:5px 12px;border-radius:5px;font-size:.75rem;cursor:pointer;font-family:'Noto Sans JP',sans-serif;margin-left:12px;transition:all .2s}
+.btn-logout:hover{border-color:#fff;color:#fff}
+.main{max-width:860px;margin:36px auto;padding:0 20px}
+.page-title{font-family:'Shippori Mincho',serif;font-size:1.5rem;margin-bottom:6px}
+.page-sub{color:var(--ink2);font-size:.84rem;margin-bottom:28px}
+.card{background:#fff;border-radius:12px;padding:28px;border:1px solid var(--border);margin-bottom:20px}
+.card-title{font-size:.9rem;font-weight:700;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--warm)}
+.form-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.field{flex:1;min-width:160px}
+.field label{display:block;font-size:.78rem;font-weight:700;margin-bottom:5px;color:var(--ink2)}
+.field input{width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:8px;font-size:.86rem;font-family:'Noto Sans JP',sans-serif;background:var(--paper);transition:border-color .2s}
+.field input:focus{outline:none;border-color:var(--green2)}
+.btn{padding:10px 22px;border-radius:8px;border:none;font-size:.86rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all .2s}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover{background:#1b5e3f}
+.btn-sm{padding:6px 14px;font-size:.76rem;border-radius:6px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-weight:700;transition:all .2s;border:2px solid var(--border);background:#fff;color:var(--ink)}
+.btn-sm:hover{background:var(--warm)}
+.btn-copy{border-color:var(--green2);color:var(--green)}
+.btn-copy:hover{background:var(--green3)}
+.btn-deact{border-color:#f5a5a7;color:var(--red)}
+.btn-deact:hover{background:#fde8e8}
+.btn-react{border-color:var(--border);color:var(--ink2)}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+th{text-align:left;padding:10px 12px;background:var(--warm);font-size:.75rem;color:var(--ink2);font-weight:700;border-bottom:2px solid var(--border)}
+td{padding:12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.badge-active{display:inline-block;background:var(--green3);color:var(--green);font-size:.7rem;font-weight:700;padding:2px 10px;border-radius:10px}
+.badge-inactive{display:inline-block;background:var(--warm);color:var(--ink2);font-size:.7rem;font-weight:700;padding:2px 10px;border-radius:10px}
+.url-text{font-size:.76rem;color:var(--ink2);font-family:monospace;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.actions{display:flex;gap:6px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 24px;border-radius:24px;font-size:.82rem;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}
+.empty{text-align:center;padding:32px;color:var(--ink2);font-size:.86rem}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-logo">職業性ストレス<span>簡易調査票</span></div>
+  <nav class="hd-nav">
+    <a href="links.html" class="active">招待URL</a>
+    <a href="dashboard.html">集計・結果</a>
+  </nav>
+  <span class="hd-user" id="hdEmail"></span>
+  <button class="btn-logout" id="btnLogout">ログアウト</button>
+</header>
+
+<main class="main">
+  <div class="page-title">招待URL管理</div>
+  <p class="page-sub">従業員に配布するURLを発行します。部署ごとにURLを分けることもできます。</p>
+
+  <!-- URL発行フォーム -->
+  <div class="card">
+    <div class="card-title">新しい招待URLを発行</div>
+    <div class="form-row">
+      <div class="field">
+        <label>部署名（任意）</label>
+        <input type="text" id="deptInput" placeholder="例：営業部">
+      </div>
+      <div class="field" style="max-width:200px">
+        <label>有効期限（任意）</label>
+        <input type="date" id="expiryInput">
+      </div>
+      <button class="btn btn-primary" id="btnCreate">URLを発行する</button>
+    </div>
+  </div>
+
+  <!-- URL一覧 -->
+  <div class="card">
+    <div class="card-title">発行済みURL一覧</div>
+    <div id="tableWrap">
+      <div class="empty">読み込み中...</div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-client.js"></script>
+<script>
+var BASE_URL = 'https://stress-check-gamma.vercel.app/register.html';
+var companyId = null;
+
+// 認証チェック
+(async function() {
+  var s = await supabase.auth.getSession();
+  if (!s.data.session) { window.location.href = 'login.html'; return; }
+  document.getElementById('hdEmail').textContent = s.data.session.user.email;
+
+  var au = await supabase.from('admin_users').select('company_id').single();
+  if (!au.data) { window.location.href = 'login.html'; return; }
+  companyId = au.data.company_id;
+  loadLinks();
+})();
+
+document.getElementById('btnLogout').addEventListener('click', async function() {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html';
+});
+
+async function loadLinks() {
+  var res = await supabase.from('survey_links')
+    .select('id, token, department, is_active, expires_at, created_at')
+    .eq('company_id', companyId)
+    .order('created_at', { ascending: false });
+
+  var wrap = document.getElementById('tableWrap');
+  if (!res.data || res.data.length === 0) {
+    wrap.innerHTML = '<div class="empty">まだURLが発行されていません</div>';
+    return;
+  }
+
+  var html = '<table><thead><tr><th>部署</th><th>招待URL</th><th>有効期限</th><th>ステータス</th><th>操作</th></tr></thead><tbody>';
+  res.data.forEach(function(lnk) {
+    var url     = BASE_URL + '?token=' + lnk.token;
+    var dept    = lnk.department || '（全体）';
+    var expiry  = lnk.expires_at ? new Date(lnk.expires_at).toLocaleDateString('ja-JP') : '無期限';
+    var badge   = lnk.is_active ? '<span class="badge-active">有効</span>' : '<span class="badge-inactive">無効</span>';
+    var toggleBtn = lnk.is_active
+      ? '<button class="btn-sm btn-deact" onclick="toggleLink(\'' + lnk.id + '\',false)">無効化</button>'
+      : '<button class="btn-sm btn-react" onclick="toggleLink(\'' + lnk.id + '\',true)">有効化</button>';
+    html += '<tr>'
+      + '<td>' + escHtml(dept) + '</td>'
+      + '<td><div class="url-text" title="' + url + '">' + url + '</div></td>'
+      + '<td>' + expiry + '</td>'
+      + '<td>' + badge + '</td>'
+      + '<td><div class="actions">'
+      + '<button class="btn-sm btn-copy" onclick="copyUrl(\'' + url + '\')">URLをコピー</button>'
+      + toggleBtn
+      + '</div></td>'
+      + '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+document.getElementById('btnCreate').addEventListener('click', async function() {
+  if (!companyId) return;
+  var dept   = document.getElementById('deptInput').value.trim() || null;
+  var expiry = document.getElementById('expiryInput').value || null;
+  var btn    = document.getElementById('btnCreate');
+  btn.disabled = true; btn.textContent = '発行中...';
+
+  var payload = { company_id: companyId, department: dept };
+  if (expiry) payload.expires_at = expiry;
+
+  var res = await supabase.from('survey_links').insert(payload);
+  btn.disabled = false; btn.textContent = 'URLを発行する';
+
+  if (res.error) { showToast('エラー: ' + res.error.message); return; }
+  document.getElementById('deptInput').value  = '';
+  document.getElementById('expiryInput').value = '';
+  showToast('URLを発行しました');
+  loadLinks();
+});
+
+async function toggleLink(id, active) {
+  await supabase.from('survey_links').update({ is_active: active }).eq('id', id);
+  loadLinks();
+}
+
+function copyUrl(url) {
+  navigator.clipboard.writeText(url).then(function(){ showToast('URLをコピーしました'); });
+}
+
+function showToast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(function(){ el.classList.remove('show'); }, 2400);
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
