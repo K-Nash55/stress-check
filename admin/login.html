@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理者ログイン | ストレスチェック</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;600&display=swap');
+:root{--ink:#1a1a2e;--ink2:#4a4a6a;--paper:#faf9f6;--warm:#f3f0e8;--green:#2d6a4f;--green2:#52b788;--green3:#d8f3dc;--border:#d6d0c4;--red:#b5373a;--sh:rgba(26,26,46,0.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.wrap{width:100%;max-width:420px;padding:0 20px}
+.logo{text-align:center;margin-bottom:32px}
+.logo-text{font-family:'Shippori Mincho',serif;font-size:1.3rem;font-weight:600;color:var(--ink)}.logo-text span{color:var(--green2)}
+.logo-sub{font-size:.75rem;color:var(--ink2);margin-top:4px;letter-spacing:.05em}
+.card{background:#fff;border-radius:14px;padding:36px;box-shadow:0 4px 24px var(--sh);border:1px solid var(--border)}
+.card-title{font-size:1rem;font-weight:700;margin-bottom:24px;text-align:center;color:var(--ink)}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.78rem;font-weight:700;margin-bottom:5px;color:var(--ink2)}
+.field input{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:8px;font-size:.9rem;font-family:'Noto Sans JP',sans-serif;background:var(--paper);transition:border-color .2s}
+.field input:focus{outline:none;border-color:var(--green2)}
+.btn{display:block;width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:.9rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;margin-top:8px;transition:all .2s}
+.btn:hover:not(:disabled){background:#1b5e3f}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.err{color:var(--red);font-size:.8rem;margin-top:10px;text-align:center;display:none}
+.divider{border:none;border-top:1px solid var(--border);margin:24px 0}
+.setup-title{font-size:.88rem;font-weight:700;margin-bottom:6px}
+.setup-desc{font-size:.8rem;color:var(--ink2);margin-bottom:16px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">
+    <div class="logo-text">職業性ストレス<span>簡易調査票</span></div>
+    <div class="logo-sub">管理者ポータル</div>
+  </div>
+
+  <!-- ログインフォーム -->
+  <div class="card" id="cardLogin">
+    <div class="card-title">管理者ログイン</div>
+    <div class="field">
+      <label>メールアドレス</label>
+      <input type="email" id="email" placeholder="admin@example.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>パスワード</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn" id="btnLogin">ログイン</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+
+  <!-- 初回セットアップ（会社名入力） -->
+  <div class="card" id="cardSetup" style="display:none">
+    <div class="setup-title">会社名を登録してください</div>
+    <div class="setup-desc">初回ログインです。ストレスチェックを実施する会社名を入力してください。</div>
+    <div class="field">
+      <label>会社名</label>
+      <input type="text" id="companyName" placeholder="例：株式会社サンプル" maxlength="100">
+    </div>
+    <button class="btn" id="btnSetup">登録して開始する</button>
+    <div class="err" id="setupErr"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-client.js"></script>
+<script>
+// すでにログイン済みなら links.html へ
+(async function() {
+  var s = await supabase.auth.getSession();
+  if (s.data.session) window.location.href = 'links.html';
+})();
+
+document.getElementById('btnLogin').addEventListener('click', async function() {
+  var email    = document.getElementById('email').value.trim();
+  var password = document.getElementById('password').value;
+  var errEl    = document.getElementById('loginErr');
+  errEl.style.display = 'none';
+
+  if (!email || !password) { errEl.textContent = 'メールアドレスとパスワードを入力してください'; errEl.style.display = 'block'; return; }
+
+  var btn = document.getElementById('btnLogin');
+  btn.disabled = true; btn.textContent = 'ログイン中...';
+
+  var res = await supabase.auth.signInWithPassword({ email: email, password: password });
+  if (res.error) {
+    errEl.textContent = 'ログインに失敗しました：' + res.error.message;
+    errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'ログイン';
+    return;
+  }
+
+  // admin_users レコードがあるか確認
+  var check = await supabase.from('admin_users').select('id').single();
+  if (check.data) {
+    window.location.href = 'links.html';
+  } else {
+    // 初回 → 会社名入力画面へ
+    document.getElementById('cardLogin').style.display = 'none';
+    document.getElementById('cardSetup').style.display = 'block';
+  }
+});
+
+document.getElementById('btnSetup').addEventListener('click', async function() {
+  var name  = document.getElementById('companyName').value.trim();
+  var errEl = document.getElementById('setupErr');
+  errEl.style.display = 'none';
+  if (!name) { errEl.textContent = '会社名を入力してください'; errEl.style.display = 'block'; return; }
+
+  var btn = document.getElementById('btnSetup');
+  btn.disabled = true; btn.textContent = '登録中...';
+
+  var res = await supabase.rpc('setup_company', { company_name: name });
+  if (res.error) {
+    errEl.textContent = '登録に失敗しました：' + res.error.message;
+    errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = '登録して開始する';
+    return;
+  }
+  window.location.href = 'links.html';
+});
+
+// Enter キー対応
+['email','password'].forEach(function(id) {
+  document.getElementById(id).addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') document.getElementById('btnLogin').click();
+  });
+});
+document.getElementById('companyName').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') document.getElementById('btnSetup').click();
+});
+</script>
+</body>
+</html>

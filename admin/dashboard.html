@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>集計・結果 | ストレスチェック管理</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;600&display=swap');
+:root{--ink:#1a1a2e;--ink2:#4a4a6a;--paper:#faf9f6;--warm:#f3f0e8;--green:#2d6a4f;--green2:#52b788;--green3:#d8f3dc;--warn:#c77c3e;--warn2:#fff3e0;--border:#d6d0c4;--red:#b5373a;--sh:rgba(26,26,46,0.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+.hd{background:var(--ink);color:#fff;padding:16px 32px;display:flex;align-items:center;gap:20px}
+.hd-logo{font-family:'Shippori Mincho',serif;font-size:1.2rem;font-weight:600;flex:1}.hd-logo span{color:var(--green2)}
+.hd-nav a{color:rgba(255,255,255,.7);text-decoration:none;font-size:.82rem;margin-left:20px;transition:color .2s}
+.hd-nav a:hover,.hd-nav a.active{color:#fff}
+.hd-user{font-size:.78rem;color:rgba(255,255,255,.6);margin-left:20px}
+.btn-logout{background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);padding:5px 12px;border-radius:5px;font-size:.75rem;cursor:pointer;font-family:'Noto Sans JP',sans-serif;margin-left:12px;transition:all .2s}
+.btn-logout:hover{border-color:#fff;color:#fff}
+.main{max-width:1000px;margin:32px auto;padding:0 20px 60px}
+.page-title{font-family:'Shippori Mincho',serif;font-size:1.5rem;margin-bottom:6px}
+.page-sub{color:var(--ink2);font-size:.84rem;margin-bottom:24px}
+/* フィルタバー */
+.filter-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:#fff;padding:16px 20px;border-radius:10px;border:1px solid var(--border);margin-bottom:24px}
+.filter-bar label{font-size:.78rem;font-weight:700;color:var(--ink2)}
+.filter-bar select,.filter-bar input{padding:7px 12px;border:2px solid var(--border);border-radius:7px;font-size:.84rem;font-family:'Noto Sans JP',sans-serif;background:var(--paper)}
+.filter-bar select:focus,.filter-bar input:focus{outline:none;border-color:var(--green2)}
+.filter-sep{flex:1}
+.btn-export{padding:7px 18px;border-radius:7px;border:2px solid var(--border);background:#fff;font-size:.8rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;color:var(--ink);transition:all .2s}
+.btn-export:hover{background:var(--warm)}
+/* サマリカード */
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.sum-card{background:#fff;border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border)}
+.sum-lbl{font-size:.72rem;color:var(--ink2);margin-bottom:6px;font-weight:500}
+.sum-val{font-size:2.2rem;font-weight:700;font-family:'Shippori Mincho',serif;line-height:1}
+.sum-unit{font-size:.72rem;color:var(--ink2);margin-top:3px}
+.sum-card.hi .sum-val{color:var(--red)}
+.sum-card.mi .sum-val{color:var(--warn)}
+.sum-card.lo .sum-val{color:var(--green)}
+/* セクション */
+.section{background:#fff;border-radius:12px;padding:24px;border:1px solid var(--border);margin-bottom:18px}
+.sec-title{font-family:'Shippori Mincho',serif;font-size:1.05rem;font-weight:600;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--warm)}
+/* ストレスレベル分布 */
+.level-bars{display:flex;flex-direction:column;gap:12px}
+.lv-row{display:flex;align-items:center;gap:12px}
+.lv-label{font-size:.82rem;font-weight:700;min-width:110px}
+.lv-track{flex:1;height:22px;background:var(--warm);border-radius:5px;overflow:hidden}
+.lv-fill{height:100%;border-radius:5px;transition:width .6s ease}
+.lv-fill.high{background:var(--red)}
+.lv-fill.mid{background:var(--warn)}
+.lv-fill.low{background:var(--green2)}
+.lv-pct{font-size:.82rem;font-weight:700;min-width:56px;text-align:right;color:var(--ink2)}
+.lv-cnt{font-size:.76rem;color:var(--ink2);min-width:40px}
+/* 尺度別 */
+.scale-group{margin-bottom:24px}
+.scale-group-title{font-size:.8rem;font-weight:700;color:#fff;padding:6px 14px;border-radius:6px;margin-bottom:12px;display:inline-block}
+.scale-item{margin-bottom:10px}
+.sc-row{display:flex;align-items:center;gap:10px;margin-bottom:3px}
+.sc-name{font-size:.78rem;flex:1;color:var(--ink)}
+.sc-vals{font-size:.74rem;color:var(--ink2);min-width:120px;text-align:right}
+.sc-track{height:7px;background:var(--warm);border-radius:4px;position:relative;overflow:visible}
+.sc-fill{height:100%;border-radius:4px;position:relative}
+.sc-avg-marker{position:absolute;top:-4px;width:2px;height:15px;background:var(--ink2);border-radius:1px}
+.scale-legend{display:flex;gap:16px;font-size:.72rem;color:var(--ink2);margin-bottom:14px;align-items:center}
+.legend-line{display:inline-block;width:14px;height:2px;background:var(--ink2);vertical-align:middle;margin-right:4px}
+/* 個人一覧 */
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+th{text-align:left;padding:9px 12px;background:var(--warm);font-size:.75rem;color:var(--ink2);font-weight:700;border-bottom:2px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafffe}
+.badge{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 10px;border-radius:10px}
+.badge.high{background:#fde8e8;color:var(--red)}
+.badge.mid{background:var(--warn2);color:var(--warn)}
+.badge.low{background:var(--green3);color:var(--green)}
+.empty{text-align:center;padding:40px;color:var(--ink2);font-size:.86rem}
+.loading{text-align:center;padding:60px;color:var(--ink2)}
+@media(max-width:640px){.summary-grid{grid-template-columns:repeat(2,1fr)}.filter-bar{flex-direction:column;align-items:stretch}}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-logo">職業性ストレス<span>簡易調査票</span></div>
+  <nav class="hd-nav">
+    <a href="links.html">招待URL</a>
+    <a href="dashboard.html" class="active">集計・結果</a>
+  </nav>
+  <span class="hd-user" id="hdEmail"></span>
+  <button class="btn-logout" id="btnLogout">ログアウト</button>
+</header>
+
+<main class="main">
+  <div class="page-title">集計・結果</div>
+  <p class="page-sub">回答済み従業員のストレスチェック結果を集計します。</p>
+
+  <div id="mainContent"><div class="loading">データを読み込んでいます...</div></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-client.js"></script>
+<script src="../js/questions.js"></script>
+<script>
+var allData    = [];   // { response + employee }
+var deptList   = [];
+var companyId  = null;
+
+// ============================================================
+// 認証チェック & 初期ロード
+// ============================================================
+(async function() {
+  var s = await supabase.auth.getSession();
+  if (!s.data.session) { window.location.href = 'login.html'; return; }
+  document.getElementById('hdEmail').textContent = s.data.session.user.email;
+
+  var au = await supabase.from('admin_users').select('company_id').single();
+  if (!au.data) { window.location.href = 'login.html'; return; }
+  companyId = au.data.company_id;
+  await loadData();
+})();
+
+document.getElementById('btnLogout').addEventListener('click', async function() {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html';
+});
+
+// ============================================================
+// データ取得
+// ============================================================
+async function loadData() {
+  var res = await supabase
+    .from('survey_responses')
+    .select('id, answers, stress_level, s_total, s_max, r_total, r_max, o_total, o_max, completed_at, employees(name, department)')
+    .eq('company_id', companyId)
+    .order('completed_at', { ascending: false });
+
+  if (res.error) { document.getElementById('mainContent').innerHTML = '<div class="empty">データ取得エラー: ' + res.error.message + '</div>'; return; }
+
+  allData = (res.data || []).map(function(r) {
+    return {
+      id:           r.id,
+      answers:      r.answers,
+      stress_level: r.stress_level,
+      s_total: r.s_total, s_max: r.s_max,
+      r_total: r.r_total, r_max: r.r_max,
+      o_total: r.o_total, o_max: r.o_max,
+      completed_at: r.completed_at,
+      name:         r.employees ? r.employees.name       : '—',
+      department:   r.employees ? (r.employees.department || '未設定') : '未設定'
+    };
+  });
+
+  deptList = Array.from(new Set(allData.map(function(d){ return d.department; }))).sort();
+  renderPage(allData);
+}
+
+// ============================================================
+// ページ描画
+// ============================================================
+function renderPage(data) {
+  var deptOptions = '<option value="">全部署</option>' + deptList.map(function(d){
+    return '<option value="' + escHtml(d) + '">' + escHtml(d) + '</option>';
+  }).join('');
+
+  var html = '';
+
+  // フィルタバー
+  html += '<div class="filter-bar">'
+    + '<label>部署</label><select id="deptFilter">' + deptOptions + '</select>'
+    + '<label style="margin-left:8px">期間（開始）</label><input type="date" id="dateFrom">'
+    + '<label>〜</label><input type="date" id="dateTo">'
+    + '<div class="filter-sep"></div>'
+    + '<button class="btn-export" id="btnCsv">CSVダウンロード</button>'
+    + '</div>';
+
+  if (data.length === 0) {
+    html += '<div class="section"><div class="empty">まだ回答データがありません。<br>招待URLを発行して従業員に配布してください。</div></div>';
+    document.getElementById('mainContent').innerHTML = html;
+    bindFilters();
+    return;
+  }
+
+  var hi = data.filter(function(d){ return d.stress_level === 'high'; }).length;
+  var mi = data.filter(function(d){ return d.stress_level === 'mid';  }).length;
+  var lo = data.filter(function(d){ return d.stress_level === 'low';  }).length;
+  var n  = data.length;
+  var hiPct = n ? (hi/n*100).toFixed(1) : 0;
+
+  // サマリカード
+  html += '<div class="summary-grid">'
+    + '<div class="sum-card"><div class="sum-lbl">回答者数</div><div class="sum-val">' + n + '</div><div class="sum-unit">名</div></div>'
+    + '<div class="sum-card hi"><div class="sum-lbl">高ストレス</div><div class="sum-val">' + hi + '</div><div class="sum-unit">名 (' + hiPct + '%)</div></div>'
+    + '<div class="sum-card mi"><div class="sum-lbl">中程度</div><div class="sum-val">' + mi + '</div><div class="sum-unit">名</div></div>'
+    + '<div class="sum-card lo"><div class="sum-lbl">低ストレス</div><div class="sum-val">' + lo + '</div><div class="sum-unit">名</div></div>'
+    + '</div>';
+
+  // ストレスレベル分布
+  html += '<div class="section"><div class="sec-title">ストレスレベル分布</div><div class="level-bars">';
+  [['high','高ストレス',hi],['mid','中程度のストレス',mi],['low','低ストレス',lo]].forEach(function(row) {
+    var pct = n ? (row[2]/n*100).toFixed(1) : 0;
+    html += '<div class="lv-row">'
+      + '<span class="lv-label">' + row[1] + '</span>'
+      + '<div class="lv-track"><div class="lv-fill ' + row[0] + '" style="width:' + pct + '%"></div></div>'
+      + '<span class="lv-pct">' + pct + '%</span>'
+      + '<span class="lv-cnt">(' + row[2] + '名)</span>'
+      + '</div>';
+  });
+  html += '</div></div>';
+
+  // 尺度別平均
+  html += '<div class="section"><div class="sec-title">尺度別平均スコア</div>';
+  html += '<div class="scale-legend"><span><span class="legend-line"></span>｜ は全国平均値</span><span style="color:var(--ink2);font-size:.72rem">スコアは 1〜4 点</span></div>';
+  html += renderScales(data);
+  html += '</div>';
+
+  // 個人一覧
+  html += '<div class="section"><div class="sec-title">個人別一覧</div>';
+  html += '<table><thead><tr><th>氏名</th><th>部署</th><th>ストレスレベル</th><th>ストレッサー</th><th>リソース</th><th>アウトカム</th><th>回答日</th></tr></thead><tbody>';
+  data.forEach(function(d) {
+    var lvLabel = d.stress_level === 'high' ? '高ストレス' : d.stress_level === 'mid' ? '中程度' : '低ストレス';
+    var sRatio = d.s_max ? (d.s_total/d.s_max*100).toFixed(0) + '%' : '—';
+    var rRatio = d.r_max ? (d.r_total/d.r_max*100).toFixed(0) + '%' : '—';
+    var oRatio = d.o_max ? (d.o_total/d.o_max*100).toFixed(0) + '%' : '—';
+    var date   = d.completed_at ? new Date(d.completed_at).toLocaleDateString('ja-JP') : '—';
+    html += '<tr>'
+      + '<td>' + escHtml(d.name) + '</td>'
+      + '<td>' + escHtml(d.department) + '</td>'
+      + '<td><span class="badge ' + d.stress_level + '">' + lvLabel + '</span></td>'
+      + '<td>' + sRatio + '</td>'
+      + '<td>' + rRatio + '</td>'
+      + '<td>' + oRatio + '</td>'
+      + '<td>' + date + '</td>'
+      + '</tr>';
+  });
+  html += '</tbody></table></div>';
+
+  document.getElementById('mainContent').innerHTML = html;
+  bindFilters();
+  bindCsv(data);
+}
+
+// ============================================================
+// 尺度別スコア集計
+// ============================================================
+function renderScales(data) {
+  if (data.length === 0) return '';
+
+  // 尺度ごとに全回答者の平均を集計
+  var scaleMap = {};
+  QUESTIONS.forEach(function(q) {
+    var key = q.scale.trim();
+    if (!scaleMap[key]) scaleMap[key] = { questions: [], category: q.category, nationalAvg: q.avg };
+    scaleMap[key].questions.push(q);
+  });
+
+  var scaleResults = {};
+  Object.keys(scaleMap).forEach(function(key) {
+    var qList = scaleMap[key].questions;
+    var respondentAvgs = [];
+    data.forEach(function(resp) {
+      var ans = resp.answers;
+      var tot = 0, cnt = 0;
+      qList.forEach(function(q) {
+        var v = ans[q.no] || ans[String(q.no)];
+        if (v) { tot += v; cnt++; }
+      });
+      if (cnt > 0) respondentAvgs.push(tot / cnt);
+    });
+    var avg = respondentAvgs.length ? respondentAvgs.reduce(function(a,b){return a+b;},0) / respondentAvgs.length : 0;
+    scaleResults[key] = { avg: avg, nationalAvg: scaleMap[key].nationalAvg, category: scaleMap[key].category };
+  });
+
+  var groups = [
+    { name:'ストレッサー（仕事の負担）', color:'#b5373a', cats:['1.ストレッサー（仕事の負担）'] },
+    { name:'作業リソース',               color:'#2d6a4f', cats:['2-1.作業リソース（仕事の資源）'] },
+    { name:'部署・会社リソース',         color:'#1a4d3a', cats:['2-2.部署リソース（仕事の資源）','2-3.会社リソース（仕事の資源）'] },
+    { name:'精神的ストレス',             color:'#c77c3e', cats:['3-1.精神的ストレス（アウトカム）'] },
+    { name:'身体的ストレス',             color:'#9e5a3e', cats:['3-2.身体的ストレス（アウトカム）'] },
+    { name:'その他（アウトカム）',       color:'#4a6fa5', cats:['3-3.その他（アウトカム）'] }
+  ];
+
+  var html = '';
+  groups.forEach(function(grp) {
+    var items = Object.keys(scaleResults).filter(function(k) {
+      return grp.cats.indexOf(scaleResults[k].category) !== -1;
+    });
+    if (items.length === 0) return;
+    html += '<div class="scale-group">';
+    html += '<div class="scale-group-title" style="background:' + grp.color + '">' + grp.name + '</div>';
+    items.forEach(function(key) {
+      var sr   = scaleResults[key];
+      var name = key.replace(/^\d+[\.\-\s]+/, '').trim();
+      var pct  = (sr.avg / 4 * 100).toFixed(1);
+      var natPct = sr.nationalAvg ? (sr.nationalAvg / 4 * 100).toFixed(1) : null;
+      html += '<div class="scale-item">'
+        + '<div class="sc-row"><span class="sc-name">' + escHtml(name) + '</span>'
+        + '<span class="sc-vals">平均 ' + sr.avg.toFixed(2) + ' / 4.00　全国 ' + (sr.nationalAvg ? sr.nationalAvg.toFixed(2) : '—') + '</span></div>'
+        + '<div class="sc-track">'
+        + '<div class="sc-fill" style="width:' + pct + '%;background:' + grp.color + ';opacity:0.8"></div>'
+        + (natPct ? '<div class="sc-avg-marker" style="left:' + natPct + '%"></div>' : '')
+        + '</div></div>';
+    });
+    html += '</div>';
+  });
+  return html;
+}
+
+// ============================================================
+// フィルタ
+// ============================================================
+function bindFilters() {
+  var deptSel  = document.getElementById('deptFilter');
+  var dateFrom = document.getElementById('dateFrom');
+  var dateTo   = document.getElementById('dateTo');
+  if (!deptSel) return;
+
+  function applyFilter() {
+    var dept = deptSel.value;
+    var from = dateFrom.value ? new Date(dateFrom.value) : null;
+    var to   = dateTo.value   ? new Date(dateTo.value + 'T23:59:59') : null;
+    var filtered = allData.filter(function(d) {
+      if (dept && d.department !== dept) return false;
+      if (from && new Date(d.completed_at) < from) return false;
+      if (to   && new Date(d.completed_at) > to)   return false;
+      return true;
+    });
+    renderPage(filtered);
+    // フィルタ値を復元
+    document.getElementById('deptFilter').value = dept;
+    if (from) document.getElementById('dateFrom').value = dateFrom.value;
+    if (to)   document.getElementById('dateTo').value   = dateTo.value;
+  }
+
+  deptSel.addEventListener('change', applyFilter);
+  dateFrom.addEventListener('change', applyFilter);
+  dateTo.addEventListener('change', applyFilter);
+}
+
+// ============================================================
+// CSVダウンロード
+// ============================================================
+function bindCsv(data) {
+  var btn = document.getElementById('btnCsv');
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    var rows = [['氏名','部署','ストレスレベル','ストレッサー得点','ストレッサー最大','リソース得点','リソース最大','アウトカム得点','アウトカム最大','回答日']];
+    data.forEach(function(d) {
+      var lvLabel = d.stress_level === 'high' ? '高ストレス' : d.stress_level === 'mid' ? '中程度' : '低ストレス';
+      rows.push([d.name, d.department, lvLabel, d.s_total, d.s_max, d.r_total, d.r_max, d.o_total, d.o_max,
+        d.completed_at ? new Date(d.completed_at).toLocaleDateString('ja-JP') : '']);
+    });
+    var csv = '\uFEFF' + rows.map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\r\n');
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href = url; a.download = 'stress_check_' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click(); URL.revokeObjectURL(url);
+  });
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
