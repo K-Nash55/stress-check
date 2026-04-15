@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ストレスチェック 参加登録</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;600&display=swap');
+:root{--ink:#1a1a2e;--ink2:#4a4a6a;--paper:#faf9f6;--warm:#f3f0e8;--green:#2d6a4f;--green2:#52b788;--green3:#d8f3dc;--warn:#c77c3e;--border:#d6d0c4;--red:#b5373a;--sh:rgba(26,26,46,0.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+.hd{background:var(--ink);color:#fff;padding:20px 32px}
+.hd-logo{font-family:'Shippori Mincho',serif;font-size:1.4rem;font-weight:600}.hd-logo span{color:var(--green2)}
+.wrap{max-width:520px;margin:60px auto;padding:0 20px;flex:1}
+.card{background:#fff;border-radius:14px;padding:40px;box-shadow:0 4px 24px var(--sh);border:1px solid var(--border)}
+.badge{display:inline-block;background:var(--green3);color:var(--green);font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.card-title{font-family:'Shippori Mincho',serif;font-size:1.6rem;margin-bottom:8px}
+.card-desc{color:var(--ink2);font-size:.88rem;margin-bottom:24px;line-height:1.8}
+.info-box{background:var(--warm);border-radius:10px;padding:16px 20px;margin-bottom:28px;font-size:.86rem;line-height:2}
+.info-box strong{color:var(--green);font-weight:700}
+.field{margin-bottom:20px}
+.field label{display:block;font-size:.82rem;font-weight:700;margin-bottom:6px;color:var(--ink2)}
+.field input{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:8px;font-size:.95rem;font-family:'Noto Sans JP',sans-serif;background:var(--paper);transition:border-color .2s}
+.field input:focus{outline:none;border-color:var(--green2)}
+.btn{display:block;width:100%;padding:15px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;letter-spacing:.06em;transition:all .2s}
+.btn:hover:not(:disabled){background:#1b5e3f;transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.err{color:var(--red);font-size:.82rem;margin-top:12px;text-align:center;display:none}
+.loading{text-align:center;padding:60px 0;color:var(--ink2);font-size:.9rem}
+.expired{text-align:center;padding:40px 0}
+.expired-icon{font-size:3rem;margin-bottom:12px}
+.expired-title{font-family:'Shippori Mincho',serif;font-size:1.3rem;margin-bottom:8px}
+.expired-desc{color:var(--ink2);font-size:.86rem;line-height:1.8}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-logo">職業性ストレス<span>簡易調査票</span></div>
+</header>
+
+<div class="wrap">
+  <!-- ローディング -->
+  <div id="viewLoading" class="loading">リンクを確認しています...</div>
+
+  <!-- エラー -->
+  <div id="viewError" style="display:none">
+    <div class="card expired">
+      <div class="expired-icon">⚠️</div>
+      <div class="expired-title" id="errTitle">無効なリンクです</div>
+      <div class="expired-desc" id="errDesc">このURLは無効または期限切れです。担当者にお問い合わせください。</div>
+    </div>
+  </div>
+
+  <!-- 登録フォーム -->
+  <div id="viewForm" style="display:none">
+    <div class="card">
+      <div class="badge">参加登録</div>
+      <h1 class="card-title">氏名を入力してください</h1>
+      <p class="card-desc">以下の情報を確認のうえ、氏名を入力して調査を開始してください。</p>
+      <div class="info-box">
+        <div><strong>会社名：</strong><span id="infoCompany">—</span></div>
+        <div id="infoDeptRow"><strong>部署：</strong><span id="infoDept">—</span></div>
+      </div>
+      <div class="field">
+        <label for="nameInput">氏名（フルネーム）</label>
+        <input type="text" id="nameInput" placeholder="例：山田 太郎" maxlength="50" autocomplete="name">
+      </div>
+      <button class="btn" id="btnRegister" disabled>調査を開始する →</button>
+      <div class="err" id="errMsg">氏名を入力してください</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script>
+var linkInfo = null;
+
+function show(id) {
+  ['viewLoading','viewError','viewForm'].forEach(function(v){
+    document.getElementById(v).style.display = v === id ? 'block' : 'none';
+  });
+}
+
+function showError(title, desc) {
+  document.getElementById('errTitle').textContent = title;
+  document.getElementById('errDesc').textContent  = desc;
+  show('viewError');
+}
+
+async function init() {
+  var params = new URLSearchParams(window.location.search);
+  var token  = params.get('token');
+  if (!token) { showError('URLが正しくありません', '招待URLにはtokenパラメータが必要です。担当者にお問い合わせください。'); return; }
+
+  var res = await supabase.rpc('get_link_by_token', { p_token: token });
+  if (res.error || !res.data || res.data.length === 0) {
+    showError('無効なリンクです', 'このURLは存在しないか、すでに無効化されています。');
+    return;
+  }
+
+  linkInfo = res.data[0];
+  if (!linkInfo.is_active) { showError('このリンクは無効化されています', '担当者にお問い合わせください。'); return; }
+  if (linkInfo.expires_at && new Date(linkInfo.expires_at) < new Date()) {
+    showError('このリンクは期限切れです', '有効期限：' + new Date(linkInfo.expires_at).toLocaleDateString('ja-JP') + '\n担当者にお問い合わせください。');
+    return;
+  }
+
+  document.getElementById('infoCompany').textContent = linkInfo.company_name;
+  if (linkInfo.department) {
+    document.getElementById('infoDept').textContent = linkInfo.department;
+  } else {
+    document.getElementById('infoDeptRow').style.display = 'none';
+  }
+  show('viewForm');
+}
+
+var nameInput  = document.getElementById('nameInput');
+var btnRegister = document.getElementById('btnRegister');
+
+nameInput.addEventListener('input', function() {
+  btnRegister.disabled = nameInput.value.trim().length === 0;
+});
+
+btnRegister.addEventListener('click', async function() {
+  var name = nameInput.value.trim();
+  if (!name) { document.getElementById('errMsg').style.display = 'block'; return; }
+
+  btnRegister.disabled = true;
+  btnRegister.textContent = '登録中...';
+
+  var res = await supabase.from('employees').insert({
+    company_id:     linkInfo.company_id,
+    survey_link_id: linkInfo.link_id,
+    name:           name,
+    department:     linkInfo.department || null
+  }).select('id').single();
+
+  if (res.error) {
+    console.error(res.error);
+    btnRegister.disabled = false;
+    btnRegister.textContent = '調査を開始する →';
+    document.getElementById('errMsg').textContent = '登録に失敗しました。もう一度お試しください。';
+    document.getElementById('errMsg').style.display = 'block';
+    return;
+  }
+
+  sessionStorage.setItem('employee_id', res.data.id);
+  sessionStorage.setItem('company_id',  linkInfo.company_id);
+  sessionStorage.setItem('employee_name', name);
+  window.location.href = 'index.html';
+});
+
+init();
+</script>
+</body>
+</html>
