@@ -192,24 +192,36 @@ function renderPage(data) {
     + '<div class="sum-card lo"><div class="sum-lbl">低ストレス</div><div class="sum-val">' + lo + '</div><div class="sum-unit">名</div></div>'
     + '</div>';
 
+  var MIN_GROUP = 5;
+
   // ストレスレベル分布
-  html += '<div class="section"><div class="sec-title">ストレスレベル分布</div><div class="level-bars">';
-  [['high','高ストレス',hi],['mid','中程度のストレス',mi],['low','低ストレス',lo]].forEach(function(row) {
-    var pct = n ? (row[2]/n*100).toFixed(1) : 0;
-    html += '<div class="lv-row">'
-      + '<span class="lv-label">' + row[1] + '</span>'
-      + '<div class="lv-track"><div class="lv-fill ' + row[0] + '" style="width:' + pct + '%"></div></div>'
-      + '<span class="lv-pct">' + pct + '%</span>'
-      + '<span class="lv-cnt">(' + row[2] + '名)</span>'
-      + '</div>';
-  });
-  html += '</div></div>';
+  if (n < MIN_GROUP) {
+    html += '<div class="section"><div class="sec-title">ストレスレベル分布</div>'
+      + '<div class="empty" style="padding:28px 0">集団分析には5人以上のデータが必要です（現在 ' + n + ' 名）</div></div>';
+  } else {
+    html += '<div class="section"><div class="sec-title">ストレスレベル分布</div><div class="level-bars">';
+    [['high','高ストレス',hi],['mid','中程度のストレス',mi],['low','低ストレス',lo]].forEach(function(row) {
+      var pct = (row[2]/n*100).toFixed(1);
+      html += '<div class="lv-row">'
+        + '<span class="lv-label">' + row[1] + '</span>'
+        + '<div class="lv-track"><div class="lv-fill ' + row[0] + '" style="width:' + pct + '%"></div></div>'
+        + '<span class="lv-pct">' + pct + '%</span>'
+        + '<span class="lv-cnt">(' + row[2] + '名)</span>'
+        + '</div>';
+    });
+    html += '</div></div>';
+  }
 
   // 尺度別平均
-  html += '<div class="section"><div class="sec-title">尺度別平均スコア</div>';
-  html += '<div class="scale-legend"><span><span class="legend-line"></span>｜ は全国平均値</span><span style="color:var(--ink2);font-size:.72rem">スコアは 1〜4 点</span></div>';
-  html += renderScales(data);
-  html += '</div>';
+  if (n < MIN_GROUP) {
+    html += '<div class="section"><div class="sec-title">尺度別平均スコア</div>'
+      + '<div class="empty" style="padding:28px 0">集団分析には5人以上のデータが必要です（現在 ' + n + ' 名）</div></div>';
+  } else {
+    html += '<div class="section"><div class="sec-title">尺度別平均スコア</div>';
+    html += '<div class="scale-legend"><span><span class="legend-line"></span>｜ は全国平均値</span><span style="color:var(--ink2);font-size:.72rem">スコアは 1〜4 点</span></div>';
+    html += renderScales(data);
+    html += '</div>';
+  }
 
   // 個人一覧
   html += '<div class="section"><div class="sec-title">個人別一覧</div>';
