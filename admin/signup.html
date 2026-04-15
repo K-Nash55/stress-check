@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新規登録 | ストレスチェック</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;600&display=swap');
+:root{--ink:#1a1a2e;--ink2:#4a4a6a;--paper:#faf9f6;--warm:#f3f0e8;--green:#2d6a4f;--green2:#52b788;--green3:#d8f3dc;--border:#d6d0c4;--red:#b5373a;--sh:rgba(26,26,46,0.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.wrap{width:100%;max-width:440px;padding:0 20px}
+.logo{text-align:center;margin-bottom:32px}
+.logo-text{font-family:'Shippori Mincho',serif;font-size:1.3rem;font-weight:600;color:var(--ink)}.logo-text span{color:var(--green2)}
+.logo-sub{font-size:.75rem;color:var(--ink2);margin-top:4px;letter-spacing:.05em}
+.card{background:#fff;border-radius:14px;padding:36px;box-shadow:0 4px 24px var(--sh);border:1px solid var(--border)}
+.card-title{font-size:1rem;font-weight:700;margin-bottom:6px;text-align:center;color:var(--ink)}
+.card-desc{font-size:.8rem;color:var(--ink2);text-align:center;margin-bottom:24px;line-height:1.7}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.78rem;font-weight:700;margin-bottom:5px;color:var(--ink2)}
+.field input{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:8px;font-size:.9rem;font-family:'Noto Sans JP',sans-serif;background:var(--paper);transition:border-color .2s}
+.field input:focus{outline:none;border-color:var(--green2)}
+.btn{display:block;width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:.9rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;margin-top:8px;transition:all .2s}
+.btn:hover:not(:disabled){background:#1b5e3f}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.err{color:var(--red);font-size:.8rem;margin-top:10px;text-align:center;display:none}
+.footer-link{text-align:center;margin-top:20px;font-size:.82rem;color:var(--ink2)}
+.footer-link a{color:var(--green);text-decoration:none;font-weight:700}
+.footer-link a:hover{text-decoration:underline}
+/* 送信後メッセージ */
+.success{display:none;text-align:center;padding:8px 0}
+.success-icon{font-size:2.4rem;margin-bottom:12px}
+.success-title{font-family:'Shippori Mincho',serif;font-size:1.2rem;margin-bottom:10px}
+.success-desc{font-size:.84rem;color:var(--ink2);line-height:1.8}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">
+    <div class="logo-text">職業性ストレス<span>簡易調査票</span></div>
+    <div class="logo-sub">管理者ポータル</div>
+  </div>
+
+  <!-- 登録フォーム -->
+  <div class="card" id="cardForm">
+    <div class="card-title">会社アカウントの新規登録</div>
+    <p class="card-desc">会社名・メールアドレス・パスワードを入力して<br>アカウントを作成してください。</p>
+
+    <div class="field">
+      <label>会社名</label>
+      <input type="text" id="company" placeholder="例：株式会社サンプル" maxlength="100" autocomplete="organization">
+    </div>
+    <div class="field">
+      <label>メールアドレス</label>
+      <input type="email" id="email" placeholder="admin@example.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>パスワード（8文字以上）</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="new-password">
+    </div>
+    <div class="field">
+      <label>パスワード（確認）</label>
+      <input type="password" id="passwordConfirm" placeholder="••••••••" autocomplete="new-password">
+    </div>
+
+    <button class="btn" id="btnSignup">アカウントを作成する</button>
+    <div class="err" id="signupErr"></div>
+  </div>
+
+  <!-- 登録完了（メール確認が必要な場合） -->
+  <div class="card" id="cardSuccess" style="display:none">
+    <div class="success" style="display:block">
+      <div class="success-icon">📧</div>
+      <div class="success-title">確認メールを送信しました</div>
+      <div class="success-desc">
+        登録したメールアドレスに確認メールを送信しました。<br>
+        メール内のリンクをクリックして登録を完了してください。<br><br>
+        確認後、<a href="login.html" style="color:var(--green);font-weight:700">ログインページ</a>からログインできます。
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-link">
+    すでにアカウントをお持ちの方は <a href="login.html">ログイン</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-client.js"></script>
+<script>
+// すでにログイン済みなら links.html へ
+(async function() {
+  var s = await supabase.auth.getSession();
+  if (s.data.session) window.location.href = 'links.html';
+})();
+
+document.getElementById('btnSignup').addEventListener('click', async function() {
+  var company  = document.getElementById('company').value.trim();
+  var email    = document.getElementById('email').value.trim();
+  var password = document.getElementById('password').value;
+  var confirm  = document.getElementById('passwordConfirm').value;
+  var errEl    = document.getElementById('signupErr');
+  errEl.style.display = 'none';
+
+  // バリデーション
+  if (!company)                           { showErr('会社名を入力してください'); return; }
+  if (!email)                             { showErr('メールアドレスを入力してください'); return; }
+  if (password.length < 8)               { showErr('パスワードは8文字以上で入力してください'); return; }
+  if (password !== confirm)              { showErr('パスワードが一致しません'); return; }
+
+  var btn = document.getElementById('btnSignup');
+  btn.disabled = true; btn.textContent = '登録中...';
+
+  // Supabase Auth にユーザー作成
+  var res = await supabase.auth.signUp({ email: email, password: password });
+  if (res.error) {
+    showErr('登録に失敗しました：' + res.error.message);
+    btn.disabled = false; btn.textContent = 'アカウントを作成する';
+    return;
+  }
+
+  // メール確認不要（即時セッション取得）の場合 → 会社をセットアップしてダッシュボードへ
+  if (res.data.session) {
+    var setup = await supabase.rpc('setup_company', { company_name: company });
+    if (setup.error) {
+      showErr('会社情報の登録に失敗しました：' + setup.error.message);
+      btn.disabled = false; btn.textContent = 'アカウントを作成する';
+      return;
+    }
+    window.location.href = 'links.html';
+    return;
+  }
+
+  // メール確認が必要な場合 → 会社名を localStorage に保存して確認画面を表示
+  localStorage.setItem('pending_company_name', company);
+  document.getElementById('cardForm').style.display = 'none';
+  document.getElementById('cardSuccess').style.display = 'block';
+
+  function showErr(msg) {
+    errEl.textContent = msg;
+    errEl.style.display = 'block';
+  }
+});
+
+// 内部関数をスコープ外でも使えるよう定義
+function showErr(msg) {
+  var errEl = document.getElementById('signupErr');
+  errEl.textContent = msg;
+  errEl.style.display = 'block';
+}
+
+// Enter キー対応
+['company','email','password','passwordConfirm'].forEach(function(id) {
+  document.getElementById(id).addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') document.getElementById('btnSignup').click();
+  });
+});
+</script>
+</body>
+</html>

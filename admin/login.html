@@ -48,6 +48,10 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
     </div>
     <button class="btn" id="btnLogin">ログイン</button>
     <div class="err" id="loginErr"></div>
+    <hr class="divider">
+    <p style="text-align:center;font-size:.82rem;color:var(--ink2)">
+      アカウントをお持ちでない方は <a href="signup.html" style="color:var(--green);font-weight:700;text-decoration:none">新規登録</a>
+    </p>
   </div>
 
   <!-- 初回セットアップ（会社名入力） -->
@@ -96,7 +100,14 @@ document.getElementById('btnLogin').addEventListener('click', async function() {
   if (check.data) {
     window.location.href = 'links.html';
   } else {
-    // 初回 → 会社名入力画面へ
+    // signup.html で登録した会社名が localStorage にあれば自動セットアップ
+    var pendingName = localStorage.getItem('pending_company_name');
+    if (pendingName) {
+      localStorage.removeItem('pending_company_name');
+      var setup = await supabase.rpc('setup_company', { company_name: pendingName });
+      if (!setup.error) { window.location.href = 'links.html'; return; }
+    }
+    // 手動入力画面へ
     document.getElementById('cardLogin').style.display = 'none';
     document.getElementById('cardSetup').style.display = 'block';
   }
