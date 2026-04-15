@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>職業性ストレス簡易調査票</title>
+<script>
+// Supabase のパスワードリセットリンクがここに届いた場合、正しいページへ転送する
+(function() {
+  var hash = window.location.hash;
+  if (hash && hash.indexOf('type=recovery') !== -1) {
+    window.location.replace('/admin/reset-password' + hash);
+  }
+})();
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;600&display=swap');
 :root{--ink:#1a1a2e;--ink2:#4a4a6a;--paper:#faf9f6;--warm:#f3f0e8;--green:#2d6a4f;--green2:#52b788;--green3:#d8f3dc;--warn:#c77c3e;--warn2:#fff3e0;--red:#b5373a;--border:#d6d0c4;--sh:rgba(26,26,46,0.08)}
