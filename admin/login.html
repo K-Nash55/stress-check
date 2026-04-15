@@ -50,8 +50,37 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
     <div class="err" id="loginErr"></div>
     <hr class="divider">
     <p style="text-align:center;font-size:.82rem;color:var(--ink2)">
+      <a href="#" id="linkForgot" style="color:var(--ink2);text-decoration:none">パスワードをお忘れの方</a>
+      　／
       アカウントをお持ちでない方は <a href="signup.html" style="color:var(--green);font-weight:700;text-decoration:none">新規登録</a>
     </p>
+  </div>
+
+  <!-- パスワードリセット送信フォーム -->
+  <div class="card" id="cardForgot" style="display:none">
+    <div class="card-title">パスワードをリセット</div>
+    <div class="setup-desc">登録済みのメールアドレスを入力してください。パスワード再設定のリンクを送信します。</div>
+    <div class="field">
+      <label>メールアドレス</label>
+      <input type="email" id="forgotEmail" placeholder="admin@example.com" autocomplete="email">
+    </div>
+    <button class="btn" id="btnForgot">リセットメールを送信</button>
+    <div class="err" id="forgotErr"></div>
+    <hr class="divider">
+    <p style="text-align:center;font-size:.82rem;color:var(--ink2)">
+      <a href="#" id="linkBackToLogin" style="color:var(--ink2);text-decoration:none">← ログインに戻る</a>
+    </p>
+  </div>
+
+  <!-- リセットメール送信完了 -->
+  <div class="card" id="cardForgotSent" style="display:none">
+    <div style="text-align:center;padding:8px 0">
+      <div style="font-size:2rem;margin-bottom:12px">📧</div>
+      <div style="font-family:'Shippori Mincho',serif;font-size:1.1rem;margin-bottom:10px">メールを送信しました</div>
+      <div style="font-size:.82rem;color:var(--ink2);line-height:1.8">
+        メール内のリンクをクリックして<br>パスワードを再設定してください。
+      </div>
+    </div>
   </div>
 
   <!-- 初回セットアップ（会社名入力） -->
@@ -132,6 +161,42 @@ document.getElementById('btnSetup').addEventListener('click', async function() {
   window.location.href = 'links.html';
 });
 
+// パスワードリセット
+document.getElementById('linkForgot').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.getElementById('cardLogin').style.display = 'none';
+  document.getElementById('cardForgot').style.display = 'block';
+});
+
+document.getElementById('linkBackToLogin').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.getElementById('cardForgot').style.display = 'none';
+  document.getElementById('cardForgotSent').style.display = 'none';
+  document.getElementById('cardLogin').style.display = 'block';
+});
+
+document.getElementById('btnForgot').addEventListener('click', async function() {
+  var email = document.getElementById('forgotEmail').value.trim();
+  var errEl = document.getElementById('forgotErr');
+  errEl.style.display = 'none';
+  if (!email) { errEl.textContent = 'メールアドレスを入力してください'; errEl.style.display = 'block'; return; }
+
+  var btn = document.getElementById('btnForgot');
+  btn.disabled = true; btn.textContent = '送信中...';
+
+  var redirectTo = window.location.origin + '/admin/reset-password';
+  var res = await supabase.auth.resetPasswordForEmail(email, { redirectTo: redirectTo });
+  if (res.error) {
+    errEl.textContent = '送信に失敗しました：' + res.error.message;
+    errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'リセットメールを送信';
+    return;
+  }
+
+  document.getElementById('cardForgot').style.display = 'none';
+  document.getElementById('cardForgotSent').style.display = 'block';
+});
+
 // Enter キー対応
 ['email','password'].forEach(function(id) {
   document.getElementById(id).addEventListener('keydown', function(e) {
@@ -140,6 +205,9 @@ document.getElementById('btnSetup').addEventListener('click', async function() {
 });
 document.getElementById('companyName').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') document.getElementById('btnSetup').click();
+});
+document.getElementById('forgotEmail').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') document.getElementById('btnForgot').click();
 });
 </script>
 </body>
