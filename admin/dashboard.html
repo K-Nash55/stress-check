@@ -247,6 +247,11 @@ function renderPage(data) {
   });
   html += '</tbody></table></div>';
 
+  html += '<div style="font-size:.75rem;color:var(--ink2);background:var(--warm);border:1px solid var(--border);border-radius:7px;padding:10px 14px;margin-top:18px;line-height:1.7;">'
+    + '📋 <strong>事業者の皆様へ</strong>：ストレスチェックと面接指導の実施状況は、毎年、労働基準監督署に報告する義務があります。'
+    + ' <a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/anzen/anzeneisei36/index.html" target="_blank" style="color:var(--green);text-decoration:underline;">厚生労働省の報告様式はこちら</a>'
+    + '</div>';
+
   document.getElementById('mainContent').innerHTML = html;
   bindFilters();
   bindCsv(data);
