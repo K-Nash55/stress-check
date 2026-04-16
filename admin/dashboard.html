@@ -128,7 +128,7 @@ document.getElementById('btnLogout').addEventListener('click', async function() 
 async function loadData() {
   var res = await supabase
     .from('survey_responses')
-    .select('id, answers, stress_level, s_total, s_max, r_total, r_max, o_total, o_max, completed_at, employees(name, department)')
+    .select('id, answers, stress_level, s_total, s_max, r_total, r_max, o_total, o_max, completed_at, employees(department)')
     .eq('company_id', companyId)
     .order('completed_at', { ascending: false });
 
@@ -143,7 +143,6 @@ async function loadData() {
       r_total: r.r_total, r_max: r.r_max,
       o_total: r.o_total, o_max: r.o_max,
       completed_at: r.completed_at,
-      name:         r.employees ? r.employees.name       : '—',
       department:   r.employees ? (r.employees.department || '未設定') : '未設定'
     };
   });
@@ -194,6 +193,11 @@ function renderPage(data) {
 
   var MIN_GROUP = 5;
 
+  // 不利益取扱い禁止の注意書き
+  html += '<div style="font-size:.75rem;color:#854F0B;background:#fff3e0;border:1px solid #e8d5b0;border-radius:7px;padding:10px 14px;margin-bottom:18px;line-height:1.6;">'
+    + '⚠️ 集団分析結果を、特定の個人への人事評価や不利益な取扱いの根拠として使用することは法律で禁止されています。'
+    + '</div>';
+
   // ストレスレベル分布
   if (n < MIN_GROUP) {
     html += '<div class="section"><div class="sec-title">ストレスレベル分布</div>'
@@ -225,7 +229,7 @@ function renderPage(data) {
 
   // 個人一覧
   html += '<div class="section"><div class="sec-title">個人別一覧</div>';
-  html += '<table><thead><tr><th>氏名</th><th>部署</th><th>ストレスレベル</th><th>ストレッサー</th><th>リソース</th><th>アウトカム</th><th>回答日</th></tr></thead><tbody>';
+  html += '<table><thead><tr><th>部署</th><th>ストレスレベル</th><th>ストレッサー</th><th>リソース</th><th>アウトカム</th><th>回答日</th></tr></thead><tbody>';
   data.forEach(function(d) {
     var lvLabel = d.stress_level === 'high' ? '高ストレス' : d.stress_level === 'mid' ? '中程度' : '低ストレス';
     var sRatio = d.s_max ? (d.s_total/d.s_max*100).toFixed(0) + '%' : '—';
@@ -233,7 +237,6 @@ function renderPage(data) {
     var oRatio = d.o_max ? (d.o_total/d.o_max*100).toFixed(0) + '%' : '—';
     var date   = d.completed_at ? new Date(d.completed_at).toLocaleDateString('ja-JP') : '—';
     html += '<tr>'
-      + '<td>' + escHtml(d.name) + '</td>'
       + '<td>' + escHtml(d.department) + '</td>'
       + '<td><span class="badge ' + d.stress_level + '">' + lvLabel + '</span></td>'
       + '<td>' + sRatio + '</td>'
@@ -353,10 +356,10 @@ function bindCsv(data) {
   var btn = document.getElementById('btnCsv');
   if (!btn) return;
   btn.addEventListener('click', function() {
-    var rows = [['氏名','部署','ストレスレベル','ストレッサー得点','ストレッサー最大','リソース得点','リソース最大','アウトカム得点','アウトカム最大','回答日']];
+    var rows = [['部署','ストレスレベル','ストレッサー得点','ストレッサー最大','リソース得点','リソース最大','アウトカム得点','アウトカム最大','回答日']];
     data.forEach(function(d) {
       var lvLabel = d.stress_level === 'high' ? '高ストレス' : d.stress_level === 'mid' ? '中程度' : '低ストレス';
-      rows.push([d.name, d.department, lvLabel, d.s_total, d.s_max, d.r_total, d.r_max, d.o_total, d.o_max,
+      rows.push([d.department, lvLabel, d.s_total, d.s_max, d.r_total, d.r_max, d.o_total, d.o_max,
         d.completed_at ? new Date(d.completed_at).toLocaleDateString('ja-JP') : '']);
     });
     var csv = '\uFEFF' + rows.map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\r\n');
