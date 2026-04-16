@@ -28,7 +28,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .btn-export{padding:7px 18px;border-radius:7px;border:2px solid var(--border);background:#fff;font-size:.8rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;color:var(--ink);transition:all .2s}
 .btn-export:hover{background:var(--warm)}
 /* サマリカード */
-.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
 .sum-card{background:#fff;border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border)}
 .sum-lbl{font-size:.72rem;color:var(--ink2);margin-bottom:6px;font-weight:500}
 .sum-val{font-size:2.2rem;font-weight:700;font-family:'Shippori Mincho',serif;line-height:1}
@@ -99,9 +99,10 @@ tr:hover td{background:#fafffe}
 <script src="../js/supabase-client.js"></script>
 <script src="../js/questions.js"></script>
 <script>
-var allData    = [];   // { response + employee }
-var deptList   = [];
-var companyId  = null;
+var allData         = [];   // { response + employee }
+var deptList        = [];
+var companyId       = null;
+var totalEmployees  = 0;
 
 // ============================================================
 // 認証チェック & 初期ロード
@@ -126,13 +127,20 @@ document.getElementById('btnLogout').addEventListener('click', async function() 
 // データ取得
 // ============================================================
 async function loadData() {
-  var res = await supabase
-    .from('survey_responses')
-    .select('id, answers, stress_level, s_total, s_max, r_total, r_max, o_total, o_max, completed_at, employees(department)')
-    .eq('company_id', companyId)
-    .order('completed_at', { ascending: false });
+  var [res, empRes] = await Promise.all([
+    supabase
+      .from('survey_responses')
+      .select('id, answers, stress_level, s_total, s_max, r_total, r_max, o_total, o_max, completed_at, employees(department)')
+      .eq('company_id', companyId)
+      .order('completed_at', { ascending: false }),
+    supabase
+      .from('employees')
+      .select('id', { count: 'exact', head: true })
+      .eq('company_id', companyId)
+  ]);
 
   if (res.error) { document.getElementById('mainContent').innerHTML = '<div class="empty">データ取得エラー: ' + res.error.message + '</div>'; return; }
+  totalEmployees = empRes.count || 0;
 
   allData = (res.data || []).map(function(r) {
     return {
@@ -184,11 +192,13 @@ function renderPage(data) {
   var hiPct = n ? (hi/n*100).toFixed(1) : 0;
 
   // サマリカード
+  var ratePct = totalEmployees ? (n / totalEmployees * 100).toFixed(1) : '—';
   html += '<div class="summary-grid">'
     + '<div class="sum-card"><div class="sum-lbl">回答者数</div><div class="sum-val">' + n + '</div><div class="sum-unit">名</div></div>'
     + '<div class="sum-card hi"><div class="sum-lbl">高ストレス</div><div class="sum-val">' + hi + '</div><div class="sum-unit">名 (' + hiPct + '%)</div></div>'
     + '<div class="sum-card mi"><div class="sum-lbl">中程度</div><div class="sum-val">' + mi + '</div><div class="sum-unit">名</div></div>'
     + '<div class="sum-card lo"><div class="sum-lbl">低ストレス</div><div class="sum-val">' + lo + '</div><div class="sum-unit">名</div></div>'
+    + '<div class="sum-card"><div class="sum-lbl">受検率</div><div class="sum-val" style="font-size:1.6rem">' + ratePct + '</div><div class="sum-unit">% （受検済 ' + n + ' / 登録済 ' + totalEmployees + ' 名）</div></div>'
     + '</div>';
 
   var MIN_GROUP = 5;
