@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>集団分析・結果 | ストレスチェック管理</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', sans-serif; background: #f5f4f0; color: #1a1a1a; }
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.page-title { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+.page-sub { font-size: 13px; color: #666; margin-bottom: 1rem; }
+.dev-note { font-size: 11px; color: #666; margin-bottom: 1.5rem; padding: 6px 10px; background: #ebebea; border-radius: 6px; display: inline-block; }
+
+.summary-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+.s-card { background: #ebebea; border-radius: 8px; padding: 0.75rem 1rem; }
+.s-card-label { font-size: 11px; color: #666; margin-bottom: 4px; }
+.s-card-val { font-size: 24px; font-weight: 500; line-height: 1.2; }
+.s-card-pct { font-size: 12px; color: #666; margin-top: 2px; }
+
+.stress-bar-wrap { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 2rem; }
+.stress-bar-label { font-size: 13px; color: #666; margin-bottom: 8px; }
+.stress-bar { display: flex; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 6px; }
+.stress-legend { display: flex; gap: 16px; font-size: 11px; color: #666; flex-wrap: wrap; }
+.sl-item { display: flex; align-items: center; gap: 4px; }
+.sl-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+.cat-block { margin-top: 1.75rem; }
+.cat-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+.cat-badge { font-size: 14px; font-weight: 500; padding: 5px 14px; border-radius: 8px; background: #ebebea; color: #1a1a1a; border: 0.5px solid rgba(0,0,0,0.15); }
+.cat-subtotal { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 8px; }
+.cat-desc { font-size: 11px; color: #666; margin-bottom: 8px; line-height: 1.6; }
+
+.header-row { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 4px; padding-left: 7px; }
+.header-name { width: 175px; flex-shrink: 0; }
+.header-chart { width: 300px; flex-shrink: 0; font-size: 10px; color: #888; display: flex; justify-content: space-between; position: relative; }
+.header-nat { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+.header-desc { flex: 1; }
+
+.scale-row { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; border-radius: 8px; padding: 4px 8px; border-left: 3px solid transparent; }
+.scale-row.danger { border-left: 3px solid #E24B4A; }
+.col-name { width: 175px; flex-shrink: 0; font-size: 13px; font-weight: 500; color: #1a1a1a; line-height: 1.4; }
+.col-name.private { color: #888; }
+.col-chart { width: 300px; flex-shrink: 0; }
+.bar-track { width: 100%; height: 11px; background: #e0dfd9; border-radius: 6px; position: relative; overflow: visible; }
+.bar-fill { height: 11px; border-radius: 6px; position: absolute; left: 0; top: 0; }
+.nat-line { position: absolute; top: -4px; width: 2px; height: 19px; background: #444; border-radius: 1px; }
+.axis-row { display: flex; justify-content: space-between; margin-top: 2px; font-size: 10px; color: #888; }
+.col-desc { flex: 1; font-size: 11px; color: #666; line-height: 1.5; padding: 4px 6px; border-radius: 6px; }
+.col-desc.danger-bg { background: #FCEBEB; color: #A32D2D; }
+
+@media (max-width: 700px) {
+  .summary-cards { grid-template-columns: repeat(2, 1fr); }
+  .scale-row { flex-wrap: wrap; }
+  .col-name { width: 100%; }
+  .col-chart { width: 100%; }
+  .header-row { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="page-title">集計・結果</div>
+  <div class="page-sub">回答済み従業員のストレスチェック結果を集計します。</div>
+  <div class="dev-note">偏差値は全国平均を50として算出しています。50より高い＝全国より上、低い＝全国より下を示します。</div>
+
+  <div class="summary-cards">
+    <div class="s-card"><div class="s-card-label">回答者数</div><div class="s-card-val">10名</div></div>
+    <div class="s-card"><div class="s-card-label">高ストレス</div><div class="s-card-val" style="color:#E24B4A;">0名</div><div class="s-card-pct">（0.0%）</div></div>
+    <div class="s-card"><div class="s-card-label">中程度</div><div class="s-card-val" style="color:#EF9F27;">9名</div><div class="s-card-pct">（90.0%）</div></div>
+    <div class="s-card"><div class="s-card-label">低ストレス</div><div class="s-card-val" style="color:#378ADD;">1名</div><div class="s-card-pct">（10.0%）</div></div>
+  </div>
+
+  <div class="stress-bar-wrap">
+    <div class="stress-bar-label">ストレスレベル分布</div>
+    <div class="stress-bar">
+      <div style="width:0%;background:#E24B4A"></div>
+      <div style="width:90%;background:#EF9F27"></div>
+      <div style="width:10%;background:#378ADD"></div>
+    </div>
+    <div class="stress-legend">
+      <span class="sl-item"><span class="sl-dot" style="background:#E24B4A"></span>高ストレス 0%</span>
+      <span class="sl-item"><span class="sl-dot" style="background:#EF9F27"></span>中程度 90%</span>
+      <span class="sl-item"><span class="sl-dot" style="background:#378ADD"></span>低ストレス 10%</span>
+    </div>
+  </div>
+
+  <div id="cats"></div>
+</div>
+
+<script>
+(function(){
+  var SC='#378ADD',WC='#EF9F27',DC='#E24B4A';
+  var SB='#E6F1FB',SF='#185FA5',WB='#FAEEDA',WF='#854F0B',DB='#FCEBEB',DF='#A32D2D';
+
+  function getStatus(dev,negHigh){
+    var over=negHigh?dev>50:dev<50;
+    if(!over) return {c:SC,bg:SB,fg:SF,mark:'〇',text:'安全',danger:false};
+    var diff=negHigh?dev-50:50-dev;
+    if(diff>=10) return {c:DC,bg:DB,fg:DF,mark:'✕',text:'危険',danger:true};
+    return {c:WC,bg:WB,fg:WF,mark:'△',text:'注意',danger:false};
+  }
+
+  var cats=[
+    {name:'ストレッサー（仕事の負担）',negHigh:true,ll:'負担小 ←',rl:'→ 負担大',
+     desc:'仕事の量・質・対人関係など、働く上で感じる様々な負担のこと。数値が高いほど負担が大きく、継続するとストレス反応につながりやすい。',
+     private:[],items:[
+      ['仕事の量的負担',2.23,2.1396,0.76,'業務量の多さや時間内に処理しきれないことによる負担'],
+      ['仕事の質的負担',2.37,2.16,0.71,'注意集中・知識・技術の高さによる質的な業務負担'],
+      ['身体的負担度',1.90,2.4923,1.08,'身体を動かす作業など、からだへの業務負担'],
+      ['職場での対人関係',2.70,2.1904,0.74,'部署内外の意見の相違・対立など対人関係の負担'],
+      ['職場環境',2.30,2.7812,0.99,'騒音・照明・温度・換気など物理的環境による負担'],
+      ['情緒的負担',2.67,2.6486,0.82,'仕事上で気持ちや感情がかき乱されるなど感情面の業務負担'],
+      ['役割葛藤',2.57,2.7829,0.77,'複数の方針・要求が相容れず業務遂行が困難になる負担'],
+      ['ワーク・セルフ・バランス（ネガティブ）',2.05,2.7765,0.86,'仕事の負担が個人生活に悪影響を及ぼしている程度']
+    ]},
+    {name:'作業リソース（仕事の資源）',negHigh:false,ll:'低調 ←',rl:'→ 良好',
+     desc:'仕事のやりがいや自律性など、個人レベルで仕事を支える資源のこと。充実しているほどストレスへの緩衝効果があり、エンゲイジメント向上につながる。',
+     private:[],items:[
+      ['仕事のコントロール',2.77,2.5315,0.74,'仕事の内容・予定・手順を自分で決められる程度'],
+      ['技能の活用度',2.50,3.0012,0.85,'持っている知識・技術・資格が仕事で活かされているか'],
+      ['仕事の適性',2.50,2.9165,0.80,'仕事の内容が自分に向いている・合っていると感じるか'],
+      ['仕事の意義',2.67,3.0907,0.67,'仕事の意義が認識でき、働きがいを感じているか'],
+      ['役割明確さ',2.53,3.1593,0.59,'仕事上で果たすべき役割が明確に理解されているか'],
+      ['成長の機会',2.60,2.1807,0.77,'仕事の中で知識・技術習得や自己成長の機会があるか'],
+      ['新奇性',2.63,2.7754,0.80,'仕事に新しい発見や刺激・変化がある程度'],
+      ['予測可能性',2.60,2.4646,0.73,'仕事の見通しが立てやすく、先が読める環境にあるか'],
+      ['ワーク・セルフ・バランス（ポジティブ）',2.15,2.0986,0.78,'仕事から得たものが個人生活を豊かにする好循環があるか']
+    ]},
+    {name:'部署リソース（仕事の資源）',negHigh:false,ll:'低調 ←',rl:'→ 良好',
+     desc:'上司・同僚からのサポートや報酬など、部署レベルで仕事を支える資源のこと。充実しているほど職場環境の健全性が高く、離職リスクの低減にもつながる。',
+     private:['家族・友人からのサポート'],items:[
+      ['上司からのサポート',2.37,2.3706,0.75,'上司が話しかけやすく相談にのってくれるなど上司からの支援'],
+      ['同僚からのサポート',2.37,2.6788,0.70,'同僚が話しやすく相談にのってくれるなど同僚同士の支援'],
+      ['経済・地位報酬',2.10,2.4072,0.79,'努力や達成度に対し金銭的・処遇上の適切な報酬があるか'],
+      ['尊重報酬',2.35,2.7234,0.67,'上司や同僚から努力・達成にふさわしい尊敬や処遇を受けているか'],
+      ['安定報酬',2.37,2.4628,0.75,'雇用の安定性・将来の見込みがあるか'],
+      ['上司のリーダーシップ',2.57,2.1807,0.77,'上司が適切なフィードバックを行い能力発揮を助けているか'],
+      ['上司の公正な態度',2.53,2.5489,0.80,'上司が偏見なく思いやりと誠実さをもって対応しているか'],
+      ['ほめてもらえる職場',2.40,2.4239,0.82,'業務結果にポジティブな評価を受けられる雰囲気があるか'],
+      ['失敗を認める職場',2.70,2.2644,0.78,'失敗を取り戻す機会があり成功に転じられる雰囲気があるか'],
+      ['グループの有能感',2.53,2.4934,0.74,'グループとして高い仕事遂行能力への自信があるか'],
+      ['家族・友人からのサポート',2.77,3.3140,0.68,'家族・友人等からの支援。職場のストレスの緩衝材になります。']
+    ]},
+    {name:'会社リソース（仕事の資源）',negHigh:false,ll:'低調 ←',rl:'→ 良好',
+     desc:'経営層との信頼関係や人事制度など、組織・会社レベルで仕事を支える資源のこと。制度や文化として整備されているほど従業員の安心感・帰属意識が高まる。',
+     private:[],items:[
+      ['経営層との信頼関係',2.67,2.5284,0.71,'経営層と従業員の間に相互の信頼関係があるか'],
+      ['変化への対応',2.60,2.4760,0.72,'職場や仕事の変化に際して組織的な準備・説明があるか'],
+      ['手続きの公正性',2.27,2.1463,0.77,'意思決定プロセスが公正で一貫しているか'],
+      ['個人の尊重',2.57,2.1189,0.72,'一人ひとりの長所・価値観を考えて仕事が与えられているか'],
+      ['公正な人事評価',2.43,2.6712,0.72,'人事評価の基準が明確で納得できる説明がなされているか'],
+      ['多様な労働者への対応',2.30,2.1463,0.77,'様々な立場の従業員が職場の一員として尊重されているか'],
+      ['キャリア形成',2.18,2.4760,0.72,'従業員のキャリアに関する方針・教育・訓練が提供されているか']
+    ]},
+    {name:'ストレス反応（心身）',negHigh:true,ll:'問題なし ←',rl:'→ 不調',
+     desc:'仕事上のストレスが心身に現れた状態のこと。数値が高いほど不調。身体症状が出ている場合はすでに深刻なサインと捉える必要がある。',
+     private:[],items:[
+      ['活気',2.70,2.2568,0.79,'活気・元気・いきいき感'],
+      ['イライラ感',2.37,2.6974,0.85,'怒り・立腹・イライラなどの症状'],
+      ['疲労感',2.53,2.6987,0.88,'疲れ・へとへと・だるさなどの疲労に関連した症状'],
+      ['不安感',2.60,2.8679,0.80,'気がはりつめている・不安・落ち着かないなどの症状'],
+      ['抑うつ感',2.75,3.2737,0.67,'憂うつ感・おっくうさ・集中力の低下など気分と気力の低下'],
+      ['身体愁訴',2.46,3.2195,0.54,'めまい・頭痛・肩こり・動悸など身体的な不調の訴え']
+    ]},
+    {name:'アウトカム（成果・満足度）',negHigh:false,ll:'低調 ←',rl:'→ 良好',
+     desc:'仕事の成果や満足度など、働くことの結果を示す指標のこと。高いほど良好な状態。職場環境や各種リソースの充実がアウトカムの向上につながる。',
+     private:['家庭満足度'],items:[
+      ['仕事満足度',2.20,2.6000,0.85,'仕事に関する全般的な満足度'],
+      ['職場の一体感',2.60,2.7425,0.69,'情報共有・相互理解・助け合いの気持ちをもって業務遂行できているか'],
+      ['ワーク・エンゲイジメント',2.35,2.5160,0.77,'仕事から活力を得て誇りを感じいきいきと働いている状態'],
+      ['職務の遂行',2.23,2.9779,0.57,'指示された仕事をきちんとやりとげ期待に応えているか'],
+      ['創造性の発揮',2.43,2.6712,0.72,'仕事でアイデアを出し新しい解決策や提案をしているか'],
+      ['積極的な学習',2.40,2.5457,0.72,'新しいことを学び自己成長できているか'],
+      ['家庭満足度',2.50,3.0583,0.81,'家庭生活に関する全般的な満足度。職場のストレスの緩衝材になります。']
+    ]},
+    {name:'メンタルリスク',negHigh:true,ll:'低い ←',rl:'→ 高い',
+     desc:'ハラスメントの経験・目撃など、職場の心理的安全性を脅かすリスク指標。数値が低いほど良好。深刻なケースがある場合は早急な対応が必要。',
+     private:[],items:[
+      ['職場のハラスメント',2.45,3.5760,0.67,'いじめ・嫌がらせ・パワハラ・セクハラなどの経験・目撃頻度']
+    ]}
+  ];
+
+  var minD=30,maxD=70;
+  function dw(dev){return (Math.max(minD,Math.min(maxD,dev))-minD)/(maxD-minD)*100;}
+
+  var html='';
+  for(var ci=0;ci<cats.length;ci++){
+    var cat=cats[ci];
+    var ds=0,cnt=0;
+    for(var ii=0;ii<cat.items.length;ii++){
+      var it=cat.items[ii];
+      if(cat.private.indexOf(it[0])>=0) continue;
+      var dv=50+(it[1]-it[2])/it[3]*10;
+      ds+=dv; cnt++;
+    }
+    var avg=Math.round(ds/cnt*10)/10;
+    var st=getStatus(avg,cat.negHigh);
+
+    html+='<div class="cat-block">'
+      +'<div class="cat-header">'
+      +'<span class="cat-badge">'+cat.name+'</span>'
+      +'<span class="cat-subtotal" style="background:'+st.bg+';color:'+st.fg+';">'+st.mark+'　カテゴリ平均 '+avg+'　'+st.text+'</span>'
+      +'</div>'
+      +'<div class="cat-desc">'+cat.desc+'</div>'
+      +'<div class="header-row">'
+      +'<div class="header-name"></div>'
+      +'<div class="header-chart"><span>'+cat.ll+'</span><span class="header-nat">全国平均（偏差値50）</span><span>'+cat.rl+'</span></div>'
+      +'<div class="header-desc"></div>'
+      +'</div>';
+
+    for(var ii=0;ii<cat.items.length;ii++){
+      var it=cat.items[ii];
+      var isPrivate=cat.private.indexOf(it[0])>=0;
+      var dv=50+(it[1]-it[2])/it[3]*10;
+      var ist=getStatus(dv,cat.negHigh);
+      var bw=dw(dv);
+      var dvStr=Math.round(dv*10)/10;
+
+      html+='<div class="scale-row '+(ist.danger?'danger':'')+'">'
+        +'<div class="col-name'+(isPrivate?' private':'')+'">'+it[0]+'</div>'
+        +'<div class="col-chart">'
+        +'<div class="bar-track">'
+        +'<div class="bar-fill" style="width:'+bw+'%;background:'+ist.c+'"></div>'
+        +'<div class="nat-line" style="left:50%"></div>'
+        +'</div>'
+        +'<div class="axis-row"><span>30</span><span>'+dvStr+'</span><span>70</span></div>'
+        +'</div>'
+        +'<div class="col-desc '+(ist.danger?'danger-bg':'')+'">'+it[4]+'</div>'
+        +'</div>';
+    }
+    html+='</div>';
+  }
+  document.getElementById('cats').innerHTML=html;
+})();
+</script>
+</body>
+</html>
