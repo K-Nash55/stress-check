@@ -293,6 +293,11 @@ function buildResult() {
   if (level === 'high') {
     html += '<div class="high-box"><div class="high-title">⚠ 高ストレスの可能性があります</div>';
     html += '<div class="high-desc">回答結果から仕事上のストレスが高い状態にある可能性があります。産業医・保健師・カウンセラーへの相談をご検討ください。</div></div>';
+    html += '<div style="background:#fde8e8;border:1px solid #e0a0a0;border-radius:8px;padding:14px 18px;margin-top:16px;font-size:.85rem;line-height:1.7;color:#1a1a2e;">'
+      + '🏥 <strong>面接指導のご案内</strong><br>'
+      + '高ストレスと判定されました。産業医・保健師への面接指導の申出をご検討ください。<br>'
+      + '面接指導の申出は労働者の権利であり、それを理由に不利益な取扱いを受けることは法律で禁止されています。'
+      + '</div>';
   }
   html += '<div class="overview">';
   html += '<div class="ov-card s"><div class="ov-lbl">ストレッサー</div><div class="ov-val">' + sTotal + '</div><div class="ov-max">/ ' + sMax + '点</div></div>';
