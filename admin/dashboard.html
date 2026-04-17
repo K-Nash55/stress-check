@@ -28,11 +28,11 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .btn-export{padding:7px 18px;border-radius:7px;border:2px solid var(--border);background:#fff;font-size:.8rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;color:var(--ink);transition:all .2s}
 .btn-export:hover{background:var(--warm)}
 /* サマリカード */
-.summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
 .sum-card{background:#fff;border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border)}
 .sum-lbl{font-size:.72rem;color:var(--ink2);margin-bottom:6px;font-weight:500}
-.sum-val{font-size:2.2rem;font-weight:700;font-family:'Shippori Mincho',serif;line-height:1}
-.sum-unit{font-size:.72rem;color:var(--ink2);margin-top:3px}
+.sum-val{font-size:2rem;font-weight:700;font-family:'Shippori Mincho',serif;line-height:1.1}
+.sum-pct{font-size:.72rem;color:var(--ink2);margin-top:3px}
 .sum-card.hi .sum-val{color:var(--red)}
 .sum-card.mi .sum-val{color:var(--warn)}
 .sum-card.lo .sum-val{color:var(--green)}
@@ -52,13 +52,24 @@ tr:hover td{background:#fafffe}
 .empty{text-align:center;padding:40px;color:var(--ink2);font-size:.86rem}
 .loading{text-align:center;padding:60px;color:var(--ink2)}
 /* 集団分析 */
-.deviation-note{font-size:.76rem;color:var(--ink2);background:var(--warm);border-radius:7px;padding:8px 14px;margin-bottom:20px;display:inline-block}
+.ga-intro{font-size:.76rem;color:var(--ink2);background:var(--warm);border-radius:7px;padding:10px 14px;margin-bottom:16px;line-height:1.7}
+.ga-intro strong{font-weight:700;color:var(--ink)}
+.deviation-note{font-size:.76rem;color:var(--ink2);background:var(--warm);border-radius:7px;padding:8px 14px;margin-bottom:16px;display:inline-block}
 .stress-bar-wrap{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:18px}
 .stress-bar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin-bottom:8px}
 .stress-legend{display:flex;gap:16px;font-size:.76rem;color:var(--ink2);flex-wrap:wrap}
 .sl-item{display:flex;align-items:center;gap:4px}
 .sl-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.cat-block{margin-bottom:28px}
+/* グループブロック */
+.group-block{border-radius:10px;padding:16px 18px;margin-bottom:18px;border:1px solid}
+.group-stressor{background:#FFF8F0;border-color:#FAC775}
+.group-resource{background:#F2F8EE;border-color:#C0DD97}
+.group-reaction{background:#F0F4FA;border-color:#B5D4F4}
+.group-header{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.group-num{font-size:1.2rem;font-weight:700;flex-shrink:0;line-height:1}
+.group-title{font-size:.9rem;font-weight:700;flex-shrink:0}
+.group-title-sub{font-size:.76rem;color:var(--ink2);line-height:1.6;flex:1;min-width:160px}
+.cat-block{margin-bottom:20px}
 .cat-header{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
 .cat-badge-ga{font-size:.84rem;font-weight:700;padding:5px 14px;border-radius:8px;background:var(--warm);color:var(--ink);border:1px solid var(--border)}
 .cat-subtotal-ga{font-size:.76rem;font-weight:700;padding:3px 10px;border-radius:8px}
@@ -79,7 +90,11 @@ tr:hover td{background:#fafffe}
 .ga-axis-row{display:flex;justify-content:space-between;margin-top:2px;font-size:.68rem;color:var(--ink2)}
 .ga-col-desc{flex:1;font-size:.74rem;color:var(--ink2);line-height:1.5;padding:4px 6px;border-radius:6px}
 .ga-col-desc.danger-bg{background:#fde8e8;color:var(--red)}
-@media(max-width:640px){.summary-grid{grid-template-columns:repeat(2,1fr)}.filter-bar{flex-direction:column;align-items:stretch}.ga-scale-row{flex-wrap:wrap}.ga-col-name{width:100%}.ga-col-chart{width:100%}.ga-header-row{display:none}}
+/* 個人一覧折りたたみ */
+.details-toggle{width:100%;text-align:left;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:.84rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.details-toggle:hover{background:var(--warm)}
+.details-body{background:#fff;border:1px solid var(--border);border-radius:0 0 10px 10px;overflow:hidden;margin-top:-4px}
+@media(max-width:640px){.summary-grid{grid-template-columns:repeat(2,1fr)}.filter-bar{flex-direction:column;align-items:stretch}.ga-scale-row{flex-wrap:wrap}.ga-col-name{width:100%}.ga-col-chart{width:100%}.ga-header-row{display:none}.group-header{flex-direction:column;gap:4px}}
 </style>
 </head>
 <body>
@@ -196,14 +211,17 @@ function renderPage(data) {
   var n  = data.length;
   var hiPct = n ? (hi/n*100).toFixed(1) : 0;
 
-  // サマリカード
-  var ratePct = totalEmployees ? (n / totalEmployees * 100).toFixed(1) : '—';
+  // イントロ説明
+  html += '<div class="ga-intro">ストレスチェックは <strong>① 仕事の負担</strong>・<strong>② 職場のリソース</strong>・<strong>③ 個人の反応と状態</strong> の3つの視点で職場環境を分析します。①の負担が高くても②のリソースが充実していれば影響は緩和されます。③に問題が出ている場合は①②の改善が優先課題です。</div>';
+
+  // サマリカード（4枚）
+  var miPct0 = n ? (mi/n*100).toFixed(1) : '0.0';
+  var loPct0 = n ? (lo/n*100).toFixed(1) : '0.0';
   html += '<div class="summary-grid">'
-    + '<div class="sum-card"><div class="sum-lbl">回答者数</div><div class="sum-val">' + n + '</div><div class="sum-unit">名</div></div>'
-    + '<div class="sum-card hi"><div class="sum-lbl">高ストレス</div><div class="sum-val">' + hi + '</div><div class="sum-unit">名 (' + hiPct + '%)</div></div>'
-    + '<div class="sum-card mi"><div class="sum-lbl">中程度</div><div class="sum-val">' + mi + '</div><div class="sum-unit">名</div></div>'
-    + '<div class="sum-card lo"><div class="sum-lbl">低ストレス</div><div class="sum-val">' + lo + '</div><div class="sum-unit">名</div></div>'
-    + '<div class="sum-card"><div class="sum-lbl">受検率</div><div class="sum-val" style="font-size:1.6rem">' + ratePct + '</div><div class="sum-unit">% （受検済 ' + n + ' / 登録済 ' + totalEmployees + ' 名）</div></div>'
+    + '<div class="sum-card"><div class="sum-lbl">回答者数</div><div class="sum-val">' + n + '名</div></div>'
+    + '<div class="sum-card hi"><div class="sum-lbl">高ストレス</div><div class="sum-val">' + hi + '名</div><div class="sum-pct">（' + hiPct + '%）</div></div>'
+    + '<div class="sum-card mi"><div class="sum-lbl">中程度</div><div class="sum-val">' + mi + '名</div><div class="sum-pct">（' + miPct0 + '%）</div></div>'
+    + '<div class="sum-card lo"><div class="sum-lbl">低ストレス</div><div class="sum-val">' + lo + '名</div><div class="sum-pct">（' + loPct0 + '%）</div></div>'
     + '</div>';
 
   var MIN_GROUP = 5;
@@ -241,14 +259,14 @@ function renderPage(data) {
     html += '<div class="section"><div class="sec-title">集団分析（偏差値グラフ）</div>'
       + '<div class="empty" style="padding:28px 0">集団分析には5人以上のデータが必要です（現在 ' + n + ' 名）</div></div>';
   } else {
-    html += '<div class="section"><div class="sec-title">集団分析（偏差値グラフ）</div>';
     html += '<div class="deviation-note">偏差値は全国平均を50として算出しています。50より高い＝全国より上、低い＝全国より下を示します。</div>';
     html += renderGroupAnalysis(data);
-    html += '</div>';
   }
 
-  // 個人一覧
-  html += '<div class="section"><div class="sec-title">個人別一覧</div>';
+  // 個人一覧（折りたたみ）
+  html += '<button class="details-toggle" id="detailToggle" onclick="var b=document.getElementById(\'detailBody\');var open=b.style.display!==\'none\';b.style.display=open?\'none\':\'block\';document.getElementById(\'detailArrow\').textContent=open?\'▼\':\'▲\'">'
+    + '<span>個人別一覧</span><span id="detailArrow">▼</span></button>';
+  html += '<div id="detailBody" class="details-body" style="display:none">';
   html += '<table><thead><tr><th>部署</th><th>ストレスレベル</th><th>ストレッサー</th><th>リソース</th><th>アウトカム</th><th>回答日</th></tr></thead><tbody>';
   data.forEach(function(d) {
     var lvLabel = d.stress_level === 'high' ? '高ストレス' : d.stress_level === 'mid' ? '中程度' : '低ストレス';
@@ -265,7 +283,7 @@ function renderPage(data) {
       + '<td>' + date + '</td>'
       + '</tr>';
   });
-  html += '</tbody></table></div>';
+  html += '</tbody></table></div></div>';
 
   document.getElementById('mainContent').innerHTML = html;
   bindFilters();
@@ -413,60 +431,88 @@ function renderGroupAnalysis(data) {
     scaleNameMap[shortName] = { nationalAvg: scaleMap[key].nationalAvg, sd: scaleMap[key].sd, myAvg: scaleAvg[key] };
   });
 
-  var html = '';
-  for (var ci = 0; ci < cats.length; ci++) {
-    var cat = cats[ci];
-    var ds = 0, cnt = 0;
-    for (var ii = 0; ii < cat.items.length; ii++) {
-      var it = cat.items[ii];
-      if (cat.private.indexOf(it[0]) >= 0) continue;
-      var scaleLookup = scaleNameMap[it[0]];
-      var myAvg = scaleLookup && scaleLookup.myAvg != null ? scaleLookup.myAvg : null;
-      var natAvg = it[1], sd = it[2];
-      var dv = myAvg != null ? 50 + (myAvg - natAvg) / sd * 10 : 50 + (natAvg - natAvg) / sd * 10;
-      ds += dv; cnt++;
-    }
-    var catAvg = cnt > 0 ? Math.round(ds / cnt * 10) / 10 : 50;
-    var catSt = getStatus(catAvg, cat.negHigh);
+  // グループ定義
+  var groups = [
+    { num:'①', cls:'group-stressor', titleColor:'#633806', numColor:'#BA7517',
+      title:'仕事の負担（ストレッサー）',
+      sub:'仕事上で感じる負担を示します。負担が大きい状態が継続するとストレス反応につながりやすくなります。',
+      catIndexes:[0] },
+    { num:'②', cls:'group-resource', titleColor:'#173404', numColor:'#3B6D11',
+      title:'職場・仕事のリソース',
+      sub:'ストレスを緩和させることができる資源です。充実しているほどストレッサーの影響を和らげ、エンゲイジメントの向上にもつながります。',
+      catIndexes:[1,2,3] },
+    { num:'③', cls:'group-reaction', titleColor:'#042C53', numColor:'#185FA5',
+      title:'個人の反応と状態',
+      sub:'心身の不調・職場リスクを示します。ここに問題が見られる場合は、ストレッサーの軽減やリソースの強化など、根本原因への対処が重要です。',
+      catIndexes:[4,5,6] }
+  ];
 
-    html += '<div class="cat-block">'
-      + '<div class="cat-header">'
-      + '<span class="cat-badge-ga">' + escHtml(cat.name) + '</span>'
-      + '<span class="cat-subtotal-ga" style="background:' + catSt.bg + ';color:' + catSt.fg + ';">'
-      + catSt.mark + '　カテゴリ平均 ' + catAvg + '　' + catSt.text
-      + '</span>'
-      + '</div>'
-      + '<div class="cat-desc-ga">' + escHtml(cat.desc) + '</div>'
-      + '<div class="ga-header-row">'
-      + '<div class="ga-header-name"></div>'
-      + '<div class="ga-header-chart"><span>' + escHtml(cat.ll) + '</span><span class="ga-header-nat">全国平均（偏差値50）</span><span>' + escHtml(cat.rl) + '</span></div>'
-      + '<div class="ga-header-desc"></div>'
+  var html = '';
+  for (var gi = 0; gi < groups.length; gi++) {
+    var grp = groups[gi];
+    html += '<div class="group-block ' + grp.cls + '">'
+      + '<div class="group-header">'
+      + '<span class="group-num" style="color:' + grp.numColor + '">' + grp.num + '</span>'
+      + '<span class="group-title" style="color:' + grp.titleColor + '">' + grp.title + '</span>'
+      + '<span class="group-title-sub">' + grp.sub + '</span>'
       + '</div>';
 
-    for (var jj = 0; jj < cat.items.length; jj++) {
-      var item = cat.items[jj];
-      var isPrivate = cat.private.indexOf(item[0]) >= 0;
-      var scaleLookup2 = scaleNameMap[item[0]];
-      var myAvg2 = scaleLookup2 && scaleLookup2.myAvg != null ? scaleLookup2.myAvg : null;
-      var natAvg2 = item[1], sd2 = item[2], desc2 = item[3];
-      var dv2 = myAvg2 != null ? 50 + (myAvg2 - natAvg2) / sd2 * 10 : 50;
-      var ist = isPrivate ? { c:'#aaa', bg:'', fg:'', mark:'', text:'', danger:false } : getStatus(dv2, cat.negHigh);
-      var bw = dw(dv2);
-      var dvStr = Math.round(dv2 * 10) / 10;
+    for (var gi2 = 0; gi2 < grp.catIndexes.length; gi2++) {
+      var ci = grp.catIndexes[gi2];
+      var cat = cats[ci];
+      var ds = 0, cnt = 0;
+      for (var ii = 0; ii < cat.items.length; ii++) {
+        var it = cat.items[ii];
+        if (cat.private.indexOf(it[0]) >= 0) continue;
+        var scaleLookup = scaleNameMap[it[0]];
+        var myAvg = scaleLookup && scaleLookup.myAvg != null ? scaleLookup.myAvg : null;
+        var natAvg = it[1], sd = it[2];
+        var dv = myAvg != null ? 50 + (myAvg - natAvg) / sd * 10 : 50;
+        ds += dv; cnt++;
+      }
+      var catAvg = cnt > 0 ? Math.round(ds / cnt * 10) / 10 : 50;
+      var catSt = getStatus(catAvg, cat.negHigh);
 
-      html += '<div class="ga-scale-row' + (ist.danger ? ' danger' : '') + '">'
-        + '<div class="ga-col-name' + (isPrivate ? ' private' : '') + '">' + escHtml(item[0]) + '</div>'
-        + '<div class="ga-col-chart">'
-        + '<div class="ga-bar-track">'
-        + '<div class="ga-bar-fill" style="width:' + bw + '%;background:' + ist.c + '"></div>'
-        + '<div class="ga-nat-line" style="left:50%"></div>'
+      html += '<div class="cat-block">'
+        + '<div class="cat-header">'
+        + '<span class="cat-badge-ga">' + escHtml(cat.name) + '</span>'
+        + '<span class="cat-subtotal-ga" style="background:' + catSt.bg + ';color:' + catSt.fg + ';">'
+        + catSt.mark + '　カテゴリ平均 ' + catAvg + '　' + catSt.text
+        + '</span>'
         + '</div>'
-        + '<div class="ga-axis-row"><span>30</span><span>' + dvStr + '</span><span>70</span></div>'
-        + '</div>'
-        + '<div class="ga-col-desc' + (ist.danger ? ' danger-bg' : '') + '">' + escHtml(desc2) + '</div>'
+        + '<div class="cat-desc-ga">' + escHtml(cat.desc) + '</div>'
+        + '<div class="ga-header-row">'
+        + '<div class="ga-header-name"></div>'
+        + '<div class="ga-header-chart"><span>' + escHtml(cat.ll) + '</span><span class="ga-header-nat">全国平均（偏差値50）</span><span>' + escHtml(cat.rl) + '</span></div>'
+        + '<div class="ga-header-desc"></div>'
         + '</div>';
+
+      for (var jj = 0; jj < cat.items.length; jj++) {
+        var item = cat.items[jj];
+        var isPrivate = cat.private.indexOf(item[0]) >= 0;
+        var scaleLookup2 = scaleNameMap[item[0]];
+        var myAvg2 = scaleLookup2 && scaleLookup2.myAvg != null ? scaleLookup2.myAvg : null;
+        var natAvg2 = item[1], sd2 = item[2], desc2 = item[3];
+        var dv2 = myAvg2 != null ? 50 + (myAvg2 - natAvg2) / sd2 * 10 : 50;
+        var ist = isPrivate ? { c:'#aaa', bg:'', fg:'', mark:'', text:'', danger:false } : getStatus(dv2, cat.negHigh);
+        var bw = dw(dv2);
+        var dvStr = Math.round(dv2 * 10) / 10;
+
+        html += '<div class="ga-scale-row' + (ist.danger ? ' danger' : '') + '">'
+          + '<div class="ga-col-name' + (isPrivate ? ' private' : '') + '">' + escHtml(item[0]) + '</div>'
+          + '<div class="ga-col-chart">'
+          + '<div class="ga-bar-track">'
+          + '<div class="ga-bar-fill" style="width:' + bw + '%;background:' + ist.c + '"></div>'
+          + '<div class="ga-nat-line" style="left:50%"></div>'
+          + '</div>'
+          + '<div class="ga-axis-row"><span>30</span><span>' + dvStr + '</span><span>70</span></div>'
+          + '</div>'
+          + '<div class="ga-col-desc' + (ist.danger ? ' danger-bg' : '') + '">' + escHtml(desc2) + '</div>'
+          + '</div>';
+      }
+      html += '</div>'; // cat-block
     }
-    html += '</div>';
+    html += '</div>'; // group-block
   }
   return html;
 }
