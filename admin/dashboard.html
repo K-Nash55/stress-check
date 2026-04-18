@@ -94,6 +94,34 @@ tr:hover td{background:#fafffe}
 .details-toggle{width:100%;text-align:left;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:.84rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .details-toggle:hover{background:var(--warm)}
 .details-body{background:#fff;border:1px solid var(--border);border-radius:0 0 10px 10px;overflow:hidden;margin-top:-4px}
+/* 印刷ボタン */
+.print-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.btn-print{padding:8px 18px;border-radius:7px;border:2px solid var(--border);background:#fff;font-size:.8rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;color:var(--ink);transition:all .2s;display:flex;align-items:center;gap:6px}
+.btn-print:hover{background:var(--warm)}
+.btn-print.primary{border-color:var(--green);color:var(--green)}
+.btn-print.primary:hover{background:var(--green3)}
+/* 印刷スタイル */
+@media print{
+  .hd,.filter-bar,.print-bar,.details-toggle,.details-body,.btn-logout,.no-print{display:none!important}
+  body{background:#fff;color:#000}
+  .main{margin:0;padding:10px;max-width:100%}
+  .page-title{font-size:1.2rem;margin-bottom:4px}
+  .page-sub{margin-bottom:12px}
+  .summary-grid{grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+  .sum-card{padding:12px;border:1px solid #ccc}
+  .group-block{page-break-inside:avoid;border:1px solid #ccc;margin-bottom:12px;background:#fff!important}
+  .cat-block{page-break-inside:avoid}
+  .ga-scale-row{page-break-inside:avoid}
+  .stress-bar-wrap{border:1px solid #ccc;margin-bottom:12px}
+  .warn-note{border:1px solid #e8d5b0}
+  .ga-intro{background:#f5f5f5!important}
+  .deviation-note{background:#f5f5f5!important}
+}
+@media print and (data-print-mode='list'){
+  .group-analysis-area{display:none!important}
+  .details-toggle{display:none!important}
+  .details-body{display:block!important;border:none}
+}
 @media(max-width:640px){.summary-grid{grid-template-columns:repeat(2,1fr)}.filter-bar{flex-direction:column;align-items:stretch}.ga-scale-row{flex-wrap:wrap}.ga-col-name{width:100%}.ga-col-chart{width:100%}.ga-header-row{display:none}.group-header{flex-direction:column;gap:4px}}
 </style>
 </head>
@@ -198,6 +226,12 @@ function renderPage(data) {
     + '<button class="btn-export" id="btnCsv">CSVダウンロード</button>'
     + '</div>';
 
+  // 印刷ボタン
+  html += '<div class="print-bar no-print">'
+    + '<button class="btn-print primary" onclick="printResults()">🖨 結果を印刷</button>'
+    + '<button class="btn-print" onclick="printList()">🖨 個人一覧を印刷</button>'
+    + '</div>';
+
   if (data.length === 0) {
     html += '<div class="section"><div class="empty">まだ回答データがありません。<br>招待URLを発行して従業員に配布してください。</div></div>';
     document.getElementById('mainContent').innerHTML = html;
@@ -260,10 +294,13 @@ function renderPage(data) {
       + '<div class="empty" style="padding:28px 0">集団分析には5人以上のデータが必要です（現在 ' + n + ' 名）</div></div>';
   } else {
     html += '<div class="deviation-note">偏差値は全国平均を50として算出しています。50より高い＝全国より上、低い＝全国より下を示します。</div>';
+    html += '<div class="group-analysis-area">';
     html += renderGroupAnalysis(data);
+    html += '</div>';
   }
 
   // 個人一覧（折りたたみ）
+  html += '<div class="individual-list-area">';
   html += '<button class="details-toggle" id="detailToggle" onclick="var b=document.getElementById(\'detailBody\');var open=b.style.display!==\'none\';b.style.display=open?\'none\':\'block\';document.getElementById(\'detailArrow\').textContent=open?\'▼\':\'▲\'">'
     + '<span>個人別一覧</span><span id="detailArrow">▼</span></button>';
   html += '<div id="detailBody" class="details-body" style="display:none">';
@@ -283,7 +320,7 @@ function renderPage(data) {
       + '<td>' + date + '</td>'
       + '</tr>';
   });
-  html += '</tbody></table></div></div>';
+  html += '</tbody></table></div></div></div>';
 
   document.getElementById('mainContent').innerHTML = html;
   bindFilters();
@@ -568,6 +605,41 @@ function bindCsv(data) {
     a.href = url; a.download = 'stress_check_' + new Date().toISOString().slice(0,10) + '.csv';
     a.click(); URL.revokeObjectURL(url);
   });
+}
+
+// ============================================================
+// 印刷
+// ============================================================
+function printResults() {
+  // 個人一覧を非表示にして印刷
+  var listArea = document.querySelector('.individual-list-area');
+  if (listArea) listArea.style.display = 'none';
+  window.print();
+  if (listArea) listArea.style.display = '';
+}
+
+function printList() {
+  // 集団分析を非表示にして印刷
+  var analysisArea = document.querySelector('.group-analysis-area');
+  var deviationNote = document.querySelector('.deviation-note');
+  var stressBar = document.querySelector('.stress-bar-wrap');
+  var intro = document.querySelector('.ga-intro');
+  var detailBody = document.getElementById('detailBody');
+  var wasHidden = detailBody && detailBody.style.display === 'none';
+
+  if (analysisArea) analysisArea.style.display = 'none';
+  if (deviationNote) deviationNote.style.display = 'none';
+  if (stressBar) stressBar.style.display = 'none';
+  if (intro) intro.style.display = 'none';
+  if (detailBody) detailBody.style.display = 'block';
+
+  window.print();
+
+  if (analysisArea) analysisArea.style.display = '';
+  if (deviationNote) deviationNote.style.display = '';
+  if (stressBar) stressBar.style.display = '';
+  if (intro) intro.style.display = '';
+  if (wasHidden && detailBody) detailBody.style.display = 'none';
 }
 
 function escHtml(s) {
