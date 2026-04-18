@@ -74,9 +74,9 @@ tr:hover td{background:#fafffe}
 .cat-badge-ga{font-size:.84rem;font-weight:700;padding:5px 14px;border-radius:8px;background:var(--warm);color:var(--ink);border:1px solid var(--border)}
 .cat-subtotal-ga{font-size:.76rem;font-weight:700;padding:3px 10px;border-radius:8px}
 .cat-desc-ga{font-size:.76rem;color:var(--ink2);margin-bottom:8px;line-height:1.6}
-.ga-header-row{display:flex;align-items:flex-end;gap:12px;margin-bottom:4px;padding-left:6px}
+.ga-header-row{display:flex;align-items:flex-end;gap:12px;margin-bottom:4px;padding-left:8px}
 .ga-header-name{width:175px;flex-shrink:0;font-size:.72rem;color:var(--ink2)}
-.ga-header-chart{width:280px;flex-shrink:0;font-size:.7rem;color:var(--ink2);display:flex;justify-content:space-between;position:relative}
+.ga-header-chart{width:280px;flex-shrink:0;font-size:.7rem;color:var(--ink2);display:flex;justify-content:space-between;position:relative;padding:0 2px}
 .ga-header-nat{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap}
 .ga-header-desc{flex:1;font-size:.72rem;color:var(--ink2)}
 .ga-scale-row{display:flex;align-items:center;gap:12px;margin-bottom:9px;border-radius:8px;padding:4px 8px;border-left:3px solid transparent}
@@ -102,7 +102,7 @@ tr:hover td{background:#fafffe}
 .btn-print.primary:hover{background:var(--green3)}
 /* 印刷スタイル */
 @media print{
-  @page{size:A4 portrait;margin:10mm 12mm}
+  @page{size:A4 portrait;margin:14mm 16mm}
   .hd,.filter-bar,.print-bar,.details-toggle,.details-body,.btn-logout,.no-print{display:none!important}
   body{background:#fff;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:10px}
   .main{margin:0;padding:0;max-width:100%}
@@ -130,11 +130,12 @@ tr:hover td{background:#fafffe}
   .cat-badge-ga{font-size:.7rem;padding:2px 7px}
   .cat-subtotal-ga{font-size:.67rem;padding:2px 6px}
   .cat-desc-ga{font-size:.67rem;margin-bottom:3px;line-height:1.4}
-  .ga-header-row{margin-bottom:2px}
-  .ga-header-chart{font-size:.62rem}
+  .ga-header-row{margin-bottom:2px;padding-left:4px}
+  .ga-header-name{width:130px}
+  .ga-header-chart{width:220px;font-size:.6rem}
   .ga-scale-row{margin-bottom:3px;padding:1px 3px}
-  .ga-col-name{width:140px;font-size:.68rem}
-  .ga-col-chart{width:250px}
+  .ga-col-name{width:130px;font-size:.68rem}
+  .ga-col-chart{width:220px}
   .ga-bar-track{height:8px}
   .ga-bar-fill{height:8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .ga-nat-line{height:15px;top:-3px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -391,10 +392,10 @@ function renderGroupAnalysis(data) {
       : null;
   });
 
-  // カテゴリ定義（モックアップのデータをそのまま使う）
+  // カテゴリ定義
   var cats = [
     {name:'ストレッサー（仕事の負担）',negHigh:true,ll:'負担小 ←',rl:'→ 負担大',
-     desc:'仕事の量・質・対人関係など、働く上で感じる様々な負担のこと。数値が高いほど負担が大きく、継続するとストレス反応につながりやすい。',
+     desc:'',
      private:[],
      items:[
       ['仕事の量的負担',2.1396,0.76,'業務量の多さや時間内に処理しきれないことによる負担'],
@@ -407,7 +408,7 @@ function renderGroupAnalysis(data) {
       ['ワーク・セルフ・バランス（ネガティブ）',2.7765,0.86,'仕事の負担が個人生活に悪影響を及ぼしている程度']
     ]},
     {name:'作業リソース（仕事の資源）',negHigh:false,ll:'低調 ←',rl:'→ 良好',
-     desc:'仕事のやりがいや自律性など、個人レベルで仕事を支える資源のこと。充実しているほどストレスへの緩衝効果があり、エンゲイジメント向上につながる。',
+     desc:'個人レベルで仕事を支える資源です。充実しているほど①ストレッサーを緩和することができます。',
      private:[],
      items:[
       ['仕事のコントロール',2.5315,0.74,'仕事の内容・予定・手順を自分で決められる程度'],
@@ -421,7 +422,7 @@ function renderGroupAnalysis(data) {
       ['ワーク・セルフ・バランス（ポジティブ）',2.0986,0.78,'仕事から得たものが個人生活を豊かにする好循環があるか']
     ]},
     {name:'部署リソース（仕事の資源）',negHigh:false,ll:'低調 ←',rl:'→ 良好',
-     desc:'上司・同僚からのサポートや報酬など、部署レベルで仕事を支える資源のこと。充実しているほど職場環境の健全性が高く、離職リスクの低減にもつながる。',
+     desc:'部署レベルで仕事を支える資源です。充実しているほど①ストレッサーを緩和することができます。',
      private:['家族・友人からのサポート'],
      items:[
       ['上司からのサポート',2.3706,0.75,'上司が話しかけやすく相談にのってくれるなど上司からの支援'],
@@ -437,7 +438,7 @@ function renderGroupAnalysis(data) {
       ['家族・友人からのサポート',3.3140,0.68,'家族・友人等からの支援。職場のストレスの緩衝材になります。']
     ]},
     {name:'会社リソース（仕事の資源）',negHigh:false,ll:'低調 ←',rl:'→ 良好',
-     desc:'経営層との信頼関係や人事制度など、組織・会社レベルで仕事を支える資源のこと。制度や文化として整備されているほど従業員の安心感・帰属意識が高まる。',
+     desc:'組織・会社レベルで仕事を支える資源です。充実しているほど①ストレッサーを緩和することができます。',
      private:[],
      items:[
       ['経営層との信頼関係',2.5284,0.71,'経営層と従業員の間に相互の信頼関係があるか'],
@@ -449,7 +450,7 @@ function renderGroupAnalysis(data) {
       ['キャリア形成',2.4760,0.72,'従業員のキャリアに関する方針・教育・訓練が提供されているか']
     ]},
     {name:'ストレス反応（心身）',negHigh:true,ll:'問題なし ←',rl:'→ 不調',
-     desc:'仕事上のストレスが心身に現れた状態のこと。数値が高いほど不調。身体症状が出ている場合はすでに深刻なサインと捉える必要がある。',
+     desc:'仕事上のストレスが心身に現れた状態。身体症状が出ている場合はすでに深刻なサインと捉える必要があります。',
      private:[],
      items:[
       ['活気',2.2568,0.79,'活気・元気・いきいき感'],
@@ -460,7 +461,7 @@ function renderGroupAnalysis(data) {
       ['身体愁訴',3.2195,0.54,'めまい・頭痛・肩こり・動悸など身体的な不調の訴え']
     ]},
     {name:'アウトカム（成果・満足度）',negHigh:false,ll:'低調 ←',rl:'→ 良好',
-     desc:'仕事の成果や満足度など、働くことの結果を示す指標のこと。高いほど良好な状態。職場環境や各種リソースの充実がアウトカムの向上につながる。',
+     desc:'仕事への満足度・成果・意欲など、職場環境の健全性が反映される指標です。②各種リソースの充実がアウトカムの向上につながります。',
      private:['家庭満足度'],
      items:[
       ['仕事満足度',2.6000,0.85,'仕事に関する全般的な満足度'],
@@ -472,7 +473,7 @@ function renderGroupAnalysis(data) {
       ['家庭満足度',3.0583,0.81,'家庭生活に関する全般的な満足度。職場のストレスの緩衝材になります。']
     ]},
     {name:'メンタルリスク',negHigh:true,ll:'低い ←',rl:'→ 高い',
-     desc:'ハラスメントの経験・目撃など、職場の心理的安全性を脅かすリスク指標。数値が低いほど良好。深刻なケースがある場合は早急な対応が必要。',
+     desc:'ハラスメントの経験・目撃など、職場の心理的安全性を脅かすリスク指標。深刻なケースがある場合は早急な対応が必要。',
      private:[],
      items:[
       ['職場のハラスメント',3.5760,0.67,'いじめ・嫌がらせ・パワハラ・セクハラなどの経験・目撃頻度']
@@ -493,15 +494,15 @@ function renderGroupAnalysis(data) {
   var groups = [
     { num:'①', cls:'group-stressor', titleColor:'#633806', numColor:'#BA7517',
       title:'仕事の負担（ストレッサー）',
-      sub:'仕事上で感じる負担を示します。負担が大きい状態が継続するとストレス反応につながりやすくなります。',
+      sub:'仕事上で感じる負担を示します。負担が大きい状態が継続すると③ストレス反応につながりやすくなります。',
       catIndexes:[0] },
     { num:'②', cls:'group-resource', titleColor:'#173404', numColor:'#3B6D11',
       title:'職場・仕事のリソース',
-      sub:'ストレスを緩和させることができる資源です。充実しているほどストレッサーの影響を和らげ、エンゲイジメントの向上にもつながります。',
+      sub:'ストレスを緩和させることができる資源です。充実しているほど①ストレッサーの影響を緩和することができます。',
       catIndexes:[1,2,3] },
     { num:'③', cls:'group-reaction', titleColor:'#042C53', numColor:'#185FA5',
       title:'個人の反応と状態',
-      sub:'心身の不調・職場リスクを示します。ここに問題が見られる場合は、ストレッサーの軽減やリソースの強化など、根本原因への対処が重要です。',
+      sub:'①ストレッサーと②リソースのバランスが崩れた結果として現れる心身の不調・職場リスクを示します。ここに問題が見られる場合は、①ストレッサーの軽減や②リソースの強化など、根本原因への対処が重要です。',
       catIndexes:[4,5,6] }
   ];
 
