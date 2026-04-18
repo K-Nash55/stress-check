@@ -90,10 +90,6 @@ tr:hover td{background:#fafffe}
 .ga-axis-row{display:flex;justify-content:space-between;margin-top:2px;font-size:.68rem;color:var(--ink2)}
 .ga-col-desc{flex:1;font-size:.74rem;color:var(--ink2);line-height:1.5;padding:4px 6px;border-radius:6px}
 .ga-col-desc.danger-bg{background:#fde8e8;color:var(--red)}
-/* 個人一覧折りたたみ */
-.details-toggle{width:100%;text-align:left;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:.84rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-.details-toggle:hover{background:var(--warm)}
-.details-body{background:#fff;border:1px solid var(--border);border-radius:0 0 10px 10px;overflow:hidden;margin-top:-4px}
 /* 印刷ボタン */
 .print-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
 .btn-print{padding:8px 18px;border-radius:7px;border:2px solid var(--border);background:#fff;font-size:.8rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;color:var(--ink);transition:all .2s;display:flex;align-items:center;gap:6px}
@@ -245,13 +241,11 @@ function renderPage(data) {
     + '<label style="margin-left:8px">期間（開始）</label><input type="date" id="dateFrom">'
     + '<label>〜</label><input type="date" id="dateTo">'
     + '<div class="filter-sep"></div>'
-    + '<button class="btn-export" id="btnCsv">CSVダウンロード</button>'
     + '</div>';
 
   // 印刷ボタン
   html += '<div class="print-bar no-print">'
     + '<button class="btn-print primary" onclick="printResults()">🖨 結果を印刷</button>'
-    + '<button class="btn-print" onclick="printList()">🖨 個人一覧を印刷</button>'
     + '</div>';
 
   if (data.length === 0) {
@@ -321,32 +315,8 @@ function renderPage(data) {
     html += '</div>';
   }
 
-  // 個人一覧（折りたたみ）
-  html += '<div class="individual-list-area">';
-  html += '<button class="details-toggle" id="detailToggle" onclick="var b=document.getElementById(\'detailBody\');var open=b.style.display!==\'none\';b.style.display=open?\'none\':\'block\';document.getElementById(\'detailArrow\').textContent=open?\'▼\':\'▲\'">'
-    + '<span>個人別一覧</span><span id="detailArrow">▼</span></button>';
-  html += '<div id="detailBody" class="details-body" style="display:none">';
-  html += '<table><thead><tr><th>部署</th><th>ストレスレベル</th><th>ストレッサー</th><th>リソース</th><th>アウトカム</th><th>回答日</th></tr></thead><tbody>';
-  data.forEach(function(d) {
-    var lvLabel = d.stress_level === 'high' ? '高ストレス' : d.stress_level === 'mid' ? '中程度' : '低ストレス';
-    var sRatio = d.s_max ? (d.s_total/d.s_max*100).toFixed(0) + '%' : '—';
-    var rRatio = d.r_max ? (d.r_total/d.r_max*100).toFixed(0) + '%' : '—';
-    var oRatio = d.o_max ? (d.o_total/d.o_max*100).toFixed(0) + '%' : '—';
-    var date   = d.completed_at ? new Date(d.completed_at).toLocaleDateString('ja-JP') : '—';
-    html += '<tr>'
-      + '<td>' + escHtml(d.department) + '</td>'
-      + '<td><span class="badge ' + d.stress_level + '">' + lvLabel + '</span></td>'
-      + '<td>' + sRatio + '</td>'
-      + '<td>' + rRatio + '</td>'
-      + '<td>' + oRatio + '</td>'
-      + '<td>' + date + '</td>'
-      + '</tr>';
-  });
-  html += '</tbody></table></div></div></div>';
-
   document.getElementById('mainContent').innerHTML = html;
   bindFilters();
-  bindCsv(data);
 }
 
 // ============================================================
@@ -610,58 +580,11 @@ function bindFilters() {
 // ============================================================
 // CSVダウンロード
 // ============================================================
-function bindCsv(data) {
-  var btn = document.getElementById('btnCsv');
-  if (!btn) return;
-  btn.addEventListener('click', function() {
-    var rows = [['部署','ストレスレベル','ストレッサー得点','ストレッサー最大','リソース得点','リソース最大','アウトカム得点','アウトカム最大','回答日']];
-    data.forEach(function(d) {
-      var lvLabel = d.stress_level === 'high' ? '高ストレス' : d.stress_level === 'mid' ? '中程度' : '低ストレス';
-      rows.push([d.department, lvLabel, d.s_total, d.s_max, d.r_total, d.r_max, d.o_total, d.o_max,
-        d.completed_at ? new Date(d.completed_at).toLocaleDateString('ja-JP') : '']);
-    });
-    var csv = '\uFEFF' + rows.map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\r\n');
-    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    var url  = URL.createObjectURL(blob);
-    var a    = document.createElement('a');
-    a.href = url; a.download = 'stress_check_' + new Date().toISOString().slice(0,10) + '.csv';
-    a.click(); URL.revokeObjectURL(url);
-  });
-}
-
 // ============================================================
 // 印刷
 // ============================================================
 function printResults() {
-  // 個人一覧を非表示にして印刷
-  var listArea = document.querySelector('.individual-list-area');
-  if (listArea) listArea.style.display = 'none';
   window.print();
-  if (listArea) listArea.style.display = '';
-}
-
-function printList() {
-  // 集団分析を非表示にして印刷
-  var analysisArea = document.querySelector('.group-analysis-area');
-  var deviationNote = document.querySelector('.deviation-note');
-  var stressBar = document.querySelector('.stress-bar-wrap');
-  var intro = document.querySelector('.ga-intro');
-  var detailBody = document.getElementById('detailBody');
-  var wasHidden = detailBody && detailBody.style.display === 'none';
-
-  if (analysisArea) analysisArea.style.display = 'none';
-  if (deviationNote) deviationNote.style.display = 'none';
-  if (stressBar) stressBar.style.display = 'none';
-  if (intro) intro.style.display = 'none';
-  if (detailBody) detailBody.style.display = 'block';
-
-  window.print();
-
-  if (analysisArea) analysisArea.style.display = '';
-  if (deviationNote) deviationNote.style.display = '';
-  if (stressBar) stressBar.style.display = '';
-  if (intro) intro.style.display = '';
-  if (wasHidden && detailBody) detailBody.style.display = 'none';
 }
 
 function escHtml(s) {
