@@ -264,15 +264,21 @@ function renderPage(data) {
   // イントロ説明
   html += '<div class="ga-intro">ストレスチェックは <strong>① 仕事の負担</strong>・<strong>② 職場のリソース</strong>・<strong>③ 個人の反応と状態</strong> の3つの視点で職場環境を分析します。①の負担が高くても②のリソースが充実していれば影響は緩和されます。③に問題が出ている場合は①②の改善が優先課題です。</div>';
 
-  // サマリカード（4枚）
+  // サマリカード（4枚、5人未満は回答者数のみ）
   var miPct0 = n ? (mi/n*100).toFixed(1) : '0.0';
   var loPct0 = n ? (lo/n*100).toFixed(1) : '0.0';
-  html += '<div class="summary-grid">'
-    + '<div class="sum-card"><div class="sum-lbl">回答者数</div><div class="sum-val">' + n + '名</div></div>'
-    + '<div class="sum-card hi"><div class="sum-lbl">高ストレス</div><div class="sum-val">' + hi + '名</div><div class="sum-pct">（' + hiPct + '%）</div></div>'
-    + '<div class="sum-card mi"><div class="sum-lbl">中程度</div><div class="sum-val">' + mi + '名</div><div class="sum-pct">（' + miPct0 + '%）</div></div>'
-    + '<div class="sum-card lo"><div class="sum-lbl">低ストレス</div><div class="sum-val">' + lo + '名</div><div class="sum-pct">（' + loPct0 + '%）</div></div>'
-    + '</div>';
+  if (n < 5) {
+    html += '<div class="summary-grid" style="grid-template-columns:1fr;max-width:200px">'
+      + '<div class="sum-card"><div class="sum-lbl">回答者数</div><div class="sum-val">' + n + '名</div></div>'
+      + '</div>';
+  } else {
+    html += '<div class="summary-grid">'
+      + '<div class="sum-card"><div class="sum-lbl">回答者数</div><div class="sum-val">' + n + '名</div></div>'
+      + '<div class="sum-card hi"><div class="sum-lbl">高ストレス</div><div class="sum-val">' + hi + '名</div><div class="sum-pct">（' + hiPct + '%）</div></div>'
+      + '<div class="sum-card mi"><div class="sum-lbl">中程度</div><div class="sum-val">' + mi + '名</div><div class="sum-pct">（' + miPct0 + '%）</div></div>'
+      + '<div class="sum-card lo"><div class="sum-lbl">低ストレス</div><div class="sum-val">' + lo + '名</div><div class="sum-pct">（' + loPct0 + '%）</div></div>'
+      + '</div>';
+  }
 
   var MIN_GROUP = 5;
 
