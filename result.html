@@ -12,9 +12,6 @@
   --teal: #5DCAA5;
   --purple: #7F77DD;
   --danger: #E24B4A;
-  --sig-blue: #378ADD;
-  --sig-yellow: #EF9F27;
-  --sig-red: #E24B4A;
   --ink: #1a1a2e;
   --ink2: #4a4a6a;
   --paper: #faf9f6;
@@ -56,12 +53,27 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
 .sec-hazard   { border-left: 4px solid var(--danger); }
 
 .sec-head { display: flex; align-items: center; gap: 12px; padding: 16px 20px 10px; }
-.badge-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .78rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+
+/* バッジ：ピル形状で①②-1③-1⚠に対応 */
+.badge-num {
+  height: 26px; min-width: 26px; border-radius: 13px; padding: 0 7px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: .72rem; font-weight: 700; color: #fff; flex-shrink: 0;
+  letter-spacing: 0;
+}
+
 .sec-title { font-size: .98rem; font-weight: 700; }
-.sec-body  { padding: 2px 20px 18px; }
+.sec-body  { padding: 0 20px 18px; }
+
+/* ── カテゴリ解説文 ── */
+.sec-cat-desc {
+  font-size: .8rem; color: var(--ink2); line-height: 1.75;
+  background: var(--warm); border-radius: 8px; padding: 9px 13px;
+  margin-bottom: 14px;
+}
 
 /* ── スケール行（ストレッサー個別） ── */
-.scale-row { margin-bottom: 18px; }
+.scale-row { margin-bottom: 16px; }
 .scale-row-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 3px; }
 .scale-name { font-size: .85rem; font-weight: 500; }
 .scale-dev  { font-size: .78rem; font-weight: 700; }
@@ -69,15 +81,21 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
 
 /* ── 棒グラフ ── */
 .bar-dir { display: flex; justify-content: space-between; font-size: .65rem; color: var(--ink2); margin-bottom: 2px; }
+
+/* グループバー：値を右端に小さく添える */
+.bar-row { display: flex; align-items: center; gap: 8px; }
+.bar-row .bar-wrapper { flex: 1; }
+.bar-dev-val { font-size: .78rem; font-weight: 700; min-width: 34px; text-align: right; flex-shrink: 0; }
+
 .bar-wrapper { position: relative; margin: 2px 0 4px; }
 .bar-track { height: 8px; background: var(--warm); border-radius: 4px; overflow: hidden; }
 .bar-fill  { height: 100%; border-radius: 4px; transition: width .4s ease; }
-.bar-avg-line { position: absolute; top: -4px; left: 50%; width: 2px; height: 16px;
-  background: rgba(26,26,46,0.35); border-radius: 1px; transform: translateX(-50%); pointer-events: none; }
-
-/* ── グループ偏差値表示 ── */
-.group-dev       { font-size: 1.5rem; font-weight: 700; text-align: center; margin: 8px 0 2px; }
-.group-dev-label { font-size: .7rem; color: var(--ink2); text-align: center; margin-bottom: 8px; }
+.bar-avg-line {
+  position: absolute; top: -4px; left: 50%; width: 2px; height: 16px;
+  background: rgba(26,26,46,0.35); border-radius: 1px;
+  transform: translateX(-50%); pointer-events: none;
+}
+.bar-nat-note { font-size: .64rem; color: var(--ink2); margin-top: 2px; }
 
 /* ── 強み・課題カード ── */
 .bw-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
@@ -85,26 +103,32 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
 .bw-card.best  { background: #E6F1FB; border: 1px solid #b5d3f5; }
 .bw-card.worst { background: #FCEBEB; border: 1px solid #f5b5b5; }
 .bw-card.none  { background: #f5f4f1; border: 1px dashed var(--border); }
-.bw-card-lbl   { font-size: .63rem; font-weight: 700; letter-spacing: .06em; color: var(--ink2); margin-bottom: 4px; text-transform: uppercase; }
+.bw-card-lbl   { font-size: .63rem; font-weight: 700; letter-spacing: .06em; color: var(--ink2); margin-bottom: 4px; }
 .bw-card-name  { font-size: .85rem; font-weight: 700; }
 .bw-card-dev   { font-size: .73rem; color: var(--ink2); margin-top: 2px; }
 
-/* ── 説明文 ── */
-.sec-desc { font-size: .82rem; color: var(--ink2); line-height: 1.8; margin-bottom: 12px;
-  background: var(--warm); border-radius: 8px; padding: 10px 14px; }
+/* ── 身体愁訴・ハラスメント 説明文 ── */
+.sec-desc {
+  font-size: .82rem; color: var(--ink2); line-height: 1.8; margin-bottom: 12px;
+  background: var(--warm); border-radius: 8px; padding: 10px 14px;
+}
 
 /* ── ボタン ── */
 .actions { display: flex; gap: 12px; justify-content: center; margin: 28px 0 16px; flex-wrap: wrap; }
-.btn { padding: 12px 24px; border-radius: 8px; border: 2px solid var(--border); background: #fff;
+.btn {
+  padding: 12px 24px; border-radius: 8px; border: 2px solid var(--border); background: #fff;
   font-family: 'Noto Sans JP', sans-serif; font-size: .86rem; font-weight: 700;
-  cursor: pointer; transition: all .2s; color: var(--ink); }
+  cursor: pointer; transition: all .2s; color: var(--ink);
+}
 .btn:hover { background: var(--warm); }
 .btn.primary { background: var(--teal); color: #fff; border-color: var(--teal); }
 .btn.primary:hover { background: #3db88a; }
 
 /* ── 免責 ── */
-.disclaimer { font-size: .72rem; color: #999; text-align: center; line-height: 1.8;
-  padding: 14px 16px; border: 1px dashed #ddd; border-radius: 8px; margin-top: 8px; }
+.disclaimer {
+  font-size: .72rem; color: #999; text-align: center; line-height: 1.8;
+  padding: 14px 16px; border: 1px dashed #ddd; border-radius: 8px; margin-top: 8px;
+}
 
 @media (max-width: 480px) {
   .bw-cards { grid-template-columns: 1fr; }
@@ -116,6 +140,15 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
   body { background: #fff; }
   .section { break-inside: avoid; }
   @page { margin: 14mm; }
+
+  /* 印刷時も色・背景を強制出力 */
+  .bar-fill    { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .bar-track   { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .bar-avg-line { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .section     { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .sec-cat-desc { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .bw-card     { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .sec-desc    { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 </style>
 </head>
@@ -151,13 +184,12 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
 
   function colorHex(c) { return C[c]; }
 
-  // カテゴリからスケール偏差値リストを作成
   function scalesByCategory(scaleResults, cat) {
     var out = [];
     for (var k in scaleResults) {
       var sr = scaleResults[k];
       if (sr.category !== cat) continue;
-      var q = sr.questions[0];
+      var q   = sr.questions[0];
       var dev = calcDeviation(sr.avg, q ? q.avg : null, q ? q.sd : null);
       out.push({ key: k, name: cleanName(k), dev: dev, sr: sr });
     }
@@ -171,7 +203,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
   }
 
   function getBestWorst(scales, negHigh) {
-    if (scales.length === 0) return { best: null, worst: null };
+    if (!scales.length) return { best: null, worst: null };
     var best = negHigh
       ? scales.reduce(function(a, b) { return a.dev < b.dev ? a : b; })
       : scales.reduce(function(a, b) { return a.dev > b.dev ? a : b; });
@@ -182,6 +214,8 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
   }
 
   // ── HTML パーツ ──
+
+  // 個別スケール用バー（方向ラベル + バー。偏差値は呼び出し側で表示）
   function barHTML(dev, negHigh) {
     var c   = colorHex(getColor(dev, negHigh));
     var pct = Math.min(100, Math.max(0, dev));
@@ -196,15 +230,28 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
       + '</div>';
   }
 
-  function devLabelHTML(dev, negHigh) {
-    var c = colorHex(getColor(dev, negHigh));
-    return '<div class="group-dev" style="color:' + c + '">T=' + dev.toFixed(1) + '</div>'
-         + '<div class="group-dev-label">全国平均=50　（縦線が全国平均）</div>';
+  // グループ用バー（方向ラベル + バー右端に偏差値 + 下に注記）
+  function groupBarHTML(dev, negHigh) {
+    var c   = colorHex(getColor(dev, negHigh));
+    var pct = Math.min(100, Math.max(0, dev));
+    var lft = negHigh ? '← 良好' : '← 要注意';
+    var rgt = negHigh ? '要注意 →' : '良好 →';
+    return '<div class="bar-dir"><span>' + lft + '</span><span>' + rgt + '</span></div>'
+      + '<div class="bar-row">'
+      +   '<div class="bar-wrapper">'
+      +     '<div class="bar-track">'
+      +       '<div class="bar-fill" style="width:' + pct + '%;background:' + c + '"></div>'
+      +     '</div>'
+      +     '<div class="bar-avg-line"></div>'
+      +   '</div>'
+      +   '<span class="bar-dev-val" style="color:' + c + '">' + dev.toFixed(1) + '</span>'
+      + '</div>'
+      + '<div class="bar-nat-note">全国平均=50（縦線が全国平均）</div>';
   }
 
   function bwCardsHTML(scales, negHigh) {
     if (!scales || !scales.length) return '';
-    var bw = getBestWorst(scales, negHigh);
+    var bw    = getBestWorst(scales, negHigh);
     var best  = bw.best;
     var worst = bw.worst;
     var bestCard = best
@@ -222,6 +269,10 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
     return '<div class="bw-cards">' + bestCard + worstCard + '</div>';
   }
 
+  function catDescHTML(text) {
+    return '<div class="sec-cat-desc">' + text + '</div>';
+  }
+
   function sectionWrap(colorClass, badgeColor, badgeText, title, body) {
     return '<div class="section ' + colorClass + '">'
       + '<div class="sec-head">'
@@ -234,19 +285,22 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
 
   // ── ① ストレッサー ──
   var STRESSOR_META = {
-    '仕事の量的負担':                        { label: '仕事の量的負担',   desc: '業務量の多さや時間内に処理しきれないことによる負担' },
-    '仕事の質的負担':                        { label: '仕事の質的負担',   desc: '注意集中・知識・技術の高さによる質的な業務負担' },
-    '身体的負担度':                          { label: '身体的負担度',     desc: '身体を動かす作業など、からだへの業務負担' },
-    '職場での対人関係':                      { label: '職場での対人関係', desc: '部署内外の意見の相違・対立など対人関係の負担' },
-    '職場環境':                              { label: '職場環境',         desc: '騒音・照明・温度・換気など物理的環境による負担' },
-    '情緒的負担':                            { label: '情緒的負担',       desc: '気持ちや感情がかき乱されるなど感情面の業務負担' },
-    '役割葛藤':                              { label: '役割葛藤',         desc: '複数の方針・要求が相容れず業務遂行が困難になる負担' },
-    'ワーク・セルフ・バランス（ネガティブ）': { label: 'WSB（ネガ）',      desc: '仕事の負担が個人生活に悪影響を及ぼしている程度' }
+    '仕事の量的負担':                         { label: '仕事の量的負担',   desc: '業務量の多さや時間内に処理しきれないことによる負担' },
+    '仕事の質的負担':                         { label: '仕事の質的負担',   desc: '注意集中・知識・技術の高さによる質的な業務負担' },
+    '身体的負担度':                           { label: '身体的負担度',     desc: '身体を動かす作業など、からだへの業務負担' },
+    '職場での対人関係':                       { label: '職場での対人関係', desc: '部署内外の意見の相違・対立など対人関係の負担' },
+    '職場環境':                               { label: '職場環境',         desc: '騒音・照明・温度・換気など物理的環境による負担' },
+    '情緒的負担':                             { label: '情緒的負担',       desc: '気持ちや感情がかき乱されるなど感情面の業務負担' },
+    '役割葛藤':                               { label: '役割葛藤',         desc: '複数の方針・要求が相容れず業務遂行が困難になる負担' },
+    'ワーク・セルフ・バランス（ネガティブ）': { label: 'WSB（ネガ）',       desc: '仕事の負担が個人生活に悪影響を及ぼしている程度' }
   };
 
   function buildStressor(scaleResults) {
     var scales = scalesByCategory(scaleResults, '1.ストレッサー（仕事の負担）');
-    var body = '';
+    var body = catDescHTML(
+      '仕事で感じる負担の大きさです。右寄りほど負担が大きい状態で、'
+      + '負担が続くと③の心身反応につながりやすくなります。'
+    );
     for (var i = 0; i < scales.length; i++) {
       var s    = scales[i];
       var meta = STRESSOR_META[s.name] || { label: s.name, desc: '' };
@@ -254,7 +308,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
       body += '<div class="scale-row">'
         + '<div class="scale-row-header">'
         +   '<span class="scale-name" style="color:' + c + '">' + meta.label + '</span>'
-        +   '<span class="scale-dev"  style="color:' + c + '">T=' + s.dev.toFixed(1) + '</span>'
+        +   '<span class="scale-dev"  style="color:' + c + '">' + s.dev.toFixed(1) + '</span>'
         + '</div>'
         + barHTML(s.dev, true)
         + '<div class="scale-desc">' + meta.desc + '</div>'
@@ -264,19 +318,17 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
   }
 
   // ── ② リソース（カテゴリ単位）──
-  function buildResource(scaleResults, title, cat) {
+  function buildResource(scaleResults, badgeText, title, cat, catDesc) {
     var scales = scalesByCategory(scaleResults, cat);
     if (!scales.length) return '';
     var avg  = avgOfDevs(scales);
-    var body = devLabelHTML(avg, false)
-      + barHTML(avg, false)
+    var body = catDescHTML(catDesc)
+      + groupBarHTML(avg, false)
       + bwCardsHTML(scales, false);
-    return sectionWrap('sec-resource', C.teal, '②', title, body);
+    return sectionWrap('sec-resource', C.teal, badgeText, title, body);
   }
 
-  // ── ③ 精神的ストレス反応 ──
-  var MENTAL_NEGHIGH = { '活気': false, 'イライラ感': true, '疲労感': true, '不安感': true, '抑うつ感': true };
-
+  // ── ③-1 精神的ストレス反応 ──
   function buildMentalStress(scaleResults) {
     var scales = scalesByCategory(scaleResults, '3-1.精神的ストレス（アウトカム）');
     if (!scales.length) return '';
@@ -284,21 +336,27 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
     // 活気は反転してグループ平均（高いほど悪い方向）を計算
     var normSum = 0;
     for (var i = 0; i < scales.length; i++) {
-      var nh = MENTAL_NEGHIGH[scales[i].name] !== false;
-      normSum += nh ? scales[i].dev : (100 - scales[i].dev);
+      normSum += (scales[i].name === '活気')
+        ? (100 - scales[i].dev)
+        : scales[i].dev;
     }
     var avg = Math.round(normSum / scales.length * 10) / 10;
 
-    // 強み・課題：個別negHighを考慮した「良さスコア」で比較
-    var withGoodness = scales.map(function(s) {
-      var nh = MENTAL_NEGHIGH[s.name] !== false;
-      return { name: s.name, dev: s.dev, goodness: nh ? (100 - s.dev) : s.dev };
+    // 【修正5】不調偏差で統一比較
+    // 活気：不調偏差 = 50 - dev（高いほど良いので反転）
+    // その他：不調偏差 = dev - 50
+    var withUnwell = scales.map(function(s) {
+      var unwellDev = (s.name === '活気') ? (50 - s.dev) : (s.dev - 50);
+      return { name: s.name, dev: s.dev, unwellDev: unwellDev };
     });
-    var best  = withGoodness.reduce(function(a, b) { return a.goodness > b.goodness ? a : b; });
-    var worst = withGoodness.reduce(function(a, b) { return a.goodness < b.goodness ? a : b; });
+    var best  = withUnwell.reduce(function(a, b) { return a.unwellDev < b.unwellDev ? a : b; });
+    var worst = withUnwell.reduce(function(a, b) { return a.unwellDev > b.unwellDev ? a : b; });
 
-    var body = devLabelHTML(avg, true)
-      + barHTML(avg, true)
+    var body = catDescHTML(
+      '活気・イライラ感・疲労感・不安感・抑うつ感の5項目の平均です。'
+      + '活気のみ高いほど良いスケールで、他は低いほど良好です。'
+    )
+      + groupBarHTML(avg, true)
       + '<div class="bw-cards">'
       +   '<div class="bw-card best"><div class="bw-card-lbl">強み（最も良好）</div>'
       +     '<div class="bw-card-name">' + best.name + '</div>'
@@ -307,34 +365,35 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
       +     '<div class="bw-card-name">' + worst.name + '</div>'
       +     '<div class="bw-card-dev">偏差値 ' + worst.dev.toFixed(1) + '</div></div>'
       + '</div>';
-    return sectionWrap('sec-outcome', C.purple, '③', '精神的ストレス反応', body);
+    return sectionWrap('sec-outcome', C.purple, '③-1', '精神的ストレス反応', body);
   }
 
-  // ── ③ 身体愁訴 ──
+  // ── ③-2 身体愁訴 ──
   function buildBodyComplaints(scaleResults) {
     var scales = scalesByCategory(scaleResults, '3-2.身体的ストレス（アウトカム）');
     if (!scales.length) return '';
-    var s   = scales[0];
-    var c   = colorHex(getColor(s.dev, true));
+    var s    = scales[0];
     var body = '<div class="sec-desc">めまい・頭痛・肩こり・動悸など身体的な不調の訴えです。'
       + '低いほど良好で、現在は全国平均より大きく低い状態です。'
       + 'スコアが上昇してきた場合は、医療機関や相談窓口への受診・相談をご検討ください。</div>'
-      + '<div class="group-dev" style="color:' + c + '">T=' + s.dev.toFixed(1) + '</div>'
-      + '<div class="group-dev-label">全国平均=50　（縦線が全国平均）</div>'
-      + barHTML(s.dev, true);
-    return sectionWrap('sec-outcome', C.purple, '③', '身体愁訴', body);
+      + groupBarHTML(s.dev, true);
+    return sectionWrap('sec-outcome', C.purple, '③-2', '身体愁訴', body);
   }
 
-  // ── ③ アウトカム（ハラスメント除外）──
+  // ── ③-3 アウトカム（ハラスメント除外）──
   function buildOutcome(scaleResults) {
     var all    = scalesByCategory(scaleResults, '3-3.その他（アウトカム）');
     var scales = all.filter(function(s) { return s.name !== '職場のハラスメント'; });
     if (!scales.length) return '';
     var avg  = avgOfDevs(scales);
-    var body = devLabelHTML(avg, false)
-      + barHTML(avg, false)
+    var body = catDescHTML(
+      '仕事満足度・職場の一体感・ワークエンゲイジメント・職務の遂行・'
+      + '創造性・積極的な学習・家庭満足度の7項目の平均です。'
+      + '②リソースの充実がアウトカム向上につながります。'
+    )
+      + groupBarHTML(avg, false)
       + bwCardsHTML(scales, false);
-    return sectionWrap('sec-outcome', C.purple, '③', 'アウトカム（活力・職務遂行・創造性）', body);
+    return sectionWrap('sec-outcome', C.purple, '③-3', 'アウトカム（活力・職務遂行・創造性）', body);
   }
 
   // ── ⚠ ハラスメントリスク ──
@@ -345,13 +404,10 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
       if (all[i].name === '職場のハラスメント') { s = all[i]; break; }
     }
     if (!s) return '';
-    var c    = colorHex(getColor(s.dev, true));
     var body = '<div class="sec-desc">いじめ・嫌がらせ・パワハラ・セクハラの経験・目撃頻度です。'
       + '低いほど良好で、現在は全国平均より大きく低い状態です。'
       + '気になることがある場合は、社内外の相談窓口への相談をご検討ください。</div>'
-      + '<div class="group-dev" style="color:' + c + '">T=' + s.dev.toFixed(1) + '</div>'
-      + '<div class="group-dev-label">全国平均=50　（縦線が全国平均）</div>'
-      + barHTML(s.dev, true);
+      + groupBarHTML(s.dev, true);
     return sectionWrap('sec-hazard', C.danger, '⚠', 'ハラスメントリスク', body);
   }
 
@@ -413,9 +469,21 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
 
     // 各セクション
     html += buildStressor(scaleResults);
-    html += buildResource(scaleResults, '作業リソース（仕事のコントロール・成長）',  '2-1.作業リソース（仕事の資源）');
-    html += buildResource(scaleResults, '部署リソース（職場のサポート・評価）',      '2-2.部署リソース（仕事の資源）');
-    html += buildResource(scaleResults, '会社リソース（組織・制度・キャリア）',      '2-3.会社リソース（仕事の資源）');
+    html += buildResource(scaleResults, '②-1', '作業リソース（仕事のコントロール・成長）',
+      '2-1.作業リソース（仕事の資源）',
+      '個人レベルで仕事を支える資源です。コントロール感・技能の活用・適性・意義・'
+      + '役割の明確さ・成長の機会・新奇性・予測可能性・WSBポジティブの9項目の平均です。'
+    );
+    html += buildResource(scaleResults, '②-2', '部署リソース（職場のサポート・評価）',
+      '2-2.部署リソース（仕事の資源）',
+      '部署・チームレベルの資源です。上司・同僚のサポート・各種報酬・ほめてもらえる職場・'
+      + '失敗を認める職場・グループの有能感・家族友人からのサポートなど11項目の平均です。'
+    );
+    html += buildResource(scaleResults, '②-3', '会社リソース（組織・制度・キャリア）',
+      '2-3.会社リソース（仕事の資源）',
+      '組織・経営レベルの資源です。経営層との信頼関係・変化への対応・手続きの公正性・'
+      + '個人の尊重・公正な人事評価・多様性への対応・キャリア形成の7項目の平均です。'
+    );
     html += buildMentalStress(scaleResults);
     html += buildBodyComplaints(scaleResults);
     html += buildOutcome(scaleResults);
