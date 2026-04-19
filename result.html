@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ストレスチェック 詳細結果</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+
+:root {
+  --coral: #F0997B;
+  --teal: #5DCAA5;
+  --purple: #7F77DD;
+  --danger: #E24B4A;
+  --sig-blue: #378ADD;
+  --sig-yellow: #EF9F27;
+  --sig-red: #E24B4A;
+  --ink: #1a1a2e;
+  --ink2: #4a4a6a;
+  --paper: #faf9f6;
+  --warm: #f3f0e8;
+  --border: #d6d0c4;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.7; }
+
+.wrap { max-width: 780px; margin: 0 auto; padding: 20px 16px 60px; }
+
+/* ── ヘッダー ── */
+.r-header { text-align: center; padding: 28px 20px 20px; }
+.r-badge { display: inline-block; padding: 6px 20px; border-radius: 24px; font-size: .75rem; font-weight: 700; letter-spacing: .1em; margin-bottom: 12px; }
+.r-badge.low  { background: #d8f3dc; color: #2d6a4f; }
+.r-badge.mid  { background: #fff3e0; color: #c77c3e; }
+.r-badge.high { background: #fde8e8; color: #b5373a; }
+.r-title    { font-size: 1.55rem; font-weight: 700; margin-bottom: 6px; }
+.r-subtitle { font-size: .83rem; color: var(--ink2); }
+
+/* ── 高ストレスアラート ── */
+.high-alert { background: #fde8e8; border: 2px solid #f5a5a7; border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; }
+.high-alert-title { font-weight: 700; color: #b5373a; margin-bottom: 6px; }
+.high-alert-desc  { font-size: .83rem; color: #7a2c2e; line-height: 1.8; }
+
+/* ── 凡例 ── */
+.legend { display: flex; gap: 10px; margin: 16px 0; }
+.legend-card { flex: 1; background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; text-align: center; }
+.legend-dot  { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-bottom: 4px; }
+.legend-name { font-size: .78rem; font-weight: 700; margin-bottom: 2px; }
+.legend-lbl  { font-size: .68rem; color: var(--ink2); }
+
+/* ── セクションカード ── */
+.section { background: #fff; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 14px; overflow: hidden; }
+.sec-stressor { border-left: 4px solid var(--coral); }
+.sec-resource { border-left: 4px solid var(--teal); }
+.sec-outcome  { border-left: 4px solid var(--purple); }
+.sec-hazard   { border-left: 4px solid var(--danger); }
+
+.sec-head { display: flex; align-items: center; gap: 12px; padding: 16px 20px 10px; }
+.badge-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .78rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+.sec-title { font-size: .98rem; font-weight: 700; }
+.sec-body  { padding: 2px 20px 18px; }
+
+/* ── スケール行（ストレッサー個別） ── */
+.scale-row { margin-bottom: 18px; }
+.scale-row-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 3px; }
+.scale-name { font-size: .85rem; font-weight: 500; }
+.scale-dev  { font-size: .78rem; font-weight: 700; }
+.scale-desc { font-size: .71rem; color: var(--ink2); margin-top: 3px; line-height: 1.5; }
+
+/* ── 棒グラフ ── */
+.bar-dir { display: flex; justify-content: space-between; font-size: .65rem; color: var(--ink2); margin-bottom: 2px; }
+.bar-wrapper { position: relative; margin: 2px 0 4px; }
+.bar-track { height: 8px; background: var(--warm); border-radius: 4px; overflow: hidden; }
+.bar-fill  { height: 100%; border-radius: 4px; transition: width .4s ease; }
+.bar-avg-line { position: absolute; top: -4px; left: 50%; width: 2px; height: 16px;
+  background: rgba(26,26,46,0.35); border-radius: 1px; transform: translateX(-50%); pointer-events: none; }
+
+/* ── グループ偏差値表示 ── */
+.group-dev       { font-size: 1.5rem; font-weight: 700; text-align: center; margin: 8px 0 2px; }
+.group-dev-label { font-size: .7rem; color: var(--ink2); text-align: center; margin-bottom: 8px; }
+
+/* ── 強み・課題カード ── */
+.bw-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.bw-card  { border-radius: 10px; padding: 12px 14px; }
+.bw-card.best  { background: #E6F1FB; border: 1px solid #b5d3f5; }
+.bw-card.worst { background: #FCEBEB; border: 1px solid #f5b5b5; }
+.bw-card.none  { background: #f5f4f1; border: 1px dashed var(--border); }
+.bw-card-lbl   { font-size: .63rem; font-weight: 700; letter-spacing: .06em; color: var(--ink2); margin-bottom: 4px; text-transform: uppercase; }
+.bw-card-name  { font-size: .85rem; font-weight: 700; }
+.bw-card-dev   { font-size: .73rem; color: var(--ink2); margin-top: 2px; }
+
+/* ── 説明文 ── */
+.sec-desc { font-size: .82rem; color: var(--ink2); line-height: 1.8; margin-bottom: 12px;
+  background: var(--warm); border-radius: 8px; padding: 10px 14px; }
+
+/* ── ボタン ── */
+.actions { display: flex; gap: 12px; justify-content: center; margin: 28px 0 16px; flex-wrap: wrap; }
+.btn { padding: 12px 24px; border-radius: 8px; border: 2px solid var(--border); background: #fff;
+  font-family: 'Noto Sans JP', sans-serif; font-size: .86rem; font-weight: 700;
+  cursor: pointer; transition: all .2s; color: var(--ink); }
+.btn:hover { background: var(--warm); }
+.btn.primary { background: var(--teal); color: #fff; border-color: var(--teal); }
+.btn.primary:hover { background: #3db88a; }
+
+/* ── 免責 ── */
+.disclaimer { font-size: .72rem; color: #999; text-align: center; line-height: 1.8;
+  padding: 14px 16px; border: 1px dashed #ddd; border-radius: 8px; margin-top: 8px; }
+
+@media (max-width: 480px) {
+  .bw-cards { grid-template-columns: 1fr; }
+  .legend   { flex-direction: column; }
+}
+
+@media print {
+  .actions { display: none !important; }
+  body { background: #fff; }
+  .section { break-inside: avoid; }
+  @page { margin: 14mm; }
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="root">
+  <div style="text-align:center;padding:60px 20px;color:#999">読み込み中...</div>
+</div>
+<script>
+(function () {
+  // ── カラー定数 ──
+  var C = {
+    coral:'#F0997B', teal:'#5DCAA5', purple:'#7F77DD', danger:'#E24B4A',
+    blue:'#378ADD', yellow:'#EF9F27', red:'#E24B4A'
+  };
+
+  // ── ヘルパー ──
+  function cleanName(k) {
+    return k.replace(/^\d+[\.\-]?\s+/, '').trim()
+      .replace(/^\[/, '').replace(/\]$/, '').replace(/※$/, '').trim();
+  }
+
+  function calcDeviation(myAvg, natAvg, sd) {
+    if (!natAvg || !sd) return 50;
+    return Math.round((50 + (myAvg - natAvg) / sd * 10) * 10) / 10;
+  }
+
+  function getColor(dev, negHigh) {
+    var diff = negHigh ? dev - 50 : 50 - dev;
+    if (diff <= 5)  return 'blue';
+    if (diff <= 10) return 'yellow';
+    return 'red';
+  }
+
+  function colorHex(c) { return C[c]; }
+
+  // カテゴリからスケール偏差値リストを作成
+  function scalesByCategory(scaleResults, cat) {
+    var out = [];
+    for (var k in scaleResults) {
+      var sr = scaleResults[k];
+      if (sr.category !== cat) continue;
+      var q = sr.questions[0];
+      var dev = calcDeviation(sr.avg, q ? q.avg : null, q ? q.sd : null);
+      out.push({ key: k, name: cleanName(k), dev: dev, sr: sr });
+    }
+    return out;
+  }
+
+  function avgOfDevs(scales) {
+    if (!scales.length) return 50;
+    var sum = scales.reduce(function(s, x) { return s + x.dev; }, 0);
+    return Math.round(sum / scales.length * 10) / 10;
+  }
+
+  function getBestWorst(scales, negHigh) {
+    if (scales.length === 0) return { best: null, worst: null };
+    var best = negHigh
+      ? scales.reduce(function(a, b) { return a.dev < b.dev ? a : b; })
+      : scales.reduce(function(a, b) { return a.dev > b.dev ? a : b; });
+    var worst = negHigh
+      ? scales.reduce(function(a, b) { return a.dev > b.dev ? a : b; })
+      : scales.reduce(function(a, b) { return a.dev < b.dev ? a : b; });
+    return { best: best, worst: worst };
+  }
+
+  // ── HTML パーツ ──
+  function barHTML(dev, negHigh) {
+    var c   = colorHex(getColor(dev, negHigh));
+    var pct = Math.min(100, Math.max(0, dev));
+    var lft = negHigh ? '← 良好' : '← 要注意';
+    var rgt = negHigh ? '要注意 →' : '良好 →';
+    return '<div class="bar-dir"><span>' + lft + '</span><span>' + rgt + '</span></div>'
+      + '<div class="bar-wrapper">'
+      +   '<div class="bar-track">'
+      +     '<div class="bar-fill" style="width:' + pct + '%;background:' + c + '"></div>'
+      +   '</div>'
+      +   '<div class="bar-avg-line"></div>'
+      + '</div>';
+  }
+
+  function devLabelHTML(dev, negHigh) {
+    var c = colorHex(getColor(dev, negHigh));
+    return '<div class="group-dev" style="color:' + c + '">T=' + dev.toFixed(1) + '</div>'
+         + '<div class="group-dev-label">全国平均=50　（縦線が全国平均）</div>';
+  }
+
+  function bwCardsHTML(scales, negHigh) {
+    if (!scales || !scales.length) return '';
+    var bw = getBestWorst(scales, negHigh);
+    var best  = bw.best;
+    var worst = bw.worst;
+    var bestCard = best
+      ? '<div class="bw-card best"><div class="bw-card-lbl">強み</div>'
+          + '<div class="bw-card-name">' + best.name + '</div>'
+          + '<div class="bw-card-dev">偏差値 ' + best.dev.toFixed(1) + '</div></div>'
+      : '<div class="bw-card none"><div class="bw-card-lbl">強み</div>'
+          + '<div class="bw-card-name" style="color:#aaa">強みはありませんでした</div></div>';
+    var worstCard = worst
+      ? '<div class="bw-card worst"><div class="bw-card-lbl">課題</div>'
+          + '<div class="bw-card-name">' + worst.name + '</div>'
+          + '<div class="bw-card-dev">偏差値 ' + worst.dev.toFixed(1) + '</div></div>'
+      : '<div class="bw-card none"><div class="bw-card-lbl">課題</div>'
+          + '<div class="bw-card-name" style="color:#aaa">課題はありませんでした</div></div>';
+    return '<div class="bw-cards">' + bestCard + worstCard + '</div>';
+  }
+
+  function sectionWrap(colorClass, badgeColor, badgeText, title, body) {
+    return '<div class="section ' + colorClass + '">'
+      + '<div class="sec-head">'
+      +   '<div class="badge-num" style="background:' + badgeColor + '">' + badgeText + '</div>'
+      +   '<div class="sec-title">' + title + '</div>'
+      + '</div>'
+      + '<div class="sec-body">' + body + '</div>'
+      + '</div>';
+  }
+
+  // ── ① ストレッサー ──
+  var STRESSOR_META = {
+    '仕事の量的負担':                        { label: '仕事の量的負担',   desc: '業務量の多さや時間内に処理しきれないことによる負担' },
+    '仕事の質的負担':                        { label: '仕事の質的負担',   desc: '注意集中・知識・技術の高さによる質的な業務負担' },
+    '身体的負担度':                          { label: '身体的負担度',     desc: '身体を動かす作業など、からだへの業務負担' },
+    '職場での対人関係':                      { label: '職場での対人関係', desc: '部署内外の意見の相違・対立など対人関係の負担' },
+    '職場環境':                              { label: '職場環境',         desc: '騒音・照明・温度・換気など物理的環境による負担' },
+    '情緒的負担':                            { label: '情緒的負担',       desc: '気持ちや感情がかき乱されるなど感情面の業務負担' },
+    '役割葛藤':                              { label: '役割葛藤',         desc: '複数の方針・要求が相容れず業務遂行が困難になる負担' },
+    'ワーク・セルフ・バランス（ネガティブ）': { label: 'WSB（ネガ）',      desc: '仕事の負担が個人生活に悪影響を及ぼしている程度' }
+  };
+
+  function buildStressor(scaleResults) {
+    var scales = scalesByCategory(scaleResults, '1.ストレッサー（仕事の負担）');
+    var body = '';
+    for (var i = 0; i < scales.length; i++) {
+      var s    = scales[i];
+      var meta = STRESSOR_META[s.name] || { label: s.name, desc: '' };
+      var c    = colorHex(getColor(s.dev, true));
+      body += '<div class="scale-row">'
+        + '<div class="scale-row-header">'
+        +   '<span class="scale-name" style="color:' + c + '">' + meta.label + '</span>'
+        +   '<span class="scale-dev"  style="color:' + c + '">T=' + s.dev.toFixed(1) + '</span>'
+        + '</div>'
+        + barHTML(s.dev, true)
+        + '<div class="scale-desc">' + meta.desc + '</div>'
+        + '</div>';
+    }
+    return sectionWrap('sec-stressor', C.coral, '①', 'ストレッサー（仕事の負担）', body);
+  }
+
+  // ── ② リソース（カテゴリ単位）──
+  function buildResource(scaleResults, title, cat) {
+    var scales = scalesByCategory(scaleResults, cat);
+    if (!scales.length) return '';
+    var avg  = avgOfDevs(scales);
+    var body = devLabelHTML(avg, false)
+      + barHTML(avg, false)
+      + bwCardsHTML(scales, false);
+    return sectionWrap('sec-resource', C.teal, '②', title, body);
+  }
+
+  // ── ③ 精神的ストレス反応 ──
+  var MENTAL_NEGHIGH = { '活気': false, 'イライラ感': true, '疲労感': true, '不安感': true, '抑うつ感': true };
+
+  function buildMentalStress(scaleResults) {
+    var scales = scalesByCategory(scaleResults, '3-1.精神的ストレス（アウトカム）');
+    if (!scales.length) return '';
+
+    // 活気は反転してグループ平均（高いほど悪い方向）を計算
+    var normSum = 0;
+    for (var i = 0; i < scales.length; i++) {
+      var nh = MENTAL_NEGHIGH[scales[i].name] !== false;
+      normSum += nh ? scales[i].dev : (100 - scales[i].dev);
+    }
+    var avg = Math.round(normSum / scales.length * 10) / 10;
+
+    // 強み・課題：個別negHighを考慮した「良さスコア」で比較
+    var withGoodness = scales.map(function(s) {
+      var nh = MENTAL_NEGHIGH[s.name] !== false;
+      return { name: s.name, dev: s.dev, goodness: nh ? (100 - s.dev) : s.dev };
+    });
+    var best  = withGoodness.reduce(function(a, b) { return a.goodness > b.goodness ? a : b; });
+    var worst = withGoodness.reduce(function(a, b) { return a.goodness < b.goodness ? a : b; });
+
+    var body = devLabelHTML(avg, true)
+      + barHTML(avg, true)
+      + '<div class="bw-cards">'
+      +   '<div class="bw-card best"><div class="bw-card-lbl">強み（最も良好）</div>'
+      +     '<div class="bw-card-name">' + best.name + '</div>'
+      +     '<div class="bw-card-dev">偏差値 ' + best.dev.toFixed(1) + '</div></div>'
+      +   '<div class="bw-card worst"><div class="bw-card-lbl">課題（最も要注意）</div>'
+      +     '<div class="bw-card-name">' + worst.name + '</div>'
+      +     '<div class="bw-card-dev">偏差値 ' + worst.dev.toFixed(1) + '</div></div>'
+      + '</div>';
+    return sectionWrap('sec-outcome', C.purple, '③', '精神的ストレス反応', body);
+  }
+
+  // ── ③ 身体愁訴 ──
+  function buildBodyComplaints(scaleResults) {
+    var scales = scalesByCategory(scaleResults, '3-2.身体的ストレス（アウトカム）');
+    if (!scales.length) return '';
+    var s   = scales[0];
+    var c   = colorHex(getColor(s.dev, true));
+    var body = '<div class="sec-desc">めまい・頭痛・肩こり・動悸など身体的な不調の訴えです。'
+      + '低いほど良好で、現在は全国平均より大きく低い状態です。'
+      + 'スコアが上昇してきた場合は、医療機関や相談窓口への受診・相談をご検討ください。</div>'
+      + '<div class="group-dev" style="color:' + c + '">T=' + s.dev.toFixed(1) + '</div>'
+      + '<div class="group-dev-label">全国平均=50　（縦線が全国平均）</div>'
+      + barHTML(s.dev, true);
+    return sectionWrap('sec-outcome', C.purple, '③', '身体愁訴', body);
+  }
+
+  // ── ③ アウトカム（ハラスメント除外）──
+  function buildOutcome(scaleResults) {
+    var all    = scalesByCategory(scaleResults, '3-3.その他（アウトカム）');
+    var scales = all.filter(function(s) { return s.name !== '職場のハラスメント'; });
+    if (!scales.length) return '';
+    var avg  = avgOfDevs(scales);
+    var body = devLabelHTML(avg, false)
+      + barHTML(avg, false)
+      + bwCardsHTML(scales, false);
+    return sectionWrap('sec-outcome', C.purple, '③', 'アウトカム（活力・職務遂行・創造性）', body);
+  }
+
+  // ── ⚠ ハラスメントリスク ──
+  function buildHarassment(scaleResults) {
+    var all = scalesByCategory(scaleResults, '3-3.その他（アウトカム）');
+    var s   = null;
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].name === '職場のハラスメント') { s = all[i]; break; }
+    }
+    if (!s) return '';
+    var c    = colorHex(getColor(s.dev, true));
+    var body = '<div class="sec-desc">いじめ・嫌がらせ・パワハラ・セクハラの経験・目撃頻度です。'
+      + '低いほど良好で、現在は全国平均より大きく低い状態です。'
+      + '気になることがある場合は、社内外の相談窓口への相談をご検討ください。</div>'
+      + '<div class="group-dev" style="color:' + c + '">T=' + s.dev.toFixed(1) + '</div>'
+      + '<div class="group-dev-label">全国平均=50　（縦線が全国平均）</div>'
+      + barHTML(s.dev, true);
+    return sectionWrap('sec-hazard', C.danger, '⚠', 'ハラスメントリスク', body);
+  }
+
+  // ── メイン描画 ──
+  function render() {
+    var raw = sessionStorage.getItem('stressResult');
+    if (!raw) {
+      document.getElementById('root').innerHTML =
+        '<div style="text-align:center;padding:60px 20px;">'
+        + '<p style="color:#999;margin-bottom:20px">結果データが見つかりません。</p>'
+        + '<a href="index.html" style="color:#5DCAA5;font-weight:700">← チェックを受ける</a>'
+        + '</div>';
+      return;
+    }
+
+    var data         = JSON.parse(raw);
+    var level        = data.level;
+    var scaleResults = data.scaleResults;
+    var levelLbl     = level === 'high' ? '高ストレス' : level === 'mid' ? '中程度のストレス' : '低ストレス';
+    var date         = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    var html = '';
+
+    // ヘッダー
+    html += '<div class="r-header">'
+      + '<div class="r-badge ' + level + '">' + levelLbl + '</div>'
+      + '<h1 class="r-title">今のあなたのストレス状態</h1>'
+      + '<p class="r-subtitle">実施日：' + date + '　各スケールの偏差値（全国平均=50）で示しています</p>'
+      + '</div>';
+
+    // 高ストレスアラート
+    if (level === 'high') {
+      html += '<div class="high-alert">'
+        + '<div class="high-alert-title">⚠ 高ストレスの可能性があります</div>'
+        + '<div class="high-alert-desc">回答結果から仕事上のストレスが高い状態にある可能性があります。'
+        + '産業医・保健師・カウンセラーへの相談をご検討ください。<br>'
+        + '面接指導の申出は労働者の権利であり、それを理由に不利益な取扱いを受けることは法律で禁止されています。</div>'
+        + '</div>';
+    }
+
+    // 凡例
+    html += '<div class="legend">'
+      + '<div class="legend-card">'
+      +   '<div><span class="legend-dot" style="background:#378ADD"></span></div>'
+      +   '<div class="legend-name" style="color:#378ADD">平均的</div>'
+      +   '<div class="legend-lbl">±5以内</div>'
+      + '</div>'
+      + '<div class="legend-card">'
+      +   '<div><span class="legend-dot" style="background:#EF9F27"></span></div>'
+      +   '<div class="legend-name" style="color:#EF9F27">注意</div>'
+      +   '<div class="legend-lbl">5〜10pt差</div>'
+      + '</div>'
+      + '<div class="legend-card">'
+      +   '<div><span class="legend-dot" style="background:#E24B4A"></span></div>'
+      +   '<div class="legend-name" style="color:#E24B4A">要注意</div>'
+      +   '<div class="legend-lbl">10pt超</div>'
+      + '</div>'
+      + '</div>';
+
+    // 各セクション
+    html += buildStressor(scaleResults);
+    html += buildResource(scaleResults, '作業リソース（仕事のコントロール・成長）',  '2-1.作業リソース（仕事の資源）');
+    html += buildResource(scaleResults, '部署リソース（職場のサポート・評価）',      '2-2.部署リソース（仕事の資源）');
+    html += buildResource(scaleResults, '会社リソース（組織・制度・キャリア）',      '2-3.会社リソース（仕事の資源）');
+    html += buildMentalStress(scaleResults);
+    html += buildBodyComplaints(scaleResults);
+    html += buildOutcome(scaleResults);
+    html += buildHarassment(scaleResults);
+
+    // ボタン
+    html += '<div class="actions">'
+      + '<button class="btn primary" onclick="alert(\'この機能は準備中です\')">AIに詳しく話を聞いてもらう（有料）↗</button>'
+      + '<button class="btn" onclick="window.print()">PDFで保存</button>'
+      + '</div>';
+
+    // 免責
+    html += '<div class="disclaimer">'
+      + 'このAIは医療行為を行いません。表示内容は参考情報であり診断・治療の代替にはなりません。<br>'
+      + '気になる症状がある場合は、医療機関や相談窓口への受診・相談をご検討ください。'
+      + '</div>';
+
+    document.getElementById('root').innerHTML = html;
+    window.scrollTo(0, 0);
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

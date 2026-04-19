@@ -362,6 +362,13 @@ function buildResult() {
   var levelLbl = level === 'high' ? '高ストレス' : level === 'mid' ? '中程度のストレス' : '低ストレス';
   var date = new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
   saveToSupabase(answers, {level:level, sTotal:sTotal, sMax:sMax, rTotal:rTotal, rMax:rMax, oTotal:oTotal, oMax:oMax});
+  sessionStorage.setItem('stressResult', JSON.stringify({
+    level: level,
+    answers: answers,
+    scaleResults: scaleResults
+  }));
+  window.location.href = 'result.html';
+  return;
 
   var html = '<div class="r-head">';
   html += '<div class="r-badge ' + level + '">' + levelLbl + '</div>';
