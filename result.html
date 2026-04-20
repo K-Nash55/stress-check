@@ -130,9 +130,39 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
   padding: 14px 16px; border: 1px dashed #ddd; border-radius: 8px; margin-top: 8px;
 }
 
+.bw-card-desc { font-size: .71rem; color: var(--ink2); margin-top: 4px; line-height: 1.6; }
+
+.jdr-section { margin: 24px 0; }
+.jdr-diagram-wrap { width: 100%; margin-bottom: 16px; }
+.jdr-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.jdr-card { border-radius: 8px; padding: 10px 13px; font-size: 12px; line-height: 1.7; }
+.jdr-card strong { display: block; font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+.jdr-card--coral { background: #FDF1EE; }
+.jdr-card--coral strong { color: #993C1D; }
+.jdr-card--teal  { background: #EEF9F4; }
+.jdr-card--teal strong  { color: #0F6E56; }
+.jdr-card--red   { background: #FDF1F1; }
+.jdr-card--red strong   { color: #A32D2D; }
+.jdr-card--blue  { background: #EEF5FD; }
+.jdr-card--blue strong  { color: #185FA5; }
+.jdr-harassment { border-radius: 8px; padding: 10px 13px; font-size: 12px; line-height: 1.7; background: #F3F2FE; margin-bottom: 8px; }
+.jdr-harassment strong { font-weight: 600; color: #534AB7; }
+.jdr-source { font-size: 11px; color: #aaa; text-align: right; margin: 0; }
+
+.category-header { border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; }
+.category-header__label { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.category-header__desc { font-size: 13px; line-height: 1.75; margin: 0; }
+.category-header--teal { background: #EEF9F4; }
+.category-header--teal .category-header__label { color: #0F6E56; }
+.category-header--teal .category-header__desc  { color: #0F6E56; }
+.category-header--red { background: #FDF1F1; }
+.category-header--red .category-header__label { color: #A32D2D; }
+.category-header--red .category-header__desc  { color: #A32D2D; }
+
 @media (max-width: 480px) {
   .bw-cards { grid-template-columns: 1fr; }
   .legend   { flex-direction: column; }
+  .jdr-cards { grid-template-columns: 1fr; }
 }
 
 @media print {
@@ -249,21 +279,32 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
       + '<div class="bar-nat-note">全国平均=50（縦線が全国平均）</div>';
   }
 
-  function bwCardsHTML(scales, negHigh) {
+  function bwCardsHTML(scales, negHigh, descMap) {
     if (!scales || !scales.length) return '';
     var bw    = getBestWorst(scales, negHigh);
     var best  = bw.best;
     var worst = bw.worst;
+    function cardExtra(s) {
+      if (!descMap || !s) return '';
+      var desc = descMap[s.name] || '';
+      if (!desc) return '';
+      var diff = Math.round((s.dev - 50) * 10) / 10;
+      var diffStr = (diff >= 0 ? '+' : '') + diff.toFixed(1) + 'pt';
+      var sep = (desc.slice(-1) === '。') ? '' : '。';
+      return '<div class="bw-card-desc">' + desc + sep + '全国平均より' + diffStr + '。</div>';
+    }
     var bestCard = best
       ? '<div class="bw-card best"><div class="bw-card-lbl">強み</div>'
           + '<div class="bw-card-name">' + best.name + '</div>'
-          + '<div class="bw-card-dev">偏差値 ' + best.dev.toFixed(1) + '</div></div>'
+          + '<div class="bw-card-dev">偏差値 ' + best.dev.toFixed(1) + '</div>'
+          + cardExtra(best) + '</div>'
       : '<div class="bw-card none"><div class="bw-card-lbl">強み</div>'
           + '<div class="bw-card-name" style="color:#aaa">強みはありませんでした</div></div>';
     var worstCard = worst
       ? '<div class="bw-card worst"><div class="bw-card-lbl">課題</div>'
           + '<div class="bw-card-name">' + worst.name + '</div>'
-          + '<div class="bw-card-dev">偏差値 ' + worst.dev.toFixed(1) + '</div></div>'
+          + '<div class="bw-card-dev">偏差値 ' + worst.dev.toFixed(1) + '</div>'
+          + cardExtra(worst) + '</div>'
       : '<div class="bw-card none"><div class="bw-card-lbl">課題</div>'
           + '<div class="bw-card-name" style="color:#aaa">課題はありませんでした</div></div>';
     return '<div class="bw-cards">' + bestCard + worstCard + '</div>';
@@ -280,6 +321,114 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
       +   '<div class="sec-title">' + title + '</div>'
       + '</div>'
       + '<div class="sec-body">' + body + '</div>'
+      + '</div>';
+  }
+
+  // ── スケール解説文 ──
+  var SCALE_DESC_RESOURCE = {
+    '仕事のコントロール': '仕事の内容や予定や手順などを自分で決められる程度のこと。仕事の負担の高い状況とコントロール度の低い状況とが重なるとストレス度が高くなる。',
+    '技能の活用度': '持っている技術、知識、技能、資格などが仕事上活用されていること。',
+    '仕事の適性': '仕事の内容が自分に向いている、合っていること。',
+    '仕事の意義': '仕事の意義が認識でき、働きがいを感じていること。',
+    '役割明確さ': '仕事の上で果たすべき役割が明確に理解されていること。',
+    '成長の機会': '仕事の中で、知識や技術を得たり、その他の自己成長の機会があること。',
+    '新奇性': '仕事の中で新しいことや変化に富んだ経験ができる程度。新奇性の高い仕事は認知的刺激をもたらし、内発的動機づけやエンゲージメントを高める要因とされています。',
+    '予測可能性': '職場や仕事の将来について、ある程度見通しが持てる状態。不確実性や曖昧さが低いほど心理的安全感が高まり、慢性的なストレスの軽減につながることが示されています。',
+    'WSBポジティブ': '仕事から得たものにより、個人生活を豊かにすることができる風土や方針があること。',
+    '上司からのサポート': '上司が話しかけやすく、頼りになり、相談にのってくれるなど上司が部下に行う支援。',
+    '同僚からのサポート': '同僚が話しをしやすく、頼りになり、相談にのってくれるなど同僚同士での支援。',
+    '家族・友人からのサポート': '配偶者、家族、友人等から受けられる支援。',
+    '経済・地位報酬': '仕事上の努力や達成度に対し金銭的あるいは処遇を適切に受けていること。尊重報酬、安定報酬とともに仕事の三大報酬の１つ。',
+    '尊重報酬': '上司や同僚から、仕事上の努力や達成度にふさわしい尊敬や処遇を受けていること。',
+    '安定報酬': '仕事が不安定であり、将来の見込みがないなど、職を失う可能性のあること（低いほど良好）。',
+    '上司のリーダーシップ': '上司が、仕事の出来について適切なフィードバックを行い、部下の能力発揮を助け、自ら問題解決できるよう指導していること。',
+    '上司の公正な態度': '上司が、偏見を持ったり独りよがりだったりせず、部下に思いやりと誠実さを持って対応してくれること。',
+    'ほめてもらえる職場': '業務の結果に対して、上司や同僚からのねぎらいや感謝の言葉など、ポジティブな評価を受けることができる雰囲気が職場にあること。',
+    '失敗を認める職場': '仕事上で失敗しても、それを取り戻す機会があったり、失敗を転じて成功に導くことができる雰囲気が職場にあること。',
+    'グループの有能感': '自分が所属するチームや部署全体が、仕事をうまくこなせているという集合的な自己効力感。チームの有能感が高いほど個人のモチベーションと職場のパフォーマンスが向上することが示されています。',
+    '経営層との信頼関係': '経営層と従業員の間に相互の信頼関係があること。',
+    '変化への対応': '職場や仕事でどんな変化があるか説明があったり、たずねることができたりと、変化がある際の準備が組織的にできていること。',
+    '手続きの公正性': '意思決定や人事評価などの手続きが公平・透明に行われているという認識。手続きの公正性は組織への信頼感や従業員の精神的健康に強く関連することが報告されています。',
+    '個人の尊重': '一人ひとりの長所や得意分野、価値観などを考えて仕事が与えられる風土や方針があること。',
+    '公正な人事評価': '人事評価の方針、基準について情報が提供され、個別の人事評価結果について納得できる説明がなされる風土や方針があること。',
+    '多様な労働者への対応': '女性、高齢者、若年者、雇用形態別のさまざまな従業員が職場の一員として尊重される風土や方針があること。',
+    'キャリア形成': '従業員のキャリアについて、人事方針や目標が明確にされ、教育・訓練が提供されていること。'
+  };
+
+  var SCALE_DESC_OUTCOME = {
+    '仕事満足度': '仕事に関する全般的な満足度。',
+    '家庭満足度': '家庭生活に関する全般的な満足度。',
+    '職場の一体感': '職場のメンバーが情報共有、相互理解や信頼、助け合いの気持ちをもって業務を遂行している状態。',
+    'ワーク・エンゲイジメント': '仕事から活力を得て、仕事に誇りを感じ、従業員がいきいきと仕事をしている状態。',
+    '職務の遂行': '自分に課された業務や役割を、期待される水準で達成できている程度。職務遂行能力はワーク・エンゲイジメントや職業的自己効力感と正の関連があり、リソースの充実によって向上することが示されています。',
+    '創造性の発揮': '仕事の中で新しいアイデアを生み出したり、独自の方法で問題を解決できている程度。心理的安全性や自律性などの職場リソースが創造性を促進することが示されています。',
+    '積極的な学習': '仕事を通じて新しい知識・スキルを自発的に習得しようとする行動傾向。学習行動はワーク・エンゲイジメントの高さと関連し、成長の機会や心理的安全性によって促進されます。'
+  };
+
+  // ── JD-Rモデル図解HTML ──
+  var JDR_HTML = '<div class="jdr-section">'
+    + '<div class="jdr-diagram-wrap">'
+    + '<svg width="100%" viewBox="0 0 680 360">'
+    + '<defs>'
+    + '<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">'
+    + '<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
+    + '</marker>'
+    + '</defs>'
+    + '<text font-size="11" fill="#888" x="90" y="18" text-anchor="middle">負担・リスク要因</text>'
+    + '<text font-size="11" fill="#888" x="310" y="18" text-anchor="middle">心への影響</text>'
+    + '<text font-size="11" fill="#888" x="530" y="18" text-anchor="middle">結果</text>'
+    + '<rect x="20" y="35" width="140" height="90" rx="10" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>'
+    + '<text font-size="11" fill="#993C1D" x="90" y="60" text-anchor="middle">①</text>'
+    + '<text font-size="13" font-weight="500" fill="#993C1D" x="90" y="80" text-anchor="middle">ストレッサー</text>'
+    + '<text font-size="11" fill="#993C1D" x="90" y="100" text-anchor="middle">仕事の負担</text>'
+    + '<rect x="20" y="148" width="140" height="90" rx="10" fill="#EEEDFE" stroke="#7F77DD" stroke-width="1"/>'
+    + '<text font-size="11" fill="#534AB7" x="90" y="170" text-anchor="middle">⚠ ハラスメント</text>'
+    + '<text font-size="13" font-weight="500" fill="#534AB7" x="90" y="190" text-anchor="middle">いじめ・嫌がらせ</text>'
+    + '<text font-size="11" fill="#534AB7" x="90" y="210" text-anchor="middle">パワハラ・セクハラ</text>'
+    + '<line x1="90" y1="125" x2="90" y2="146" stroke="#7F77DD" stroke-width="1" stroke-dasharray="3 2" opacity="0.5"/>'
+    + '<rect x="20" y="258" width="140" height="90" rx="10" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>'
+    + '<text font-size="11" fill="#0F6E56" x="90" y="282" text-anchor="middle">②</text>'
+    + '<text font-size="13" font-weight="500" fill="#0F6E56" x="90" y="302" text-anchor="middle">リソース</text>'
+    + '<text font-size="11" fill="#0F6E56" x="90" y="322" text-anchor="middle">仕事・部署・会社</text>'
+    + '<rect x="230" y="35" width="140" height="90" rx="10" fill="#FCEBEB" stroke="#E24B4A" stroke-width="0.5"/>'
+    + '<text font-size="11" fill="#A32D2D" x="300" y="60" text-anchor="middle">③-1</text>'
+    + '<text font-size="13" font-weight="500" fill="#A32D2D" x="300" y="80" text-anchor="middle">ストレス反応</text>'
+    + '<text font-size="11" fill="#A32D2D" x="300" y="100" text-anchor="middle">疲労・不安・活気</text>'
+    + '<rect x="440" y="35" width="130" height="90" rx="10" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>'
+    + '<text font-size="11" fill="#854F0B" x="505" y="60" text-anchor="middle">③-2</text>'
+    + '<text font-size="13" font-weight="500" fill="#854F0B" x="505" y="80" text-anchor="middle">健康障害</text>'
+    + '<text font-size="11" fill="#854F0B" x="505" y="100" text-anchor="middle">身体愁訴</text>'
+    + '<rect x="230" y="258" width="140" height="90" rx="10" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>'
+    + '<text font-size="11" fill="#185FA5" x="300" y="282" text-anchor="middle">③-3</text>'
+    + '<text font-size="13" font-weight="500" fill="#185FA5" x="300" y="302" text-anchor="middle">アウトカム</text>'
+    + '<text font-size="11" fill="#185FA5" x="300" y="322" text-anchor="middle">活力・創造性・満足</text>'
+    + '<rect x="440" y="258" width="130" height="90" rx="10" fill="#EAF3DE" stroke="#639922" stroke-width="0.5"/>'
+    + '<text font-size="13" font-weight="500" fill="#3B6D11" x="505" y="295" text-anchor="middle">成果</text>'
+    + '<text font-size="11" fill="#3B6D11" x="505" y="315" text-anchor="middle">高業績・組織貢献</text>'
+    + '<line x1="160" y1="80" x2="228" y2="80" stroke="#D85A30" stroke-width="1.5" marker-end="url(#arrow)"/>'
+    + '<path d="M160 175 Q194 138 228 98" fill="none" stroke="#7F77DD" stroke-width="1.8" marker-end="url(#arrow)"/>'
+    + '<line x1="370" y1="80" x2="438" y2="80" stroke="#E24B4A" stroke-width="1.5" marker-end="url(#arrow)"/>'
+    + '<line x1="160" y1="303" x2="228" y2="303" stroke="#1D9E75" stroke-width="1.5" marker-end="url(#arrow)"/>'
+    + '<line x1="370" y1="303" x2="438" y2="303" stroke="#378ADD" stroke-width="1.5" marker-end="url(#arrow)"/>'
+    + '<path d="M160 262 Q230 190 248 108" fill="none" stroke="#1D9E75" stroke-width="1" stroke-dasharray="5 3" opacity="0.7" marker-end="url(#arrow)"/>'
+    + '<text font-size="11" fill="#0F6E56" x="252" y="188" text-anchor="start" opacity="0.9">緩和</text>'
+    + '</svg>'
+    + '</div>'
+    + '<div class="jdr-cards">'
+    + '<div class="jdr-card jdr-card--coral"><strong>① 負担が積み重なると…</strong>業務量・質・身体負担などが高い状態が続くと、③-1ストレス反応（疲労・不安）として現れ、さらに放置すると③-2の身体愁訴へ進行します。③-2は③-1より重篤な段階です。</div>'
+    + '<div class="jdr-card jdr-card--teal"><strong>② リソースには2つの働きがある</strong>上司・同僚のサポート、コントロール感、評価などのリソースは、③-3アウトカムを直接高めると同時に、①の負担によるストレス反応を緩和します（破線）。</div>'
+    + '<div class="jdr-card jdr-card--red"><strong>③-1 → ③-2 の進行に注意</strong>ストレス反応は心理的なサインです。③-1のスコアが高い場合は、③-2への移行を防ぐ早めの対処が重要です。</div>'
+    + '<div class="jdr-card jdr-card--blue"><strong>好循環をつくるには</strong>リソースを充実させることで③-3アウトカムが高まり、成果（高業績・組織貢献）につながります。「負担を減らす」だけでなく「資源を増やす」視点が同様に重要です。</div>'
+    + '</div>'
+    + '<div class="jdr-harassment"><strong>⚠ ハラスメントリスクについて</strong>ハラスメント（いじめ・嫌がらせ・パワハラ・セクハラ）は①ストレッサーの一種ですが、通常の業務負担とは異なり③-1ストレス反応へ直接・強く影響します。②リソースによる緩和も受けにくいため、独立した項目として別途表示しています。スコアが高い場合は、社内外の相談窓口への相談をご検討ください。</div>'
+    + '<p class="jdr-source">JD-Rモデル（Bakker &amp; Demerouti, 2007）に基づく</p>'
+    + '</div>';
+
+  // ── カテゴリヘッダー ──
+  function categoryHeaderHTML(colorClass, label, desc) {
+    return '<div class="category-header category-header--' + colorClass + '">'
+      + '<div class="category-header__label">' + label + '</div>'
+      + '<p class="category-header__desc">' + desc + '</p>'
       + '</div>';
   }
 
@@ -324,7 +473,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
     var avg  = avgOfDevs(scales);
     var body = catDescHTML(catDesc)
       + groupBarHTML(avg, false)
-      + bwCardsHTML(scales, false);
+      + bwCardsHTML(scales, false, SCALE_DESC_RESOURCE);
     return sectionWrap('sec-resource', C.teal, badgeText, title, body);
   }
 
@@ -365,7 +514,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
       +     '<div class="bw-card-name">' + worst.name + '</div>'
       +     '<div class="bw-card-dev">偏差値 ' + worst.dev.toFixed(1) + '</div></div>'
       + '</div>';
-    return sectionWrap('sec-outcome', C.purple, '③-1', '精神的ストレス反応', body);
+    return sectionWrap('sec-outcome', C.purple, '③-1', '精神的ストレス', body);
   }
 
   // ── ③-2 身体愁訴 ──
@@ -392,8 +541,8 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
       + '②リソースの充実がアウトカム向上につながります。'
     )
       + groupBarHTML(avg, false)
-      + bwCardsHTML(scales, false);
-    return sectionWrap('sec-outcome', C.purple, '③-3', 'アウトカム（活力・職務遂行・創造性）', body);
+      + bwCardsHTML(scales, false, SCALE_DESC_OUTCOME);
+    return sectionWrap('sec-outcome', C.purple, '③-3', 'アウトカム', body);
   }
 
   // ── ⚠ ハラスメントリスク ──
@@ -467,22 +616,37 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
       + '</div>'
       + '</div>';
 
+    // JD-Rモデル図解
+    html += JDR_HTML;
+
     // 各セクション
     html += buildStressor(scaleResults);
-    html += buildResource(scaleResults, '②-1', '作業リソース（仕事のコントロール・成長）',
+    html += categoryHeaderHTML('teal', '② 職場・仕事のリソース',
+      'リソースとは、仕事の負担を和らげ、成長・やりがい・アウトカムを高める職場の資源です。'
+      + '個人レベルの「作業リソース」、部署・チームレベルの「部署リソース」、'
+      + '組織・経営レベルの「会社リソース」の3層で構成されます。'
+      + 'リソースが豊富な環境ほど、高い負担下でも心身の健康が保たれやすくなります。'
+    );
+    html += buildResource(scaleResults, '②-1', '作業リソース',
       '2-1.作業リソース（仕事の資源）',
       '個人レベルで仕事を支える資源です。コントロール感・技能の活用・適性・意義・'
       + '役割の明確さ・成長の機会・新奇性・予測可能性・WSBポジティブの9項目の平均です。'
     );
-    html += buildResource(scaleResults, '②-2', '部署リソース（職場のサポート・評価）',
+    html += buildResource(scaleResults, '②-2', '部署リソース',
       '2-2.部署リソース（仕事の資源）',
-      '部署・チームレベルの資源です。上司・同僚のサポート・各種報酬・ほめてもらえる職場・'
-      + '失敗を認める職場・グループの有能感・家族友人からのサポートなど11項目の平均です。'
+      '部署・チームレベルの資源です。上司・同僚のサポート、上司のリーダーシップ・公正な態度、'
+      + '経済・尊重・安定の三大報酬、ほめてもらえる職場、失敗を認める職場、グループの有能感、'
+      + '家族・友人からのサポートの11項目の平均です。'
     );
-    html += buildResource(scaleResults, '②-3', '会社リソース（組織・制度・キャリア）',
+    html += buildResource(scaleResults, '②-3', '会社リソース',
       '2-3.会社リソース（仕事の資源）',
       '組織・経営レベルの資源です。経営層との信頼関係・変化への対応・手続きの公正性・'
       + '個人の尊重・公正な人事評価・多様性への対応・キャリア形成の7項目の平均です。'
+    );
+    html += categoryHeaderHTML('red', '③ 個人の状態',
+      '仕事の負担やリソースの状態が、心身にどう現れているかを示します。'
+      + '③-1は感情・気力などの精神的な反応、③-2は身体症状、③-3は仕事への関与や充実度です。'
+      + '③-1のスコアが悪化すると③-2へ進行しやすくなるため、早期のサインとして重要です。'
     );
     html += buildMentalStress(scaleResults);
     html += buildBodyComplaints(scaleResults);
