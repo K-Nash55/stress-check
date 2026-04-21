@@ -41,8 +41,9 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
 /* ── 凡例 ── */
 .legend { display: flex; gap: 10px; margin: 16px 0; }
 .legend-card { flex: 1; background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; text-align: center; }
-.legend-dot  { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-bottom: 4px; }
-.legend-name { font-size: .78rem; font-weight: 700; margin-bottom: 2px; }
+.legend-dot  { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.legend-top  { display: flex; align-items: center; gap: 6px; justify-content: center; margin-bottom: 2px; }
+.legend-name { font-size: .78rem; font-weight: 700; }
 .legend-lbl  { font-size: .68rem; color: var(--ink2); }
 
 /* ── セクションカード ── */
@@ -620,18 +621,15 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
     // 凡例
     html += '<div class="legend">'
       + '<div class="legend-card">'
-      +   '<div><span class="legend-dot" style="background:#378ADD"></span></div>'
-      +   '<div class="legend-name" style="color:#378ADD">平均的</div>'
+      +   '<div class="legend-top"><span class="legend-dot" style="background:#378ADD"></span><span class="legend-name" style="color:#378ADD">平均的</span></div>'
       +   '<div class="legend-lbl">±5以内</div>'
       + '</div>'
       + '<div class="legend-card">'
-      +   '<div><span class="legend-dot" style="background:#EF9F27"></span></div>'
-      +   '<div class="legend-name" style="color:#EF9F27">注意</div>'
+      +   '<div class="legend-top"><span class="legend-dot" style="background:#EF9F27"></span><span class="legend-name" style="color:#EF9F27">注意</span></div>'
       +   '<div class="legend-lbl">5〜10pt差</div>'
       + '</div>'
       + '<div class="legend-card">'
-      +   '<div><span class="legend-dot" style="background:#E24B4A"></span></div>'
-      +   '<div class="legend-name" style="color:#E24B4A">要注意</div>'
+      +   '<div class="legend-top"><span class="legend-dot" style="background:#E24B4A"></span><span class="legend-name" style="color:#E24B4A">要注意</span></div>'
       +   '<div class="legend-lbl">10pt超</div>'
       + '</div>'
       + '</div>';
