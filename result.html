@@ -166,19 +166,19 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
 }
 
 @media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   .actions { display: none !important; }
   body { background: #fff; }
   .section { break-inside: avoid; }
   @page { margin: 14mm; }
 
-  /* 印刷時も色・背景を強制出力 */
-  .bar-fill    { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .bar-track   { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .bar-avg-line { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .section     { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .sec-cat-desc { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .bw-card     { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .sec-desc    { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .jdr-harassment { page-break-inside: avoid; }
+  .category-header { page-break-inside: avoid; page-break-before: avoid; }
+  .jdr-cards { page-break-inside: avoid; }
 }
 </style>
 </head>
@@ -355,6 +355,14 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
     'キャリア形成': '従業員のキャリアについて、人事方針や目標が明確にされ、教育・訓練が提供されていること。'
   };
 
+  var SCALE_DESC_MENTAL = {
+    '活気':    '活気、元気、いきいきなどのポジティブな感情。活気のみ高いほど良好なスケールです',
+    'イライラ感': '怒り、立腹、イライラなどの症状',
+    '疲労感':  '疲れ、へとへと、だるさなどの疲労に関連した症状',
+    '不安感':  '気がはりつめている、不安、落ち着かないなどの不安に関する症状',
+    '抑うつ感': '憂うつ感、おっくうさ、集中力の低下など、気分と気力の低下に関する症状'
+  };
+
   var SCALE_DESC_OUTCOME = {
     '仕事満足度': '仕事に関する全般的な満足度。',
     '家庭満足度': '家庭生活に関する全般的な満足度。',
@@ -506,14 +514,26 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
       + '活気のみ高いほど良いスケールで、他は低いほど良好です。'
     )
       + groupBarHTML(avg, true)
-      + '<div class="bw-cards">'
-      +   '<div class="bw-card best"><div class="bw-card-lbl">強み（最も良好）</div>'
-      +     '<div class="bw-card-name">' + best.name + '</div>'
-      +     '<div class="bw-card-dev">偏差値 ' + best.dev.toFixed(1) + '</div></div>'
-      +   '<div class="bw-card worst"><div class="bw-card-lbl">課題（最も要注意）</div>'
-      +     '<div class="bw-card-name">' + worst.name + '</div>'
-      +     '<div class="bw-card-dev">偏差値 ' + worst.dev.toFixed(1) + '</div></div>'
-      + '</div>';
+      + (function() {
+          function mentalCardExtra(s) {
+            var desc = SCALE_DESC_MENTAL[s.name] || '';
+            if (!desc) return '';
+            var diff = Math.round((s.dev - 50) * 10) / 10;
+            var diffStr = (diff >= 0 ? '+' : '') + diff.toFixed(1) + 'pt';
+            var sep = (desc.slice(-1) === '。') ? '' : '。';
+            return '<div class="bw-card-desc">' + desc + sep + '全国平均より' + diffStr + '。</div>';
+          }
+          return '<div class="bw-cards">'
+            + '<div class="bw-card best"><div class="bw-card-lbl">強み（最も良好）</div>'
+            +   '<div class="bw-card-name">' + best.name + '</div>'
+            +   '<div class="bw-card-dev">偏差値 ' + best.dev.toFixed(1) + '</div>'
+            +   mentalCardExtra(best) + '</div>'
+            + '<div class="bw-card worst"><div class="bw-card-lbl">課題（最も要注意）</div>'
+            +   '<div class="bw-card-name">' + worst.name + '</div>'
+            +   '<div class="bw-card-dev">偏差値 ' + worst.dev.toFixed(1) + '</div>'
+            +   mentalCardExtra(worst) + '</div>'
+            + '</div>';
+        })();
     return sectionWrap('sec-outcome', C.purple, '③-1', '精神的ストレス', body);
   }
 
