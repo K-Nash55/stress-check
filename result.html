@@ -146,8 +146,12 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
 .jdr-card--red strong   { color: #A32D2D; }
 .jdr-card--blue  { background: #EEF5FD; }
 .jdr-card--blue strong  { color: #185FA5; }
-.jdr-harassment { border-radius: 8px; padding: 10px 13px; font-size: 12px; line-height: 1.7; background: #F3F2FE; margin-bottom: 8px; }
-.jdr-harassment strong { font-weight: 600; color: #534AB7; }
+.jdr-card--purple { background: #F3F2FE; }
+.jdr-card--purple strong { color: #534AB7; }
+.jdr-card-full { border-radius: 8px; padding: 10px 13px; font-size: 12px; line-height: 1.7; margin-top: 10px; }
+.jdr-card-full strong { display: block; font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+.jdr-card-full.jdr-card--blue { background: #EEF5FD; }
+.jdr-card-full.jdr-card--blue strong { color: #185FA5; }
 .jdr-source { font-size: 11px; color: #aaa; text-align: right; margin: 0; }
 
 .category-header { border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; }
@@ -424,14 +428,13 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
     + '</svg>'
     + '</div>'
     + '<div class="jdr-cards">'
-    + '<div class="jdr-card jdr-card--coral"><strong>① 負担が積み重なると…</strong>業務量・質・身体負担などが高い状態が続くと、③-1ストレス反応（疲労・不安）として現れ、さらに放置すると③-2の身体愁訴へ進行します。③-2は③-1より重篤な段階です。</div>'
-    + '<div class="jdr-card jdr-card--teal"><strong>② リソースには2つの働きがある</strong>上司・同僚のサポート、コントロール感、評価などのリソースは、③-3アウトカムを直接高めると同時に、①の負担によるストレス反応を緩和します（破線）。</div>'
-    + '<div class="jdr-card jdr-card--red"><strong>③-1 → ③-2 の進行に注意</strong>ストレス反応は心理的なサインです。③-1のスコアが高い場合は、③-2への移行を防ぐ早めの対処が重要です。</div>'
-    + '<div class="jdr-card jdr-card--blue"><strong>好循環をつくるには</strong>リソースを充実させることで③-3アウトカムが高まり、成果（高業績・組織貢献）につながります。「負担を減らす」だけでなく「資源を増やす」視点が同様に重要です。</div>'
+    + '<div class="jdr-card jdr-card--coral"><strong>① 仕事の負担が積み重なると…</strong>業務量や対人関係など「仕事の負担」が高い状態が続くと、「ストレス反応」として現れ、さらに放置すると「身体愁訴」へ進行するリスクがあります。</div>'
+    + '<div class="jdr-card jdr-card--teal"><strong>② リソースには2つの働きがある</strong>上司・同僚のサポートなどの「リソース」は、「アウトカム」を直接高めると同時に、「ストレス反応」を緩和します（破線）。</div>'
+    + '<div class="jdr-card jdr-card--red"><strong>③ ストレス反応→身体愁訴への進行に注意</strong>「ストレス反応」は心理的なサインです。そのスコアが高い場合は、「身体愁訴」への移行を防ぐ早めの対処が重要です。</div>'
+    + '<div class="jdr-card jdr-card--purple"><strong>⚠ ハラスメントリスクについて</strong>「ハラスメント」は心理的ダメージが深く、目撃するだけでも「ストレス反応」へ直接・強く影響します。また「リソース」による緩和も受けにくい特性があります。</div>'
     + '</div>'
-    + '<div class="jdr-harassment"><strong>⚠ ハラスメントリスクについて</strong>ハラスメント（いじめ・嫌がらせ・パワハラ・セクハラ）は①ストレッサーの一種ですが、通常の業務負担とは異なり③-1ストレス反応へ直接・強く影響します。②リソースによる緩和も受けにくいため、独立した項目として別途表示しています。スコアが高い場合は、社内外の相談窓口への相談をご検討ください。'
+    + '<div class="jdr-card-full jdr-card--blue"><strong>好循環をつくるには</strong>「ストレス反応」の緩和には「仕事の負担」を減らすこと、また「リソース」を充実させるという2つのアプローチがあります。社員のパフォーマンス向上と、組織全体の業績改善につながります。</div>'
     + '<p class="jdr-source">JD-Rモデル（Bakker &amp; Demerouti, 2007）に基づく</p>'
-    + '</div>'
     + '</div>';
 
   // ── カテゴリヘッダー ──
