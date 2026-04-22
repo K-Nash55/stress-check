@@ -191,6 +191,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
 <div class="wrap" id="root">
   <div style="text-align:center;padding:60px 20px;color:#999">読み込み中...</div>
 </div>
+<script src="js/scoring.js"></script>
 <script>
 (function () {
   // ── カラー定数 ──
@@ -203,11 +204,6 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
   function cleanName(k) {
     return k.replace(/^\d+[\.\-]?\s+/, '').trim()
       .replace(/^\[/, '').replace(/\]$/, '').replace(/※$/, '').trim();
-  }
-
-  function calcDeviation(myAvg, natAvg, sd) {
-    if (!natAvg || !sd) return 50;
-    return Math.round((50 + (myAvg - natAvg) / sd * 10) * 10) / 10;
   }
 
   function getColor(dev, negHigh) {
@@ -495,24 +491,12 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
     var scales = scalesByCategory(scaleResults, '3-1.精神的ストレス（アウトカム）');
     if (!scales.length) return '';
 
-    // 活気は反転してグループ平均（高いほど悪い方向）を計算
-    var normSum = 0;
-    for (var i = 0; i < scales.length; i++) {
-      normSum += (scales[i].name === '活気')
-        ? (100 - scales[i].dev)
-        : scales[i].dev;
-    }
-    var avg = Math.round(normSum / scales.length * 10) / 10;
+    var avg = Math.round(scales.reduce(function(s, x) {
+      return s + toStressDev(x.dev, x.name);
+    }, 0) / scales.length * 10) / 10;
 
-    // 【修正5】不調偏差で統一比較
-    // 活気：不調偏差 = 50 - dev（高いほど良いので反転）
-    // その他：不調偏差 = dev - 50
-    var withUnwell = scales.map(function(s) {
-      var unwellDev = (s.name === '活気') ? (50 - s.dev) : (s.dev - 50);
-      return { name: s.name, dev: s.dev, unwellDev: unwellDev };
-    });
-    var best  = withUnwell.reduce(function(a, b) { return a.unwellDev < b.unwellDev ? a : b; });
-    var worst = withUnwell.reduce(function(a, b) { return a.unwellDev > b.unwellDev ? a : b; });
+    var best  = scales.reduce(function(a, b) { return toStressDev(a.dev, a.name) < toStressDev(b.dev, b.name) ? a : b; });
+    var worst = scales.reduce(function(a, b) { return toStressDev(a.dev, a.name) > toStressDev(b.dev, b.name) ? a : b; });
 
     var body = catDescHTML(
       '活気・イライラ感・疲労感・不安感・抑うつ感の5項目の平均です。'

@@ -99,6 +99,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
+<script src="js/scoring.js"></script>
 </head>
 <body>
 <header class="hd">
@@ -258,99 +259,8 @@ function showResults() {
   buildResult();
 }
 
-function calcDeviation(myAvg, natAvg, sd) {
-  if (!natAvg || !sd) return 50;
-  return 50 + (myAvg - natAvg) / sd * 10;
-}
-
-function getStressLevel(scaleResults) {
-  // 各スケールの偏差値を計算するヘルパー
-  function dev(scaleName) {
-    for (var k in scaleResults) {
-      var clean = k.replace(/^\d+[\.\s]+/, '').trim();
-      if (clean === scaleName) {
-        var sr = scaleResults[k];
-        var q = sr.questions[0];
-        return calcDeviation(sr.avg, q.avg, q.sd);
-      }
-    }
-    return 50;
-  }
-
-  // ①ストレッサー8項目平均
-  var stressorItems = [
-    '仕事の量的負担','仕事の質的負担','身体的負担度',
-    '職場での対人関係','職場環境','情緒的負担',
-    '役割葛藤','ワーク・セルフ・バランス（ネガティブ）'
-  ];
-  var stressorSum = 0;
-  for (var i = 0; i < stressorItems.length; i++) {
-    stressorSum += dev(stressorItems[i]);
-  }
-  var stressor = stressorSum / stressorItems.length;
-
-  // ②リソース（作業・部署・会社）平均
-  var resourceItems = [
-    '仕事のコントロール','技能の活用度','仕事の適性','仕事の意義',
-    '役割明確さ','成長の機会','新奇性','予測可能性',
-    'ワーク・セルフ・バランス（ポジティブ）',
-    '上司からのサポート','同僚からのサポート','経済・地位報酬',
-    '尊重報酬','安定報酬','上司のリーダーシップ','上司の公正な態度',
-    'ほめてもらえる職場','失敗を認める職場','グループの有能感',
-    '家族・友人からのサポート',
-    '経営層との信頼関係','変化への対応','手続きの公正性','個人の尊重',
-    '公正な人事評価','多様な労働者への対応','キャリア形成'
-  ];
-  var resourceSum = 0;
-  for (var i = 0; i < resourceItems.length; i++) {
-    resourceSum += dev(resourceItems[i]);
-  }
-  var resource = resourceSum / resourceItems.length;
-
-  // ③精神的ストレス反応（活気は反転）
-  var mentalItems = [
-    {name:'活気', reverse:true},
-    {name:'イライラ感', reverse:false},
-    {name:'疲労感', reverse:false},
-    {name:'不安感', reverse:false},
-    {name:'抑うつ感', reverse:false}
-  ];
-  var mentalSum = 0;
-  for (var i = 0; i < mentalItems.length; i++) {
-    var d = dev(mentalItems[i].name);
-    mentalSum += mentalItems[i].reverse ? (100 - d) : d;
-  }
-  var mental = mentalSum / mentalItems.length;
-
-  // 身体愁訴（反転：低いほど良い）
-  var body = 100 - dev('身体愁訴');
-
-  // ③総合反応
-  var reaction = (mental + body) / 2;
-
-  // 判定
-  if (reaction >= 60) return 'high';
-  if (reaction >= 55 && stressor >= 55) return 'high';
-  if (reaction >= 55 && resource <= 45) return 'high';
-  if (reaction >= 50 || stressor >= 55) return 'mid';
-  return 'low';
-}
-
 function buildResult() {
-  var scaleMap = {};
-  for (var i = 0; i < QUESTIONS.length; i++) {
-    var q = QUESTIONS[i];
-    var key = q.scale.trim();
-    if (!scaleMap[key]) scaleMap[key] = {questions:[], category:q.category};
-    scaleMap[key].questions.push(q);
-  }
-  var scaleResults = {};
-  for (var k in scaleMap) {
-    var d = scaleMap[k];
-    var tot = 0;
-    for (var j = 0; j < d.questions.length; j++) tot += (answers[d.questions[j].no] || 0);
-    scaleResults[k] = {score:tot, avg:tot/d.questions.length, maxScore:d.questions.length*4, questions:d.questions, category:d.category};
-  }
+  var scaleResults = calcScaleResults(answers);
   var sTotal=0,sMax=0,rTotal=0,rMax=0,oTotal=0,oMax=0;
   for (var k in scaleResults) {
     var cat = scaleResults[k].category;
