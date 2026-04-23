@@ -201,31 +201,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
   };
 
   // ── ヘルパー ──
-  function cleanName(k) {
-    return k.replace(/^\d+[\.\-]?\s+/, '').trim()
-      .replace(/^\[/, '').replace(/\]$/, '').replace(/※$/, '').trim();
-  }
-
-  function getColor(dev, negHigh) {
-    var diff = negHigh ? dev - 50 : 50 - dev;
-    if (diff <= 5)  return 'blue';
-    if (diff <= 10) return 'yellow';
-    return 'red';
-  }
-
   function colorHex(c) { return C[c]; }
-
-  function scalesByCategory(scaleResults, cat) {
-    var out = [];
-    for (var k in scaleResults) {
-      var sr = scaleResults[k];
-      if (sr.category !== cat) continue;
-      var q   = sr.questions[0];
-      var dev = calcDeviation(sr.avg, q ? q.avg : null, q ? q.sd : null);
-      out.push({ key: k, name: cleanName(k), dev: dev, sr: sr });
-    }
-    return out;
-  }
 
   function avgOfDevs(scales) {
     if (!scales.length) return 50;
@@ -248,7 +224,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
 
   // 個別スケール用バー（方向ラベル + バー。偏差値は呼び出し側で表示）
   function barHTML(dev, negHigh) {
-    var c   = colorHex(getColor(dev, negHigh));
+    var c   = colorHex(getDevColor(dev, negHigh));
     var pct = Math.min(100, Math.max(0, dev));
     var lft = negHigh ? '← 良好' : '← 要注意';
     var rgt = negHigh ? '要注意 →' : '良好 →';
@@ -263,7 +239,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
 
   // グループ用バー（方向ラベル + バー右端に偏差値 + 下に注記）
   function groupBarHTML(dev, negHigh) {
-    var c   = colorHex(getColor(dev, negHigh));
+    var c   = colorHex(getDevColor(dev, negHigh));
     var pct = Math.min(100, Math.max(0, dev));
     var lft = negHigh ? '← 良好' : '← 要注意';
     var rgt = negHigh ? '要注意 →' : '良好 →';
@@ -462,13 +438,13 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
     for (var i = 0; i < scales.length; i++) {
       var s    = scales[i];
       var meta = STRESSOR_META[s.name] || { label: s.name, desc: '' };
-      var c    = colorHex(getColor(s.dev, true));
+      var c    = colorHex(getDevColor(s.displayDev, true));
       body += '<div class="scale-row">'
         + '<div class="scale-row-header">'
         +   '<span class="scale-name" style="color:' + c + '">' + meta.label + '</span>'
         +   '<span class="scale-dev"  style="color:' + c + '">' + s.dev.toFixed(1) + '</span>'
         + '</div>'
-        + barHTML(s.dev, true)
+        + barHTML(s.displayDev, true)
         + '<div class="scale-desc">' + meta.desc + '</div>'
         + '</div>';
     }
@@ -534,7 +510,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
     var body = '<div class="sec-desc">めまい・体のふしぶしの痛み・頭痛・肩こり・腰痛・目の疲れ・動悸や息切れ・胃腸の不調・食欲不振・便秘や下痢・不眠など身体的な不調の訴えです。'
       + '低いほど良好で、現在は全国平均より大きく低い状態です。'
       + 'スコアが上昇してきた場合は、医療機関や相談窓口への受診・相談をご検討ください。</div>'
-      + groupBarHTML(s.dev, true);
+      + groupBarHTML(s.displayDev, true);
     return sectionWrap('sec-outcome', C.purple, '③-2', '身体愁訴', body);
   }
 
@@ -565,7 +541,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
     var body = '<div class="sec-desc">いじめ・嫌がらせ・パワハラ・セクハラの経験・目撃頻度です。'
       + '低いほど良好で、現在は全国平均より大きく低い状態です。'
       + '気になることがある場合は、社内外の相談窓口への相談をご検討ください。</div>'
-      + groupBarHTML(s.dev, true);
+      + groupBarHTML(s.displayDev, true);
     return sectionWrap('sec-hazard', C.danger, '⚠', 'ハラスメントリスク', body);
   }
 

@@ -208,7 +208,9 @@ function scalesByCategory(scaleResults, category) {
     if (sr.category !== category) continue;
     var q   = sr.questions[0];
     var dev = calcDeviation(sr.avg, q ? q.avg : null, q ? q.sd : null);
-    out.push({ key: k, name: cleanScaleName(k), dev: dev, sr: sr });
+    var q0 = sr.questions[0];
+    var displayDev = q0.direction === '4321' ? (100 - dev) : dev;
+    out.push({ key: k, name: cleanScaleName(k), dev: dev, displayDev: displayDev, sr: sr });
   }
   return out;
 }
