@@ -205,7 +205,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
 
   function avgOfDevs(scales) {
     if (!scales.length) return 50;
-    var sum = scales.reduce(function(s, x) { return s + x.dev; }, 0);
+    var sum = scales.reduce(function(s, x) { return s + x.displayDev; }, 0);
     return Math.round(sum / scales.length * 10) / 10;
   }
 
