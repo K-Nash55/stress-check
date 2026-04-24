@@ -205,7 +205,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
 
   function avgOfDevs(scales) {
     if (!scales.length) return 50;
-    var sum = scales.reduce(function(s, x) { return s + x.displayDev; }, 0);
+    var sum = scales.reduce(function(s, x) { return s + x.dev; }, 0);
     return Math.round(sum / scales.length * 10) / 10;
   }
 
@@ -273,14 +273,14 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
     var bestCard = best
       ? '<div class="bw-card best"><div class="bw-card-lbl">強み</div>'
           + '<div class="bw-card-name">' + best.name + '</div>'
-          + '<div class="bw-card-dev">偏差値 ' + best.displayDev.toFixed(1) + '</div>'
+          + '<div class="bw-card-dev">偏差値 ' + best.dev.toFixed(1) + '</div>'
           + cardExtra(best) + '</div>'
       : '<div class="bw-card none"><div class="bw-card-lbl">強み</div>'
           + '<div class="bw-card-name" style="color:#aaa">強みはありませんでした</div></div>';
     var worstCard = worst
       ? '<div class="bw-card worst"><div class="bw-card-lbl">課題</div>'
           + '<div class="bw-card-name">' + worst.name + '</div>'
-          + '<div class="bw-card-dev">偏差値 ' + worst.displayDev.toFixed(1) + '</div>'
+          + '<div class="bw-card-dev">偏差値 ' + worst.dev.toFixed(1) + '</div>'
           + cardExtra(worst) + '</div>'
       : '<div class="bw-card none"><div class="bw-card-lbl">課題</div>'
           + '<div class="bw-card-name" style="color:#aaa">課題はありませんでした</div></div>';
@@ -444,7 +444,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
         +   '<span class="scale-name" style="color:' + c + '">' + meta.label + '</span>'
         +   '<span class="scale-dev"  style="color:' + c + '">' + s.displayDev.toFixed(1) + '</span>'
         + '</div>'
-        + barHTML(s.displayDev, true)
+        + barHTML(s.dev, true)
         + '<div class="scale-desc">' + meta.desc + '</div>'
         + '</div>';
     }
@@ -491,11 +491,11 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
           return '<div class="bw-cards">'
             + '<div class="bw-card best"><div class="bw-card-lbl">強み（最も良好）</div>'
             +   '<div class="bw-card-name">' + best.name + '</div>'
-            +   '<div class="bw-card-dev">偏差値 ' + best.displayDev.toFixed(1) + '</div>'
+            +   '<div class="bw-card-dev">偏差値 ' + best.dev.toFixed(1) + '</div>'
             +   mentalCardExtra(best) + '</div>'
             + '<div class="bw-card worst"><div class="bw-card-lbl">課題（最も要注意）</div>'
             +   '<div class="bw-card-name">' + worst.name + '</div>'
-            +   '<div class="bw-card-dev">偏差値 ' + worst.displayDev.toFixed(1) + '</div>'
+            +   '<div class="bw-card-dev">偏差値 ' + worst.dev.toFixed(1) + '</div>'
             +   mentalCardExtra(worst) + '</div>'
             + '</div>';
         })();
@@ -510,7 +510,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
     var body = '<div class="sec-desc">めまい・体のふしぶしの痛み・頭痛・肩こり・腰痛・目の疲れ・動悸や息切れ・胃腸の不調・食欲不振・便秘や下痢・不眠など身体的な不調の訴えです。'
       + '低いほど良好で、現在は全国平均より大きく低い状態です。'
       + 'スコアが上昇してきた場合は、医療機関や相談窓口への受診・相談をご検討ください。</div>'
-      + groupBarHTML(s.displayDev, true);
+      + groupBarHTML(s.dev, true);
     return sectionWrap('sec-outcome', C.purple, '③-2', '身体愁訴', body);
   }
 
@@ -541,7 +541,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color:
     var body = '<div class="sec-desc">いじめ・嫌がらせ・パワハラ・セクハラの経験・目撃頻度です。'
       + '低いほど良好で、現在は全国平均より大きく低い状態です。'
       + '気になることがある場合は、社内外の相談窓口への相談をご検討ください。</div>'
-      + groupBarHTML(s.displayDev, true);
+      + groupBarHTML(s.dev, true);
     return sectionWrap('sec-hazard', C.danger, '⚠', 'ハラスメントリスク', body);
   }
 
