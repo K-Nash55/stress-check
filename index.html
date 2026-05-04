@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>繧ｹ繝医Ξ繧ｹ繝√ぉ繝・け 繝輔Μ繝ｼ</title>
+<title>ストレスチェック フリー</title>
 <script>
 (function() {
   var hash = window.location.hash;
@@ -23,7 +23,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;line-height:1.7}
 
-/* 笏笏 繝倥ャ繝繝ｼ 笏笏 */
+/* ── ヘッダー ── */
 .hd{background:var(--ink);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)}
 .hd-logo{font-family:'Shippori Mincho',serif;font-size:1.2rem;font-weight:600;flex:1}
 .hd-logo span{color:var(--green2)}
@@ -33,10 +33,10 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .test-btn{padding:4px 10px;border-radius:5px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);font-size:.72rem;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all .15s}
 .test-btn:hover{background:rgba(255,255,255,.2)}
 
-/* 笏笏 逕ｻ髱｢蛻・ｊ譖ｿ縺・笏笏 */
+/* ── 画面切り替え ── */
 .screen{display:none}.screen.active{display:block}
 
-/* 笏笏 P1 繧ｹ繧ｿ繝ｼ繝育判髱｢ 笏笏 */
+/* ── P1 スタート画面 ── */
 .start-wrap{max-width:680px;margin:60px auto;padding:0 20px}
 .start-card{background:#fff;border-radius:14px;padding:48px;box-shadow:0 4px 24px var(--sh);border:1px solid var(--border)}
 .start-title{font-family:'Shippori Mincho',serif;font-size:1.9rem;line-height:1.4;margin-bottom:8px}
@@ -44,14 +44,14 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .privacy-box{background:#f0f7f4;border:1px solid #52b788;border-radius:10px;padding:16px 20px;margin-bottom:16px;font-size:.84rem;line-height:1.9;color:var(--ink)}
 .privacy-box strong{display:block;margin-bottom:6px;font-size:.9rem}
 .privacy-box ul{list-style:none;padding:0}
-.privacy-box ul li::before{content:"笨・";color:var(--green);font-weight:700}
+.privacy-box ul li::before{content:"✓ ";color:var(--green);font-weight:700}
 .notice-box{background:var(--warm);border-left:3px solid var(--border);border-radius:6px;padding:12px 16px;margin-bottom:28px;font-size:.8rem;color:var(--ink2);line-height:1.9}
 .btn-start{display:block;width:100%;padding:16px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;letter-spacing:.08em;transition:all .2s}
 .btn-start:hover{background:#1b5e3f;transform:translateY(-1px)}
 .btn-test-start{display:block;width:100%;padding:11px;margin-top:10px;background:transparent;color:var(--ink2);border:2px dashed var(--border);border-radius:10px;font-size:.82rem;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all .2s}
 .btn-test-start:hover{background:var(--warm);border-color:var(--warn);color:var(--warn)}
 
-/* 笏笏 P2縲弃9 蝗樒ｭ皮判髱｢ 笏笏 */
+/* ── P2〜P9 回答画面 ── */
 .q-wrap{max-width:740px;margin:36px auto;padding:0 20px 100px}
 .sec-hd{padding:12px 18px;background:var(--ink);color:#fff;border-radius:10px;margin-bottom:18px;font-size:.8rem;font-weight:500;letter-spacing:.05em}
 .sec-inst{font-size:.86rem;color:var(--ink2);background:var(--warm);padding:12px 18px;border-radius:8px;margin-bottom:18px;border-left:3px solid var(--border);line-height:1.8}
@@ -66,7 +66,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .choice-btn:hover{border-color:var(--green2);color:var(--green);background:var(--green3)}
 .choice-btn.selected{border-color:var(--green);background:var(--green);color:#fff;font-weight:700}
 
-/* 笏笏 繝翫ン繝舌・ 笏笏 */
+/* ── ナビバー ── */
 .nav-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:12px 20px;display:flex;gap:10px;justify-content:center;align-items:center;box-shadow:0 -4px 16px var(--sh);z-index:50}
 .warn-msg{color:var(--red);font-size:.78rem;text-align:center;padding:4px;display:none;flex:1}
 .btn-nav{padding:11px 28px;border-radius:8px;border:2px solid var(--border);background:#fff;font-family:'Noto Sans JP',sans-serif;font-size:.86rem;font-weight:700;cursor:pointer;transition:all .2s;color:var(--ink)}
@@ -75,7 +75,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .btn-nav.primary:hover{background:#1b5e3f}
 .btn-nav:disabled{opacity:.4;cursor:not-allowed}
 
-/* 笏笏 P10 遒ｺ隱咲判髱｢ 笏笏 */
+/* ── P10 確認画面 ── */
 .confirm-wrap{max-width:560px;margin:80px auto;padding:0 20px}
 .confirm-card{background:#fff;border-radius:14px;padding:48px;text-align:center;box-shadow:0 4px 24px var(--sh);border:1px solid var(--border)}
 .confirm-icon{font-size:3rem;margin-bottom:16px}
@@ -95,68 +95,68 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 </head>
 <body>
 
-<!-- 繝倥ャ繝繝ｼ -->
+<!-- ヘッダー -->
 <header class="hd">
-  <div class="hd-logo">繧ｹ繝医Ξ繧ｹ繝√ぉ繝・け <span>繝輔Μ繝ｼ</span></div>
+  <div class="hd-logo">ストレスチェック <span>フリー</span></div>
   <div class="hd-page" id="hdPage"></div>
   <div class="hd-test" id="hdTest">
-    <span style="font-size:.7rem;color:rgba(255,255,255,.5);margin-right:4px">繝・せ繝・</span>
-    <button class="test-btn" onclick="setTestData(1)">蜈ｨ繝阪ぎ</button>
-    <button class="test-btn" onclick="setTestData(2)">繧・ｄ繝阪ぎ</button>
-    <button class="test-btn" onclick="setTestData(3)">繧・ｄ繝昴ず</button>
-    <button class="test-btn" onclick="setTestData(4)">蜈ｨ繝昴ず</button>
-    <button class="test-btn" onclick="setTestData('random')">繝ｩ繝ｳ繝繝</button>
+    <span style="font-size:.7rem;color:rgba(255,255,255,.5);margin-right:4px">テスト:</span>
+    <button class="test-btn" onclick="setTestData(1)">全ネガ</button>
+    <button class="test-btn" onclick="setTestData(2)">ややネガ</button>
+    <button class="test-btn" onclick="setTestData(3)">ややポジ</button>
+    <button class="test-btn" onclick="setTestData(4)">全ポジ</button>
+    <button class="test-btn" onclick="setTestData('random')">ランダム</button>
   </div>
 </header>
 
-<!-- P1: 繧ｹ繧ｿ繝ｼ繝育判髱｢ -->
+<!-- P1: スタート画面 -->
 <div id="scStart" class="screen active">
   <div class="start-wrap">
     <div class="start-card">
-      <h1 class="start-title">繧ｹ繝医Ξ繧ｹ繝√ぉ繝・け<br>繝輔Μ繝ｼ</h1>
-      <p class="start-time">謇隕∵凾髢難ｼ夂ｴ・5蛻・/p>
+      <h1 class="start-title">ストレスチェック<br>フリー</h1>
+      <p class="start-time">所要時間：約15分</p>
       <div class="privacy-box">
-        <strong>白 繝励Λ繧､繝舌す繝ｼ縺ｫ縺､縺・※</strong>
+        <strong>🔒 プライバシーについて</strong>
         <ul>
-          <li>邨先棡縺ｯ縺ゅ↑縺溘□縺代↓騾夂衍縺輔ｌ縺ｾ縺・/li>
-          <li>莨夂､ｾ縺悟倶ｺｺ縺ｮ邨先棡繧帝夢隕ｧ縺吶ｋ縺薙→縺ｯ縺ｧ縺阪∪縺帙ｓ</li>
-          <li>豌丞錐縺ｮ蜈･蜉帙・縺ｪ縺上∫音螳壹〒縺阪∪縺帙ｓ</li>
-          <li>髮・屮蛻・梵縺ｮ邨先棡縺ｯ莨夂､ｾ縺碁夢隕ｧ縺ｧ縺阪∪縺吶′縲・0蜷肴悴貅縺ｮ蝣ｴ蜷医・髱櫁｡ｨ遉ｺ縺ｧ縺・/li>
+          <li>結果はあなただけに通知されます</li>
+          <li>会社が個人の結果を閲覧することはできません</li>
+          <li>氏名の入力はなく、特定できません</li>
+          <li>集団分析の結果は会社が閲覧できますが、10名未満の場合は非表示です</li>
         </ul>
       </div>
       <div class="notice-box">
-        譛ｬ繝・・繝ｫ縺ｯ繧ｹ繝医Ξ繧ｹ繝√ぉ繝・け螳滓命繧呈髪謠ｴ縺吶ｋWeb繧ｵ繝ｼ繝薙せ縺ｧ縺吶・br>
-        雉ｪ蝠上ｄ謗｡轤ｹ譁ｹ豕輔・蜴夂函蜉ｴ蜒咲怐縺檎匱陦ｨ縺励※縺・ｋ隱ｿ譟ｻ逾ｨ繝ｻ蜈ｨ蝗ｽ蟷ｳ蝮・ョ繝ｼ繧ｿ繧ｻ繝・ヨ縺ｫ蝓ｺ縺･縺阪∝ｮ滓命隕丞ｮ壹・螳滓命繝槭ル繝･繧｢繝ｫ縺ｫ貅匁侠縺励※縺・∪縺吶・br>
-        邨先棡縺ｮ邂｡逅・・髱｢謗･謖・ｰ弱・螳滓命縺ｯ縲∝推莠区･ｭ閠・・雋ｬ莉ｻ縺ｫ縺翫＞縺ｦ陦後ｏ繧後∪縺吶・
+        本ツールはストレスチェック実施を支援するWebサービスです。<br>
+        質問や採点方法は厚生労働省が発表している調査票・全国平均データセットに基づき、実施規定・実施マニュアルに準拠しています。<br>
+        結果の管理・面接指導の実施は、各事業者の責任において行われます。
       </div>
-      <button class="btn-start" id="btnStart">隱ｿ譟ｻ繧偵・縺倥ａ繧・竊・/button>
-      <button class="btn-test-start" id="btnTestStart">ｧｪ 繝・せ繝医Δ繝ｼ繝峨〒髢句ｧ・/button>
+      <button class="btn-start" id="btnStart">調査をはじめる →</button>
+      <button class="btn-test-start" id="btnTestStart">🧪 テストモードで開始</button>
     </div>
   </div>
 </div>
 
-<!-- P2縲弃9: 蝗樒ｭ皮判髱｢ -->
+<!-- P2〜P9: 回答画面 -->
 <div id="scQuestions" class="screen">
   <div class="q-wrap" id="qContainer"></div>
   <div class="nav-bar">
     <div style="flex:1;text-align:center">
-      <div class="warn-msg" id="warnMsg">譛ｪ蝗樒ｭ斐・雉ｪ蝠上′縺ゅｊ縺ｾ縺吶ゅ☆縺ｹ縺ｦ蝗樒ｭ斐＠縺ｦ縺九ｉ谺｡縺ｸ騾ｲ繧薙〒縺上□縺輔＞縲・/div>
+      <div class="warn-msg" id="warnMsg">未回答の質問があります。すべて回答してから次へ進んでください。</div>
     </div>
-    <button class="btn-nav" id="btnPrev">竊・蜑阪∈</button>
-    <button class="btn-nav primary" id="btnNext" disabled>谺｡縺ｸ 竊・/button>
+    <button class="btn-nav" id="btnPrev">← 前へ</button>
+    <button class="btn-nav primary" id="btnNext" disabled>次へ →</button>
   </div>
 </div>
 
-<!-- P10: 遒ｺ隱咲判髱｢ -->
+<!-- P10: 確認画面 -->
 <div id="scConfirm" class="screen">
   <div class="confirm-wrap">
     <div class="confirm-card">
-      <div class="confirm-icon">笨・/div>
-      <h2 class="confirm-title">141蝠上☆縺ｹ縺ｦ蝗樒ｭ斐＠縺ｾ縺励◆</h2>
-      <p class="confirm-desc">騾∽ｿ｡縺励※邨先棡繧堤｢ｺ隱阪＠縺ｾ縺吶°・・br>騾∽ｿ｡蠕後・蝗樒ｭ斐ｒ螟画峩縺ｧ縺阪∪縺帙ｓ縲・/p>
+      <div class="confirm-icon">✅</div>
+      <h2 class="confirm-title">141問すべて回答しました</h2>
+      <p class="confirm-desc">送信して結果を確認しますか？<br>送信後は回答を変更できません。</p>
       <div class="confirm-btns">
-        <button class="btn-confirm" id="btnConfirmBack">竊・謌ｻ繧・/button>
-        <button class="btn-confirm primary" id="btnSubmit">騾∽ｿ｡縺励※邨先棡繧定ｦ九ｋ 竊・/button>
+        <button class="btn-confirm" id="btnConfirmBack">← 戻る</button>
+        <button class="btn-confirm primary" id="btnSubmit">送信して結果を見る →</button>
       </div>
       <p class="submit-msg" id="submitMsg"></p>
     </div>
@@ -164,7 +164,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 </div>
 
 <script>
-// 笏笏笏 繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ螳夂ｾｩ・域欠遉ｺ譖ｸ貅匁侠・俄楳笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ─── セクション定義（指示書準拠）───────────────────────
 var SECTIONS = [
   { id: 1, start: 1,   end: 19  },
   { id: 2, start: 20,  end: 37  },
@@ -176,17 +176,17 @@ var SECTIONS = [
   { id: 8, start: 122, end: 141 }
 ];
 
-// 笏笏笏 迥ｶ諷・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-var answers = {};        // { [no]: score } 騾・ｻ｢謗｡轤ｹ貂医∩
-var choiceIndexes = {};  // { [no]: idx } 菴慕分逶ｮ縺ｮ驕ｸ謚櫁い繧帝∈繧薙□縺具ｼ・蟋九∪繧奇ｼ・
-var currentPage = 1;     // 1縲・=蝗樒ｭ斐・繝ｼ繧ｸ縲・=遒ｺ隱咲判髱｢
+// ─── 状態 ──────────────────────────────────────────
+var answers = {};        // { [no]: score } 逆転採点済み
+var choiceIndexes = {};  // { [no]: idx } 何番目の選択肢を選んだか（0始まり）
+var currentPage = 1;     // 1〜8=回答ページ、9=確認画面
 
-// 笏笏笏 騾・ｻ｢謗｡轤ｹ・域里蟄倥Ο繧ｸ繝・け邯ｭ謖・ｼ俄楳笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ─── 逆転採点（既存ロジック維持）────────────────────
 function getScore(q, idx) {
   return q.direction === '1234' ? idx + 1 : 4 - idx;
 }
 
-// 笏笏笏 localStorage 菫晏ｭ・蠕ｩ蜈・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ─── localStorage 保存/復元 ─────────────────────────
 function saveProgress() {
   try {
     localStorage.setItem('sc_answers', JSON.stringify(answers));
@@ -212,13 +212,13 @@ function clearProgress() {
   } catch(e) {}
 }
 
-// 笏笏笏 繝・せ繝医Δ繝ｼ繝会ｼ亥・141蝠丈ｸ諡ｬ繧ｻ繝・ヨ・俄楳笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ─── テストモード（全141問一括セット）────────────────
 function setTestData(score) {
   for (var i = 0; i < QUESTIONS.length; i++) {
     var q = QUESTIONS[i];
     var s = score === 'random' ? Math.floor(Math.random() * 4) + 1 : score;
     answers[q.no] = s;
-    // choiceIndexes: score 縺九ｉ choices 縺ｮ index 繧帝・ｼ輔″
+    // choiceIndexes: score から choices の index を逆引き
     for (var j = 0; j < q.choices.length; j++) {
       if (getScore(q, j) === s) { choiceIndexes[q.no] = j; break; }
     }
@@ -227,7 +227,7 @@ function setTestData(score) {
   renderCurrentPage();
 }
 
-// 笏笏笏 繝壹・繧ｸ蛻ｶ蠕｡繝ｦ繝ｼ繝・ぅ繝ｪ繝・ぅ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ─── ページ制御ユーティリティ ─────────────────────────
 function getQuestionsForPage(page) {
   var sec = SECTIONS[page - 1];
   return QUESTIONS.filter(function(q) { return q.no >= sec.start && q.no <= sec.end; });
@@ -245,19 +245,19 @@ function updateNextBtn() {
   var btn = document.getElementById('btnNext');
   var complete = checkPageComplete(currentPage);
   btn.disabled = !complete;
-  btn.textContent = currentPage === 8 ? '遒ｺ隱阪∈ 竊・ : '谺｡縺ｸ 竊・;
+  btn.textContent = currentPage === 8 ? '確認へ →' : '次へ →';
 }
 
 function updateHeader() {
   var el = document.getElementById('hdPage');
   if (currentPage >= 1 && currentPage <= 8) {
-    el.textContent = currentPage + ' / 8繝壹・繧ｸ';
+    el.textContent = currentPage + ' / 8ページ';
   } else {
     el.textContent = '';
   }
 }
 
-// 笏笏笏 謠冗判 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ─── 描画 ─────────────────────────────────────────
 function renderCurrentPage() {
   if (currentPage >= 1 && currentPage <= 8) {
     renderQuestionPage(currentPage);
@@ -268,14 +268,14 @@ function renderQuestionPage(page) {
   var qs = getQuestionsForPage(page);
   var sec = SECTIONS[page - 1];
 
-  // 繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ謖・､ｺ譁・・繝壹・繧ｸ蜀・・譛蛻昴・蝠上°繧牙叙繧・
+  // セクション指示文はページ内の最初の問から取る
   var sectionTitle = qs.length > 0 ? qs[0].section : '';
 
   function stripPrefix(s) {
-    return s.replace(/^[・｡-・ｨ]・・, '').trim();
+    return s.replace(/^[Ａ-Ｈ]．/, '').trim();
   }
 
-  var html = '<div class="sec-hd">繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ ' + page + ' / 8縲・・' + sec.start + '縲弉' + sec.end + '・・/div>';
+  var html = '<div class="sec-hd">セクション ' + page + ' / 8　（Q' + sec.start + '〜Q' + sec.end + '）</div>';
   html += '<div class="sec-inst">' + stripPrefix(sectionTitle) + '</div>';
 
   var lastSection = sectionTitle;
@@ -304,7 +304,7 @@ function renderQuestionPage(page) {
 
   document.getElementById('qContainer').innerHTML = html;
 
-  // 驕ｸ謚櫁い繧ｯ繝ｪ繝・け繧､繝吶Φ繝・
+  // 選択肢クリックイベント
   var btns = document.getElementById('qContainer').querySelectorAll('.choice-btn');
   for (var k = 0; k < btns.length; k++) {
     btns[k].onclick = function() {
@@ -332,14 +332,14 @@ function renderQuestionPage(page) {
   window.scrollTo(0, 0);
 }
 
-// 笏笏笏 逕ｻ髱｢蛻・ｊ譖ｿ縺・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ─── 画面切り替え ──────────────────────────────────
 function showScreen(id) {
   var screens = document.querySelectorAll('.screen');
   for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
   document.getElementById(id).classList.add('active');
 }
 
-// 笏笏笏 繝壹・繧ｸ驕ｷ遘ｻ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ─── ページ遷移 ────────────────────────────────────
 function goToPage(page) {
   currentPage = page;
   saveProgress();
@@ -356,7 +356,7 @@ function goToPage(page) {
 function onNext() {
   if (!checkPageComplete(currentPage)) {
     document.getElementById('warnMsg').style.display = 'block';
-    // 譛ｪ蝗樒ｭ斐・譛蛻昴・蝠上∈繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ
+    // 未回答の最初の問へスクロール
     var qs = getQuestionsForPage(currentPage);
     for (var i = 0; i < qs.length; i++) {
       if (answers[qs[i].no] === undefined) {
@@ -380,7 +380,7 @@ function onPrev() {
   if (currentPage > 1) goToPage(currentPage - 1);
 }
 
-// 笏笏笏 髢句ｧ・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ─── 開始 ──────────────────────────────────────────
 function startSurvey() {
   loadProgress();
   showScreen('scQuestions');
@@ -394,7 +394,7 @@ function startTestMode() {
   renderCurrentPage();
 }
 
-// 笏笏笏 謗｡轤ｹ繝ｻ騾∽ｿ｡ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ─── 採点・送信 ────────────────────────────────────
 function buildResult() {
   var scaleResults = calcScaleResults(answers);
   var sTotal=0, sMax=0, rTotal=0, rMax=0, oTotal=0, oMax=0;
@@ -436,7 +436,7 @@ function saveToSupabase(answersObj, scores) {
     s_total: scores.sTotal, s_max: scores.sMax,
     r_total: scores.rTotal, r_max: scores.rMax,
     o_total: scores.oTotal, o_max: scores.oMax
-  }).then(function(r){ if(r.error) console.error('菫晏ｭ倥お繝ｩ繝ｼ:', r.error); });
+  }).then(function(r){ if(r.error) console.error('保存エラー:', r.error); });
 }
 
 function onSubmit() {
@@ -445,13 +445,13 @@ function onSubmit() {
   var msg  = document.getElementById('submitMsg');
   btn.disabled = true;
   back.disabled = true;
-  msg.textContent = '騾∽ｿ｡荳ｭ...';
+  msg.textContent = '送信中...';
   try { buildResult(); } catch(e) { console.error('buildResult error:', e); }
   clearProgress();
   window.location.href = 'result.html';
 }
 
-// 笏笏笏 繧､繝吶Φ繝育匳骭ｲ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ─── イベント登録 ──────────────────────────────────
 document.getElementById('btnStart').onclick        = startSurvey;
 document.getElementById('btnTestStart').onclick    = startTestMode;
 document.getElementById('btnNext').onclick         = onNext;
