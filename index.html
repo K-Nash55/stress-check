@@ -267,11 +267,20 @@ function renderQuestionPage(page) {
   // セクション指示文はページ内の最初の問から取る
   var sectionTitle = qs.length > 0 ? qs[0].section : '';
 
-  var html = '<div class="sec-hd">セクション ' + page + ' / 8　（Q' + sec.start + '〜Q' + sec.end + '）</div>';
-  html += '<div class="sec-inst">' + sectionTitle + '</div>';
+  function stripPrefix(s) {
+    return s.replace(/^[Ａ-Ｈ]．/, '').trim();
+  }
 
+  var html = '<div class="sec-hd">セクション ' + page + ' / 8　（Q' + sec.start + '〜Q' + sec.end + '）</div>';
+  html += '<div class="sec-inst">' + stripPrefix(sectionTitle) + '</div>';
+
+  var lastSection = sectionTitle;
   for (var i = 0; i < qs.length; i++) {
     var q = qs[i];
+    if (i > 0 && q.section !== lastSection) {
+      html += '<div class="sec-inst" style="margin-top:20px">' + stripPrefix(q.section) + '</div>';
+      lastSection = q.section;
+    }
     var answered = answers[q.no] !== undefined;
     html += '<div class="q-card' + (answered ? ' answered' : '') + '" id="qcard' + q.no + '">';
     html += '<div class="q-row">';
