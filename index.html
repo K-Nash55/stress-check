@@ -395,33 +395,30 @@ function startTestMode() {
 }
 
 // ─── 採点・送信 ────────────────────────────────────
-function buildResult() {
-  var scaleResults = calcScaleResults(answers);
-  var sTotal=0, sMax=0, rTotal=0, rMax=0, oTotal=0, oMax=0;
-  for (var k in scaleResults) {
-    var cat = scaleResults[k].category;
-    var first = cat.charAt(0);
-    if (first === '1') {
-      sTotal += scaleResults[k].score; sMax += scaleResults[k].maxScore;
-    } else if (first === '2') {
-      rTotal += scaleResults[k].score; rMax += scaleResults[k].maxScore;
-    } else {
-      oTotal += scaleResults[k].score; oMax += scaleResults[k].maxScore;
-    }
+async function buildResult() {
+  var master = await loadMaster();
+  var scaleResults = calcScaleResults(answers, master.questions);
+  var deviations = calcAllDeviations(scaleResults, master.scales);
+  var level = getStressLevel(deviations);
+
+  var employeeId = sessionStorage.getItem('employee_id');
+  var companyId = sessionStorage.getItem('company_id');
+  if (employeeId && companyId) {
+    await supabase.from('survey_responses').insert({
+      employee_id: employeeId,
+      company_id: companyId,
+      answers: answers,
+      stress_level: level
+    });
   }
-  var level = getStressLevel(scaleResults);
-  saveToSupabase(answers, {
-    level: level,
-    sTotal: sTotal, sMax: sMax,
-    rTotal: rTotal, rMax: rMax,
-    oTotal: oTotal, oMax: oMax
-  });
+
   sessionStorage.setItem('stressResult', JSON.stringify({
     level: level,
     answers: answers,
-    choiceIndexes: choiceIndexes,
-    scaleResults: scaleResults
+    deviations: deviations
   }));
+
+  window.location.href = 'result.html';
 }
 
 function saveToSupabase(answersObj, scores) {
@@ -439,16 +436,15 @@ function saveToSupabase(answersObj, scores) {
   }).then(function(r){ if(r.error) console.error('保存エラー:', r.error); });
 }
 
-function onSubmit() {
+async function onSubmit() {
   var btn  = document.getElementById('btnSubmit');
   var back = document.getElementById('btnConfirmBack');
   var msg  = document.getElementById('submitMsg');
   btn.disabled = true;
   back.disabled = true;
   msg.textContent = '送信中...';
-  try { buildResult(); } catch(e) { console.error('buildResult error:', e); }
+  try { await buildResult(); } catch(e) { console.error('buildResult error:', e); }
   clearProgress();
-  window.location.href = 'result.html';
 }
 
 // ─── イベント登録 ──────────────────────────────────
