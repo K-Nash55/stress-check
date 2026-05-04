@@ -177,8 +177,9 @@ var SECTIONS = [
 ];
 
 // ─── 状態 ──────────────────────────────────────────
-var answers = {};      // { [no]: score } 逆転採点済み
-var currentPage = 1;   // 1〜8=回答ページ、9=確認画面
+var answers = {};        // { [no]: score } 逆転採点済み
+var choiceIndexes = {};  // { [no]: idx } 何番目の選択肢を選んだか（0始まり）
+var currentPage = 1;     // 1〜8=回答ページ、9=確認画面
 
 // ─── 逆転採点（既存ロジック維持）────────────────────
 function getScore(q, idx) {
@@ -215,9 +216,12 @@ function clearProgress() {
 function setTestData(score) {
   for (var i = 0; i < QUESTIONS.length; i++) {
     var q = QUESTIONS[i];
-    answers[q.no] = score === 'random'
-      ? Math.floor(Math.random() * 4) + 1
-      : score;
+    var s = score === 'random' ? Math.floor(Math.random() * 4) + 1 : score;
+    answers[q.no] = s;
+    // choiceIndexes: score から choices の index を逆引き
+    for (var j = 0; j < q.choices.length; j++) {
+      if (getScore(q, j) === s) { choiceIndexes[q.no] = j; break; }
+    }
   }
   saveProgress();
   renderCurrentPage();
@@ -292,7 +296,7 @@ function renderQuestionPage(page) {
       var score = getScore(q, j);
       var sel = answers[q.no] === score;
       html += '<button class="choice-btn' + (sel ? ' selected' : '') + '"'
-            + ' data-no="' + q.no + '" data-score="' + score + '">'
+            + ' data-no="' + q.no + '" data-score="' + score + '" data-idx="' + j + '">'
             + q.choices[j] + '</button>';
     }
     html += '</div></div>';
@@ -307,6 +311,7 @@ function renderQuestionPage(page) {
       var no    = parseInt(this.getAttribute('data-no'));
       var score = parseInt(this.getAttribute('data-score'));
       answers[no] = score;
+      choiceIndexes[no] = parseInt(this.getAttribute('data-idx'));
 
       var card = document.getElementById('qcard' + no);
       card.classList.add('answered');
@@ -414,6 +419,7 @@ function buildResult() {
   sessionStorage.setItem('stressResult', JSON.stringify({
     level: level,
     answers: answers,
+    choiceIndexes: choiceIndexes,
     scaleResults: scaleResults
   }));
 }
