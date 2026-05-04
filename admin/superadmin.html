@@ -110,11 +110,20 @@ var master = null;
 var answers = {};
 
 // ─── テストデータ生成 ─────────────────────────
-async function runTest(score) {
+async function runTest(targetRawScore) {
   if (!master) master = await loadMaster();
   answers = {};
   master.questions.forEach(function(q) {
-    answers[q.q141] = score === 'random' ? Math.floor(Math.random() * 4) + 1 : score;
+    if (targetRawScore === 'random') {
+      answers[q.q141] = Math.floor(Math.random() * 4) + 1;
+    } else {
+      // 目標素点になる選択肢番号を逆算
+      // direction=1234: 選択肢番号=素点
+      // direction=4321: 選択肢番号=5-素点
+      answers[q.q141] = q.direction === '4321'
+        ? 5 - targetRawScore
+        : targetRawScore;
+    }
   });
   buildAll();
 }
