@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>職業性ストレス簡易調査票</title>
+<title>ストレスチェック フリー</title>
 <script>
-// Supabase のパスワードリセットリンクがここに届いた場合、正しいページへ転送する
 (function() {
   var hash = window.location.hash;
   if (hash && hash.indexOf('type=recovery') !== -1) {
@@ -15,36 +14,48 @@
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;600&display=swap');
-:root{--ink:#1a1a2e;--ink2:#4a4a6a;--paper:#faf9f6;--warm:#f3f0e8;--green:#2d6a4f;--green2:#52b788;--green3:#d8f3dc;--warn:#c77c3e;--warn2:#fff3e0;--red:#b5373a;--border:#d6d0c4;--sh:rgba(26,26,46,0.08)}
+:root{
+  --ink:#1a1a2e;--ink2:#4a4a6a;--paper:#faf9f6;--warm:#f3f0e8;
+  --green:#2d6a4f;--green2:#52b788;--green3:#d8f3dc;
+  --warn:#c77c3e;--warn2:#fff3e0;--red:#b5373a;
+  --border:#d6d0c4;--sh:rgba(26,26,46,0.08)
+}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;line-height:1.7}
-.hd{background:var(--ink);color:#fff;padding:20px 32px;display:flex;align-items:center;gap:20px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)}
-.hd-logo{font-family:'Shippori Mincho',serif;font-size:1.4rem;font-weight:600;flex:1}.hd-logo span{color:var(--green2)}
-.hd-prog{flex:2;max-width:380px;display:none}
-.hd-prog-lbl{font-size:.7rem;color:rgba(255,255,255,.6);display:flex;justify-content:space-between;margin-bottom:5px}
-.hd-bar{height:4px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden}
-.hd-fill{height:100%;background:linear-gradient(90deg,var(--green2),#95d5b2);border-radius:4px;width:0;transition:width .4s}
+
+/* ── ヘッダー ── */
+.hd{background:var(--ink);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.hd-logo{font-family:'Shippori Mincho',serif;font-size:1.2rem;font-weight:600;flex:1}
+.hd-logo span{color:var(--green2)}
+.hd-page{color:rgba(255,255,255,.7);font-size:.82rem;white-space:nowrap}
+.hd-test{display:none;flex-wrap:wrap;gap:6px;align-items:center}
+.hd-test.visible{display:flex}
+.test-btn{padding:4px 10px;border-radius:5px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);font-size:.72rem;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all .15s}
+.test-btn:hover{background:rgba(255,255,255,.2)}
+
+/* ── 画面切り替え ── */
 .screen{display:none}.screen.active{display:block}
-/* START */
+
+/* ── P1 スタート画面 ── */
 .start-wrap{max-width:680px;margin:60px auto;padding:0 20px}
 .start-card{background:#fff;border-radius:14px;padding:48px;box-shadow:0 4px 24px var(--sh);border:1px solid var(--border)}
-.badge{display:inline-block;background:var(--green3);color:var(--green);font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:4px 12px;border-radius:20px;margin-bottom:16px}
-.start-title{font-family:'Shippori Mincho',serif;font-size:1.9rem;line-height:1.4;margin-bottom:14px}
-.start-desc{color:var(--ink2);font-size:.88rem;margin-bottom:28px;line-height:1.9}
-.meta{display:flex;gap:20px;margin-bottom:36px;padding:18px;background:var(--warm);border-radius:10px}
-.meta-item{text-align:center;flex:1}
-.meta-num{font-size:1.5rem;font-weight:700;color:var(--green);font-family:'Shippori Mincho',serif}
-.meta-lbl{font-size:.7rem;color:var(--ink2);margin-top:2px}
-.notice{background:var(--warn2);border-left:4px solid var(--warn);border-radius:4px;padding:12px 16px;font-size:.8rem;color:#7a4c1a;margin-bottom:32px;line-height:1.8}
+.start-title{font-family:'Shippori Mincho',serif;font-size:1.9rem;line-height:1.4;margin-bottom:8px}
+.start-time{font-size:.82rem;color:var(--ink2);margin-bottom:28px}
+.privacy-box{background:#f0f7f4;border:1px solid #52b788;border-radius:10px;padding:16px 20px;margin-bottom:16px;font-size:.84rem;line-height:1.9;color:var(--ink)}
+.privacy-box strong{display:block;margin-bottom:6px;font-size:.9rem}
+.privacy-box ul{list-style:none;padding:0}
+.privacy-box ul li::before{content:"✓ ";color:var(--green);font-weight:700}
+.notice-box{background:var(--warm);border-left:3px solid var(--border);border-radius:6px;padding:12px 16px;margin-bottom:28px;font-size:.8rem;color:var(--ink2);line-height:1.9}
 .btn-start{display:block;width:100%;padding:16px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;letter-spacing:.08em;transition:all .2s}
 .btn-start:hover{background:#1b5e3f;transform:translateY(-1px)}
-.btn-test{display:block;width:100%;padding:11px;margin-top:10px;background:transparent;color:var(--ink2);border:2px dashed var(--border);border-radius:10px;font-size:.82rem;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all .2s}
-.btn-test:hover{background:var(--warm);border-color:var(--warn);color:var(--warn)}
-/* QUESTIONS */
+.btn-test-start{display:block;width:100%;padding:11px;margin-top:10px;background:transparent;color:var(--ink2);border:2px dashed var(--border);border-radius:10px;font-size:.82rem;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all .2s}
+.btn-test-start:hover{background:var(--warm);border-color:var(--warn);color:var(--warn)}
+
+/* ── P2〜P9 回答画面 ── */
 .q-wrap{max-width:740px;margin:36px auto;padding:0 20px 100px}
-.sec-hd{padding:14px 20px;background:var(--ink);color:#fff;border-radius:10px;margin-bottom:20px;font-size:.8rem;font-weight:500;letter-spacing:.05em}
+.sec-hd{padding:12px 18px;background:var(--ink);color:#fff;border-radius:10px;margin-bottom:18px;font-size:.8rem;font-weight:500;letter-spacing:.05em}
 .sec-inst{font-size:.86rem;color:var(--ink2);background:var(--warm);padding:12px 18px;border-radius:8px;margin-bottom:18px;border-left:3px solid var(--border);line-height:1.8}
-.q-card{background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:12px;border:2px solid var(--border);transition:border-color .2s}
+.q-card{background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:10px;border:2px solid var(--border);transition:border-color .2s}
 .q-card.answered{border-color:var(--green3);background:#fafffe}
 .q-row{display:flex;align-items:flex-start;gap:14px}
 .q-num{font-size:.7rem;color:#fff;background:var(--ink2);padding:2px 8px;border-radius:10px;font-weight:700;flex-shrink:0;margin-top:3px;min-width:36px;text-align:center}
@@ -54,301 +65,354 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .choice-btn{flex:1;min-width:72px;padding:9px 6px;border:2px solid var(--border);border-radius:8px;background:var(--warm);font-size:.78rem;font-family:'Noto Sans JP',sans-serif;color:var(--ink2);cursor:pointer;transition:all .15s;text-align:center;line-height:1.3}
 .choice-btn:hover{border-color:var(--green2);color:var(--green);background:var(--green3)}
 .choice-btn.selected{border-color:var(--green);background:var(--green);color:#fff;font-weight:700}
-.nav-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:14px 20px;display:flex;gap:10px;justify-content:center;box-shadow:0 -4px 16px var(--sh);z-index:50}
-.warn-msg{color:var(--red);font-size:.8rem;text-align:center;padding:6px;display:none;flex:1}
+
+/* ── ナビバー ── */
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:12px 20px;display:flex;gap:10px;justify-content:center;align-items:center;box-shadow:0 -4px 16px var(--sh);z-index:50}
+.warn-msg{color:var(--red);font-size:.78rem;text-align:center;padding:4px;display:none;flex:1}
 .btn-nav{padding:11px 28px;border-radius:8px;border:2px solid var(--border);background:#fff;font-family:'Noto Sans JP',sans-serif;font-size:.86rem;font-weight:700;cursor:pointer;transition:all .2s;color:var(--ink)}
 .btn-nav:hover{background:var(--warm)}
 .btn-nav.primary{background:var(--green);color:#fff;border-color:var(--green)}
 .btn-nav.primary:hover{background:#1b5e3f}
 .btn-nav:disabled{opacity:.4;cursor:not-allowed}
-/* RESULT */
-.r-wrap{max-width:780px;margin:36px auto;padding:0 20px 60px}
-.r-head{text-align:center;margin-bottom:36px}
-.r-badge{display:inline-block;padding:7px 22px;border-radius:28px;font-size:.78rem;font-weight:700;letter-spacing:.1em;margin-bottom:10px}
-.r-badge.low{background:var(--green3);color:var(--green)}
-.r-badge.mid{background:var(--warn2);color:var(--warn)}
-.r-badge.high{background:#fde8e8;color:var(--red)}
-.r-title{font-family:'Shippori Mincho',serif;font-size:1.9rem;margin-bottom:6px}
-.r-sub{color:var(--ink2);font-size:.86rem}
-.overview{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
-.ov-card{background:#fff;border-radius:12px;padding:18px;text-align:center;border:2px solid var(--border)}
-.ov-lbl{font-size:.7rem;color:var(--ink2);margin-bottom:6px;font-weight:500}
-.ov-val{font-size:2rem;font-weight:700;font-family:'Shippori Mincho',serif;line-height:1}
-.ov-max{font-size:.7rem;color:var(--ink2);margin-top:2px}
-.ov-card.s .ov-val{color:var(--red)}
-.ov-card.r .ov-val{color:var(--green)}
-.ov-card.o .ov-val{color:var(--warn)}
-.high-box{background:#fde8e8;border:2px solid #f5a5a7;border-radius:12px;padding:20px 24px;margin-bottom:20px}
-.high-title{font-size:.95rem;font-weight:700;color:var(--red);margin-bottom:8px}
-.high-desc{font-size:.83rem;color:#7a2c2e;line-height:1.8}
-.r-section{background:#fff;border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--border)}
-.r-sec-title{font-family:'Shippori Mincho',serif;font-size:1.05rem;font-weight:600;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--warm)}
-.sc-item{margin-bottom:14px}
-.sc-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
-.sc-name{font-size:.8rem;flex:1;font-weight:500}
-.sc-val{font-size:.8rem;color:var(--ink2);min-width:56px;text-align:right}
-.bar-track{height:7px;background:var(--warm);border-radius:4px;position:relative;overflow:hidden}
-.bar-fill{height:100%;border-radius:4px}
-.bar-avg{position:absolute;top:-3px;width:2px;height:13px;background:var(--ink2);border-radius:1px}
-.r-actions{display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap}
-.btn-act{padding:13px 26px;border-radius:8px;border:2px solid var(--border);background:#fff;font-family:'Noto Sans JP',sans-serif;font-size:.86rem;font-weight:700;cursor:pointer;transition:all .2s;color:var(--ink)}
-.btn-act:hover{background:var(--warm)}
-.btn-act.primary{background:var(--green);color:#fff;border-color:var(--green)}
-.btn-act.primary:hover{background:#1b5e3f}
-@media print{.hd,.nav-bar,.r-actions{display:none!important}body{background:#fff}.r-wrap{margin:0;padding:20px;max-width:100%}.screen{display:block!important}#scStart,#scQuestions{display:none!important}.r-section{break-inside:avoid}@page{margin:15mm}}
+
+/* ── P10 確認画面 ── */
+.confirm-wrap{max-width:560px;margin:80px auto;padding:0 20px}
+.confirm-card{background:#fff;border-radius:14px;padding:48px;text-align:center;box-shadow:0 4px 24px var(--sh);border:1px solid var(--border)}
+.confirm-icon{font-size:3rem;margin-bottom:16px}
+.confirm-title{font-family:'Shippori Mincho',serif;font-size:1.4rem;margin-bottom:10px}
+.confirm-desc{font-size:.88rem;color:var(--ink2);margin-bottom:32px;line-height:1.9}
+.confirm-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-confirm{padding:13px 28px;border-radius:8px;border:2px solid var(--border);background:#fff;font-family:'Noto Sans JP',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;color:var(--ink)}
+.btn-confirm:hover{background:var(--warm)}
+.btn-confirm.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-confirm.primary:hover{background:#1b5e3f}
+.btn-confirm:disabled{opacity:.5;cursor:not-allowed}
+.submit-msg{margin-top:16px;font-size:.82rem;color:var(--ink2)}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
 <script src="js/scoring.js"></script>
 </head>
 <body>
+
+<!-- ヘッダー -->
 <header class="hd">
-  <div class="hd-logo">職業性ストレス<span>簡易調査票</span></div>
-  <div class="hd-prog" id="hdProg">
-    <div class="hd-prog-lbl"><span>回答の進捗</span><span id="progTxt">0 / 141</span></div>
-    <div class="hd-bar"><div class="hd-fill" id="progFill"></div></div>
+  <div class="hd-logo">ストレスチェック <span>フリー</span></div>
+  <div class="hd-page" id="hdPage"></div>
+  <div class="hd-test" id="hdTest">
+    <span style="font-size:.7rem;color:rgba(255,255,255,.5);margin-right:4px">テスト:</span>
+    <button class="test-btn" onclick="setTestData(1)">全ネガ</button>
+    <button class="test-btn" onclick="setTestData(2)">ややネガ</button>
+    <button class="test-btn" onclick="setTestData(3)">ややポジ</button>
+    <button class="test-btn" onclick="setTestData(4)">全ポジ</button>
+    <button class="test-btn" onclick="setTestData('random')">ランダム</button>
   </div>
 </header>
 
+<!-- P1: スタート画面 -->
 <div id="scStart" class="screen active">
   <div class="start-wrap">
     <div class="start-card">
-      <div class="badge">2026年4月 全事業所義務化準拠</div>
-      <h1 class="start-title">職業性ストレス<br>簡易調査票</h1>
-      <p class="start-desc">あなたの仕事や職場環境に関するストレスの状態を確認するための調査票です。回答内容は本人のみが確認できます。正直にお答えください。</p>
-      <div class="meta">
-        <div class="meta-item"><div class="meta-num">141</div><div class="meta-lbl">質問数</div></div>
-        <div class="meta-item"><div class="meta-num">8</div><div class="meta-lbl">セクション</div></div>
-        <div class="meta-item"><div class="meta-num">約15</div><div class="meta-lbl">所要分数</div></div>
-        <div class="meta-item"><div class="meta-num">49</div><div class="meta-lbl">測定尺度</div></div>
+      <h1 class="start-title">ストレスチェック<br>フリー</h1>
+      <p class="start-time">所要時間：約15分</p>
+      <div class="privacy-box">
+        <strong>🔒 プライバシーについて</strong>
+        <ul>
+          <li>結果はあなただけに通知されます</li>
+          <li>会社が個人の結果を閲覧することはできません</li>
+          <li>氏名の入力はなく、特定できません</li>
+          <li>集団分析の結果は会社が閲覧できますが、10名未満の場合は非表示です</li>
+        </ul>
       </div>
-      <div class="notice"><strong>ご注意：</strong>本ツールはストレスチェック実施を支援するWebサービスです。結果の管理・面接指導の実施は、各事業者の責任において行われます。</div>
-      <div style="background:#f0f7f4;border:1px solid #52b788;border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:.85rem;line-height:1.7;color:#1a1a2e;">
-        🔒 <strong>プライバシーについて</strong><br>
-        結果はあなただけに通知されます。会社があなたの同意なく結果を閲覧することはありません。ありのままに回答してください。
+      <div class="notice-box">
+        本ツールはストレスチェック実施を支援するWebサービスです。<br>
+        質問や採点方法は厚生労働省が発表している調査票・全国平均データセットに基づき、実施規定・実施マニュアルに準拠しています。<br>
+        結果の管理・面接指導の実施は、各事業者の責任において行われます。
       </div>
       <button class="btn-start" id="btnStart">調査をはじめる →</button>
-      <button class="btn-test" id="btnTest">🧪 テストモード（全問自動回答して結果を確認）</button>
+      <button class="btn-test-start" id="btnTestStart">🧪 テストモードで開始</button>
     </div>
   </div>
 </div>
 
+<!-- P2〜P9: 回答画面 -->
 <div id="scQuestions" class="screen">
   <div class="q-wrap" id="qContainer"></div>
   <div class="nav-bar">
-    <div style="flex:1;text-align:center"><div class="warn-msg" id="warnMsg">未回答の質問があります。すべて回答してから次へ進んでください。</div></div>
+    <div style="flex:1;text-align:center">
+      <div class="warn-msg" id="warnMsg">未回答の質問があります。すべて回答してから次へ進んでください。</div>
+    </div>
     <button class="btn-nav" id="btnPrev">← 前へ</button>
-    <button class="btn-nav primary" id="btnNext">次へ →</button>
+    <button class="btn-nav primary" id="btnNext" disabled>次へ →</button>
   </div>
 </div>
 
-<div id="scResult" class="screen">
-  <div class="r-wrap" id="rContainer"></div>
+<!-- P10: 確認画面 -->
+<div id="scConfirm" class="screen">
+  <div class="confirm-wrap">
+    <div class="confirm-card">
+      <div class="confirm-icon">✅</div>
+      <h2 class="confirm-title">141問すべて回答しました</h2>
+      <p class="confirm-desc">送信して結果を確認しますか？<br>送信後は回答を変更できません。</p>
+      <div class="confirm-btns">
+        <button class="btn-confirm" id="btnConfirmBack">← 戻る</button>
+        <button class="btn-confirm primary" id="btnSubmit">送信して結果を見る →</button>
+      </div>
+      <p class="submit-msg" id="submitMsg"></p>
+    </div>
+  </div>
 </div>
 
 <script>
-var QUESTIONS = [{"no": 1, "category": "1.ストレッサー（仕事の負担）", "scale": "01.   仕事の量的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "非常にたくさんの仕事をしなければならない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1396, "sd": 0.76}, {"no": 2, "category": "1.ストレッサー（仕事の負担）", "scale": "01.   仕事の量的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "時間内に仕事が処理しきれない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1396, "sd": 0.76}, {"no": 3, "category": "1.ストレッサー（仕事の負担）", "scale": "01.   仕事の量的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "一生懸命働かなければならない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1396, "sd": 0.76}, {"no": 4, "category": "1.ストレッサー（仕事の負担）", "scale": "02.   仕事の質的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "かなり注意を集中する必要がある", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.16, "sd": 0.71}, {"no": 5, "category": "1.ストレッサー（仕事の負担）", "scale": "02.   仕事の質的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "高度の知識や技術が必要なむずかしい仕事だ", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.16, "sd": 0.71}, {"no": 6, "category": "1.ストレッサー（仕事の負担）", "scale": "02.   仕事の質的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "勤務時間中はいつも仕事のことを考えていなければならない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.16, "sd": 0.71}, {"no": 7, "category": "1.ストレッサー（仕事の負担）", "scale": "03.   身体的負担度", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "からだを大変よく使う仕事だ", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4923, "sd": 1.08}, {"no": 8, "category": "2-1.作業リソース（仕事の資源）", "scale": "09.   仕事のコントロール", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分のペースで仕事ができる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5315, "sd": 0.74}, {"no": 9, "category": "2-1.作業リソース（仕事の資源）", "scale": "09.   仕事のコントロール", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分で仕事の順番・やり方を決めることができる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5315, "sd": 0.74}, {"no": 10, "category": "2-1.作業リソース（仕事の資源）", "scale": "09.   仕事のコントロール", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場の仕事の方針に自分の意見を反映できる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5315, "sd": 0.74}, {"no": 11, "category": "2-1.作業リソース（仕事の資源）", "scale": "11.  技能の活用度", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の技能や知識を仕事で使うことが少ない（あるいは、使うことはない）", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.0012, "sd": 0.85}, {"no": 12, "category": "1.ストレッサー（仕事の負担）", "scale": "04.   職場での対人関係", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私の部署内で意見のくい違いがある", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 13, "category": "1.ストレッサー（仕事の負担）", "scale": "04.   職場での対人関係", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私の部署と他の部署とはうまが合わない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 14, "category": "1.ストレッサー（仕事の負担）", "scale": "04.   職場での対人関係", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私の職場の雰囲気は友好的である", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.8822, "sd": 0.66}, {"no": 15, "category": "1.ストレッサー（仕事の負担）", "scale": "05.   職場環境", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私の職場の作業環境（騒音、照明、温度、換気など）はよくない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7812, "sd": 0.98952}, {"no": 16, "category": "2-1.作業リソース（仕事の資源）", "scale": "10.  仕事の適性", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の内容は自分に合っている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.9165, "sd": 0.8}, {"no": 17, "category": "2-1.作業リソース（仕事の資源）", "scale": "12.  仕事の意義", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "働きがいのある仕事だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.0907, "sd": 0.67}, {"no": 18, "category": "2-1.作業リソース（仕事の資源）", "scale": "12.  仕事の意義", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事は意味のあるものだ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.0907, "sd": 0.67}, {"no": 19, "category": "2-1.作業リソース（仕事の資源）", "scale": "12.  仕事の意義", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事は重要だと思う", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.0907, "sd": 0.67}, {"no": 20, "category": "3-1.精神的ストレス（アウトカム）", "scale": "36.  活気", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "活気がわいてくる", "direction": "1234", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.2568, "sd": 0.79}, {"no": 21, "category": "3-1.精神的ストレス（アウトカム）", "scale": "36.  活気", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "元気がいっぱいだ", "direction": "1234", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.2568, "sd": 0.79}, {"no": 22, "category": "3-1.精神的ストレス（アウトカム）", "scale": "36.  活気", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": " 生き生きする", "direction": "1234", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.2568, "sd": 0.79}, {"no": 23, "category": "3-1.精神的ストレス（アウトカム）", "scale": "37.  イライラ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "怒りを感じる", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6974, "sd": 0.85}, {"no": 24, "category": "3-1.精神的ストレス（アウトカム）", "scale": "37.  イライラ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "内心腹立たしい", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6974, "sd": 0.85}, {"no": 25, "category": "3-1.精神的ストレス（アウトカム）", "scale": "37.  イライラ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "イライラしている", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6974, "sd": 0.85}, {"no": 26, "category": "3-1.精神的ストレス（アウトカム）", "scale": "38.  疲労感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "ひどく疲れた", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6987, "sd": 0.88}, {"no": 27, "category": "3-1.精神的ストレス（アウトカム）", "scale": "38.  疲労感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "へとへとだ", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6987, "sd": 0.88}, {"no": 28, "category": "3-1.精神的ストレス（アウトカム）", "scale": "38.  疲労感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "だるい", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6987, "sd": 0.88}, {"no": 29, "category": "3-1.精神的ストレス（アウトカム）", "scale": "39.  不安感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "気がはりつめている", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.8679, "sd": 0.8}, {"no": 30, "category": "3-1.精神的ストレス（アウトカム）", "scale": "39.  不安感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "不安だ", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.8679, "sd": 0.8}, {"no": 31, "category": "3-1.精神的ストレス（アウトカム）", "scale": "39.  不安感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "落着かない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.8679, "sd": 0.8}, {"no": 32, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "ゆううつだ", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 33, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "何をするのも面倒だ", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 34, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "物事に集中できない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 35, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "気分が晴れない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 36, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "仕事が手につかない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 37, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "悲しいと感じる", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 38, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "めまいがする", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 39, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "体のふしぶしが痛む", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 40, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "頭が重かったり頭痛がする", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 41, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "首筋や肩がこる", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 42, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "腰が痛い", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 43, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "目が疲れる", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 44, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "動悸や息切れがする", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 45, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "胃腸の具合が悪い", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 46, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "食欲がない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 47, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "便秘や下痢をする", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 48, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "よく眠れない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 49, "category": "2-2.部署リソース（仕事の資源）", "scale": "17.  上司からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。次の人たちはどのくらい気軽に話ができますか？", "question": "上司　", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.3706, "sd": 0.75}, {"no": 50, "category": "2-2.部署リソース（仕事の資源）", "scale": "18.  同僚からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。次の人たちはどのくらい気軽に話ができますか？", "question": "職場の同僚", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.6788, "sd": 0.7}, {"no": 51, "category": "2-2.部署リソース（仕事の資源）", "scale": "19.  [家族・友人からのサポート]", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。次の人たちはどのくらい気軽に話ができますか？", "question": "配偶者、家族、友人等", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 3.314, "sd": 0.68}, {"no": 52, "category": "2-2.部署リソース（仕事の資源）", "scale": "17.  上司からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたが困った時、次の人たちはどのくらい頼りになりますか？", "question": "上司", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.3706, "sd": 0.75}, {"no": 53, "category": "2-2.部署リソース（仕事の資源）", "scale": "18.  同僚からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたが困った時、次の人たちはどのくらい頼りになりますか？", "question": "職場の同僚", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.6788, "sd": 0.7}, {"no": 54, "category": "2-2.部署リソース（仕事の資源）", "scale": "19.  [家族・友人からのサポート]", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたが困った時、次の人たちはどのくらい頼りになりますか？", "question": "配偶者、家族、友人等", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 3.314, "sd": 0.68}, {"no": 55, "category": "2-2.部署リソース（仕事の資源）", "scale": "17.  上司からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたの個人的な問題を相談したら、次の人たちはどのくらいきいてくれますか？", "question": "上司　", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.3706, "sd": 0.75}, {"no": 56, "category": "2-2.部署リソース（仕事の資源）", "scale": "18.  同僚からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたの個人的な問題を相談したら、次の人たちはどのくらいきいてくれますか？", "question": "職場の同僚", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.6788, "sd": 0.7}, {"no": 57, "category": "2-2.部署リソース（仕事の資源）", "scale": "19.  [家族・友人からのサポート]", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたの個人的な問題を相談したら、次の人たちはどのくらいきいてくれますか？", "question": "配偶者、家族、友人等", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 3.314, "sd": 0.68}, {"no": 58, "category": "3-3.その他（アウトカム）", "scale": "42.  仕事満足度", "section": "Ｄ．満足度についてうかがいます。最もあてはまるものに○を付けてください。", "question": "仕事に満足だ", "direction": "4321", "choices": ["満足", "まあ満足", "やや不満足", "不満足"], "avg": 2.6, "sd": 0.85}, {"no": 59, "category": "3-3.その他（アウトカム）", "scale": "43.  [家庭満足度]", "section": "Ｄ．満足度についてうかがいます。最もあてはまるものに○を付けてください。", "question": "家庭生活に満足だ", "direction": "4321", "choices": ["満足", "まあ満足", "やや不満足", "不満足"], "avg": 3.0583, "sd": 0.81}, {"no": 60, "category": "1.ストレッサー（仕事の負担）", "scale": "06.   情緒的負担", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の上で、気持ちや感情がかき乱されることがある", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6486, "sd": 0.82}, {"no": 61, "category": "1.ストレッサー（仕事の負担）", "scale": "06.   情緒的負担", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "感情面で負担になる仕事だ", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6486, "sd": 0.82}, {"no": 62, "category": "1.ストレッサー（仕事の負担）", "scale": "06.   情緒的負担", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "感情的に巻き込まれやすい仕事だ", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6486, "sd": 0.82}, {"no": 63, "category": "1.ストレッサー（仕事の負担）", "scale": "07.   役割葛藤", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "自分が正しいと思うのとは違ったやり方で仕事をしなければならない-", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7829, "sd": 0.77}, {"no": 64, "category": "1.ストレッサー（仕事の負担）", "scale": "07.   役割葛藤", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "複数の人からお互いに矛盾したことを要求される", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7829, "sd": 0.77}, {"no": 65, "category": "1.ストレッサー（仕事の負担）", "scale": "07.   役割葛藤", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "十分な人やモノがないまま仕事を割り当てられる", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7829, "sd": 0.77}, {"no": 66, "category": "2-1.作業リソース（仕事の資源）", "scale": "13.  役割明確さ", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の職務や責任が何であるか分かっている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.1593, "sd": 0.59}, {"no": 67, "category": "2-1.作業リソース（仕事の資源）", "scale": "13.  役割明確さ", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "自分にどれくらい権限があるのかはっきりしている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.1593, "sd": 0.59}, {"no": 68, "category": "2-1.作業リソース（仕事の資源）", "scale": "13.  役割明確さ", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事で何をするべきかについて説明されている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.1593, "sd": 0.59}, {"no": 69, "category": "2-1.作業リソース（仕事の資源）", "scale": "14.  成長の機会", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事で新しいことを学ぶ機会がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1807, "sd": 0.77}, {"no": 70, "category": "2-1.作業リソース（仕事の資源）", "scale": "14.  成長の機会", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事で自分の長所をのばす機会がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.2644, "sd": 0.78}, {"no": 71, "category": "2-1.作業リソース（仕事の資源）", "scale": "14.  成長の機会", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "職場では、自分の技能を十分に高めることができる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4628, "sd": 0.75}, {"no": 72, "category": "2-1.作業リソース（仕事の資源）", "scale": "15.  新奇性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "これまでしたことのない種類の仕事をすることが多い", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7754, "sd": 0.8}, {"no": 73, "category": "2-1.作業リソース（仕事の資源）", "scale": "15.  新奇性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "毎回、新しい技術や知識を必要とする仕事である", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7754, "sd": 0.8}, {"no": 74, "category": "2-1.作業リソース（仕事の資源）", "scale": "15.  新奇性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の上で、以前に経験したことのないことに出会う", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7754, "sd": 0.8}, {"no": 75, "category": "2-1.作業リソース（仕事の資源）", "scale": "16.  予測可能性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "いつごろ、自分の仕事量が増えるか分かっている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4646, "sd": 0.73}, {"no": 76, "category": "2-1.作業リソース（仕事の資源）", "scale": "16.  予測可能性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "いつごろ、自分の仕事が一段落するか見通しがついている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4646, "sd": 0.73}, {"no": 77, "category": "2-1.作業リソース（仕事の資源）", "scale": "16.  予測可能性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "いつごろ、仕事上でトラブルが生じるか予想できる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4646, "sd": 0.73}, {"no": 78, "category": "2-2.部署リソース（仕事の資源）", "scale": "20.  経済・地位報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事に見合う給料やボーナスをもらっている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4072, "sd": 0.79}, {"no": 79, "category": "2-2.部署リソース（仕事の資源）", "scale": "20.  経済・地位報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の能力や経験に見合った地位・職務に就いている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4072, "sd": 0.79}, {"no": 80, "category": "2-2.部署リソース（仕事の資源）", "scale": "21.  尊重報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私は上司からふさわしい評価を受けている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7234, "sd": 0.67}, {"no": 81, "category": "2-2.部署リソース（仕事の資源）", "scale": "21.  尊重報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "同僚から、自分の仕事上のふさわしい扱いを受けている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7234, "sd": 0.67}, {"no": 82, "category": "2-2.部署リソース（仕事の資源）", "scale": "22.  安定報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "昇進の見込みは少ない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4628, "sd": 0.75}, {"no": 83, "category": "2-2.部署リソース（仕事の資源）", "scale": "22.  安定報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職を失う恐れがある", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4628, "sd": 0.75}, {"no": 84, "category": "2-2.部署リソース（仕事の資源）", "scale": "22.  安定報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場で好ましくない変化を経験している。もしくは今後そういう状況が起こりうる", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4628, "sd": 0.75}, {"no": 85, "category": "2-2.部署リソース（仕事の資源）", "scale": "23.  上司のリーダーシップ", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の出来ばえについて、上司からフィードバックをもらっている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1807, "sd": 0.77}, {"no": 86, "category": "2-2.部署リソース（仕事の資源）", "scale": "23.  上司のリーダーシップ", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は、部下が能力をのばす機会を持てるように、取り計らってくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6751, "sd": 0.81}, {"no": 87, "category": "2-2.部署リソース（仕事の資源）", "scale": "23.  上司のリーダーシップ", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は、私が自分で問題解決できるように励ましてくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": null, "sd": null}, {"no": 88, "category": "2-2.部署リソース（仕事の資源）", "scale": "24.  上司の公正な態度", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は独りよがりなものの見方をしないようにすることができる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": null, "sd": null}, {"no": 89, "category": "2-2.部署リソース（仕事の資源）", "scale": "24.  上司の公正な態度", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は親切心と思いやりをもって接してくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7425, "sd": 0.69}, {"no": 90, "category": "2-2.部署リソース（仕事の資源）", "scale": "24.  上司の公正な態度", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は誠実な態度で対応してくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5489, "sd": 0.8}, {"no": 91, "category": "2-2.部署リソース（仕事の資源）", "scale": "25.  ほめてもらえる職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事をきちんとすれば、ほめてもらえる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4239, "sd": 0.82}, {"no": 92, "category": "2-2.部署リソース（仕事の資源）", "scale": "25.  ほめてもらえる職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "努力して仕事をすれば、ほめてもらえる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4239, "sd": 0.82}, {"no": 93, "category": "2-2.部署リソース（仕事の資源）", "scale": "25.  ほめてもらえる職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "あたりまえのことでも、できたらほめてもらえる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4239, "sd": 0.82}, {"no": 94, "category": "2-2.部署リソース（仕事の資源）", "scale": "26.  失敗を認める職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "ピンチをチャンスに変えられる職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 95, "category": "2-2.部署リソース（仕事の資源）", "scale": "26.  失敗を認める職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "失敗しても挽回(ばんかい)するチャンスがある職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.2644, "sd": 0.78}, {"no": 96, "category": "2-2.部署リソース（仕事の資源）", "scale": "27.  グループの有能感", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分のグループは仕事の遂行能力がとても高いという自信がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4934, "sd": 0.74}, {"no": 97, "category": "2-2.部署リソース（仕事の資源）", "scale": "27.  グループの有能感", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分のグループは不測の事態をうまく処理できるという自信がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 98, "category": "2-2.部署リソース（仕事の資源）", "scale": "27.  グループの有能感", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分のグループは全体的に見て、課題の解決能力が高い", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.2696, "sd": 0.73}, {"no": 99, "category": "2-3.会社リソース（仕事の資源）", "scale": "28.  経営層との信頼関係", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "経営層は従業員の仕事ぶりを信頼している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5284, "sd": 0.71}, {"no": 100, "category": "2-3.会社リソース（仕事の資源）", "scale": "28.  経営層との信頼関係", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "経営層からの情報は信頼できる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5284, "sd": 0.71}, {"no": 101, "category": "2-3.会社リソース（仕事の資源）", "scale": "28.  経営層との信頼関係", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "経営層は従業員からの提案を真剣に取り扱ってくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5284, "sd": 0.71}, {"no": 102, "category": "2-3.会社リソース（仕事の資源）", "scale": "29.  変化への対応", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場や仕事でどんな変化があるか、上司にたずねる機会がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 103, "category": "2-3.会社リソース（仕事の資源）", "scale": "29.  変化への対応", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場や仕事で変化があるときには、従業員の意見が聞かれている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.476, "sd": 0.72}, {"no": 104, "category": "2-3.会社リソース（仕事の資源）", "scale": "29.  変化への対応", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場や仕事の変化がある場合、事前に説明がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.476, "sd": 0.72}, {"no": 105, "category": "2-3.会社リソース（仕事の資源）", "scale": "30.  手続きの公正性※", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "意思決定によって影響を受ける全ての関係者が、意思決定に参加している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1463, "sd": 0.77}, {"no": 106, "category": "2-3.会社リソース（仕事の資源）", "scale": "30.  手続きの公正性※", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "意思決定は一貫している(全ての従業員に対し規則が同様に適用される)", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1463, "sd": 0.77}, {"no": 107, "category": "2-3.会社リソース（仕事の資源）", "scale": "30.  手続きの公正性※", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "意思決定が行われる前に、影響を受ける人たちの考えが聞かれている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1807, "sd": 0.77}, {"no": 108, "category": "2-3.会社リソース（仕事の資源）", "scale": "31.  個人の尊重", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "一人ひとりの長所や得意分野を考えて仕事が与えられている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1189, "sd": 0.72}, {"no": 109, "category": "2-3.会社リソース（仕事の資源）", "scale": "31.  個人の尊重", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "一人ひとりの価値観を大事にしてくれる職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1189, "sd": 0.72}, {"no": 110, "category": "2-3.会社リソース（仕事の資源）", "scale": "31.  個人の尊重", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分に合った仕事や職場を社内で見つける機会がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.2696, "sd": 0.73}, {"no": 111, "category": "2-3.会社リソース（仕事の資源）", "scale": "32.  公正な人事評価", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "人事評価の結果について十分な説明がなされている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 112, "category": "2-3.会社リソース（仕事の資源）", "scale": "32.  公正な人事評価", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の方針と役割について納得できるような説明がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 113, "category": "2-3.会社リソース（仕事の資源）", "scale": "32.  公正な人事評価", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "人事評価の基準が明確にされている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6751, "sd": 0.81}, {"no": 114, "category": "2-3.会社リソース（仕事の資源）", "scale": "33. 多様な労働者への対応", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "女性、高齢者あるいは障がい者が働きやすい職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.8822, "sd": 0.66}, {"no": 115, "category": "2-3.会社リソース（仕事の資源）", "scale": "33. 多様な労働者への対応", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "若い人が働きやすい職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1189, "sd": 0.72}, {"no": 116, "category": "2-3.会社リソース（仕事の資源）", "scale": "33. 多様な労働者への対応", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場では、（正規、非正規、アルバイトなど）いろいろな立場の人が職場の一員として尊重されている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1463, "sd": 0.77}, {"no": 117, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "意欲を引き出したり、キャリアに役立つ教育が行われている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.476, "sd": 0.72}, {"no": 118, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "若いうちから将来の進路を考えて人事管理が行われている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4934, "sd": 0.74}, {"no": 119, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "グループや個人ごとに、教育・訓練の目標が明確にされている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4934, "sd": 0.74}, {"no": 120, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の職場では、誰でも必要なときに必要な教育・訓練が受けられる-", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5489, "sd": 0.8}, {"no": 121, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の職場では、従業員を育てることが大切だと考えられている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5489, "sd": 0.8}, {"no": 122, "category": "1.ストレッサー（仕事の負担）", "scale": "08.   ワーク・セルフ・バランス（ネガティブ）", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事のことを考えているため自分の生活を充実させられない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7765, "sd": 0.86}, {"no": 123, "category": "1.ストレッサー（仕事の負担）", "scale": "08.   ワーク・セルフ・バランス（ネガティブ）", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事のスケジュールのために自分の生活を充実させられない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7765, "sd": 0.86}, {"no": 124, "category": "2-3.会社リソース（仕事の資源）", "scale": "35.  ワーク・セルフ・バランス（ポジティブ）", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事で学んだことを活かして自分の生活を充実させている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.0986, "sd": 0.78}, {"no": 125, "category": "2-3.会社リソース（仕事の資源）", "scale": "35.  ワーク・セルフ・バランス（ポジティブ）", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事でエネルギーをもらうことで、自分の生活がさらに充実している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.0986, "sd": 0.78}, {"no": 126, "category": "3-3.その他（アウトカム）", "scale": "44.  職場のハラスメント", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場で自分がいじめにあっている (セクハラ、パワハラを含む)", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.576, "sd": 0.67}, {"no": 127, "category": "3-3.その他（アウトカム）", "scale": "44.  職場のハラスメント", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場でいじめにあっている人がいる (セクハラ、パワハラを含む)", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.576, "sd": 0.67}, {"no": 128, "category": "3-3.その他（アウトカム）", "scale": "45.  職場の一体感（ソーシャル・キャピタル）", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私たちの職場では、ともに働こうという姿勢がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7425, "sd": 0.69}, {"no": 129, "category": "3-3.その他（アウトカム）", "scale": "45.  職場の一体感（ソーシャル・キャピタル）", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私たちの職場では、お互いに理解し認め合っている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7425, "sd": 0.69}, {"no": 130, "category": "3-3.その他（アウトカム）", "scale": "45.  職場の一体感（ソーシャル・キャピタル）", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私たちの職場では、仕事に関連した情報の共有ができている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7425, "sd": 0.69}, {"no": 131, "category": "3-3.その他（アウトカム）", "scale": "46.  ワーク・エンゲイジメント", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事をしていると、活力がみなぎるように感じる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.516, "sd": 0.77}, {"no": 132, "category": "3-3.その他（アウトカム）", "scale": "46.  ワーク・エンゲイジメント", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事に誇りを感じる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.516, "sd": 0.77}, {"no": 133, "category": "3-3.その他（アウトカム）", "scale": "47.  職務の遂行", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "今月の自分の仕事の出来は、他の人にくらべて良かったと思う", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.9779, "sd": 0.57}, {"no": 134, "category": "3-3.その他（アウトカム）", "scale": "47.  職務の遂行", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "指示された仕事をきちんとやりとげている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.9779, "sd": 0.57}, {"no": 135, "category": "3-3.その他（アウトカム）", "scale": "47.  職務の遂行", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分に期待されている仕事は十分にこなしている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.9779, "sd": 0.57}, {"no": 136, "category": "3-3.その他（アウトカム）", "scale": "48.  創造性の発揮", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事でいろいろ工夫したり、アイデアを出している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 137, "category": "3-3.その他（アウトカム）", "scale": "48.  創造性の発揮", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事上の問題に対して新しい解決策を考えている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 138, "category": "3-3.その他（アウトカム）", "scale": "48.  創造性の発揮", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事について新しいやり方を提案している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 139, "category": "3-3.その他（アウトカム）", "scale": "49.  積極的な学習", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事で自分を上手に高めることができている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5457, "sd": 0.72}, {"no": 140, "category": "3-3.その他（アウトカム）", "scale": "49.  積極的な学習", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "新しい事をマスターすることで刺激を受けている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5457, "sd": 0.72}, {"no": 141, "category": "3-3.その他（アウトカム）", "scale": "49.  積極的な学習", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "新しいことを経験して成長している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5457, "sd": 0.72}];
+// ─── セクション定義（指示書準拠）───────────────────────
+var SECTIONS = [
+  { id: 1, start: 1,   end: 19  },
+  { id: 2, start: 20,  end: 37  },
+  { id: 3, start: 38,  end: 48  },
+  { id: 4, start: 49,  end: 59  },
+  { id: 5, start: 60,  end: 77  },
+  { id: 6, start: 78,  end: 98  },
+  { id: 7, start: 99,  end: 121 },
+  { id: 8, start: 122, end: 141 }
+];
 
-var answers = {};
-var curSec = 0;
-var SECTIONS = [];
-var lastSec = null;
-for (var i = 0; i < QUESTIONS.length; i++) {
-  var q = QUESTIONS[i];
-  if (q.section !== lastSec) {
-    SECTIONS.push({title: q.section, questions: []});
-    lastSec = q.section;
-  }
-  SECTIONS[SECTIONS.length - 1].questions.push(q);
+// ─── 状態 ──────────────────────────────────────────
+var answers = {};      // { [no]: score } 逆転採点済み
+var currentPage = 1;   // 1〜8=回答ページ、9=確認画面
+
+// ─── 逆転採点（既存ロジック維持）────────────────────
+function getScore(q, idx) {
+  return q.direction === '1234' ? idx + 1 : 4 - idx;
 }
 
+// ─── localStorage 保存/復元 ─────────────────────────
+function saveProgress() {
+  try {
+    localStorage.setItem('sc_answers', JSON.stringify(answers));
+    localStorage.setItem('sc_page', currentPage);
+  } catch(e) {}
+}
+
+function loadProgress() {
+  try {
+    var saved = localStorage.getItem('sc_answers');
+    var savedPage = localStorage.getItem('sc_page');
+    if (saved) {
+      Object.assign(answers, JSON.parse(saved));
+      currentPage = parseInt(savedPage) || 1;
+    }
+  } catch(e) {}
+}
+
+function clearProgress() {
+  try {
+    localStorage.removeItem('sc_answers');
+    localStorage.removeItem('sc_page');
+  } catch(e) {}
+}
+
+// ─── テストモード（全141問一括セット）────────────────
+function setTestData(score) {
+  for (var i = 0; i < QUESTIONS.length; i++) {
+    var q = QUESTIONS[i];
+    answers[q.no] = score === 'random'
+      ? Math.floor(Math.random() * 4) + 1
+      : score;
+  }
+  saveProgress();
+  renderCurrentPage();
+}
+
+// ─── ページ制御ユーティリティ ─────────────────────────
+function getQuestionsForPage(page) {
+  var sec = SECTIONS[page - 1];
+  return QUESTIONS.filter(function(q) { return q.no >= sec.start && q.no <= sec.end; });
+}
+
+function checkPageComplete(page) {
+  var qs = getQuestionsForPage(page);
+  for (var i = 0; i < qs.length; i++) {
+    if (answers[qs[i].no] === undefined) return false;
+  }
+  return true;
+}
+
+function updateNextBtn() {
+  var btn = document.getElementById('btnNext');
+  var complete = checkPageComplete(currentPage);
+  btn.disabled = !complete;
+  btn.textContent = currentPage === 8 ? '確認へ →' : '次へ →';
+}
+
+function updateHeader() {
+  var el = document.getElementById('hdPage');
+  if (currentPage >= 1 && currentPage <= 8) {
+    el.textContent = currentPage + ' / 8ページ';
+  } else {
+    el.textContent = '';
+  }
+}
+
+// ─── 描画 ─────────────────────────────────────────
+function renderCurrentPage() {
+  if (currentPage >= 1 && currentPage <= 8) {
+    renderQuestionPage(currentPage);
+  }
+}
+
+function renderQuestionPage(page) {
+  var qs = getQuestionsForPage(page);
+  var sec = SECTIONS[page - 1];
+
+  // セクション指示文はページ内の最初の問から取る
+  var sectionTitle = qs.length > 0 ? qs[0].section : '';
+
+  var html = '<div class="sec-hd">セクション ' + page + ' / 8　（Q' + sec.start + '〜Q' + sec.end + '）</div>';
+  html += '<div class="sec-inst">' + sectionTitle + '</div>';
+
+  for (var i = 0; i < qs.length; i++) {
+    var q = qs[i];
+    var answered = answers[q.no] !== undefined;
+    html += '<div class="q-card' + (answered ? ' answered' : '') + '" id="qcard' + q.no + '">';
+    html += '<div class="q-row">';
+    html += '<span class="q-num">Q' + q.no + '</span>';
+    html += '<div class="q-text">' + q.question.trim() + '</div>';
+    html += '</div>';
+    html += '<div class="choices">';
+    for (var j = 0; j < q.choices.length; j++) {
+      var score = getScore(q, j);
+      var sel = answers[q.no] === score;
+      html += '<button class="choice-btn' + (sel ? ' selected' : '') + '"'
+            + ' data-no="' + q.no + '" data-score="' + score + '">'
+            + q.choices[j] + '</button>';
+    }
+    html += '</div></div>';
+  }
+
+  document.getElementById('qContainer').innerHTML = html;
+
+  // 選択肢クリックイベント
+  var btns = document.getElementById('qContainer').querySelectorAll('.choice-btn');
+  for (var k = 0; k < btns.length; k++) {
+    btns[k].onclick = function() {
+      var no    = parseInt(this.getAttribute('data-no'));
+      var score = parseInt(this.getAttribute('data-score'));
+      answers[no] = score;
+
+      var card = document.getElementById('qcard' + no);
+      card.classList.add('answered');
+      var siblings = card.querySelectorAll('.choice-btn');
+      for (var m = 0; m < siblings.length; m++) siblings[m].classList.remove('selected');
+      this.classList.add('selected');
+
+      document.getElementById('warnMsg').style.display = 'none';
+      saveProgress();
+      updateNextBtn();
+    };
+  }
+
+  document.getElementById('btnPrev').disabled = (currentPage === 1);
+  document.getElementById('hdTest').classList.add('visible');
+  updateNextBtn();
+  updateHeader();
+  window.scrollTo(0, 0);
+}
+
+// ─── 画面切り替え ──────────────────────────────────
 function showScreen(id) {
   var screens = document.querySelectorAll('.screen');
   for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
   document.getElementById(id).classList.add('active');
 }
 
-function getScore(q, idx) {
-  return q.direction === '1234' ? idx + 1 : 4 - idx;
-}
-
-function updateProgress() {
-  var done = Object.keys(answers).length;
-  document.getElementById('progTxt').textContent = done + ' / 141';
-  document.getElementById('progFill').style.width = (done / 141 * 100) + '%';
-}
-
-function renderSection() {
-  var sec = SECTIONS[curSec];
-  var html = '<div class="sec-hd">セクション ' + (curSec + 1) + ' / ' + SECTIONS.length + '</div>';
-  html += '<div class="sec-inst">' + sec.title + '</div>';
-  for (var i = 0; i < sec.questions.length; i++) {
-    var q = sec.questions[i];
-    var answered = answers[q.no] !== undefined;
-    html += '<div class="q-card' + (answered ? ' answered' : '') + '" id="qcard' + q.no + '">';
-    html += '<div class="q-row"><span class="q-num">Q' + q.no + '</span>';
-    html += '<div class="q-text">' + q.question.trim() + '</div></div>';
-    html += '<div class="choices">';
-    for (var j = 0; j < q.choices.length; j++) {
-      var score = getScore(q, j);
-      var sel = answers[q.no] === score;
-      html += '<button class="choice-btn' + (sel ? ' selected' : '') + '" data-no="' + q.no + '" data-score="' + score + '">' + q.choices[j] + '</button>';
-    }
-    html += '</div></div>';
+// ─── ページ遷移 ────────────────────────────────────
+function goToPage(page) {
+  currentPage = page;
+  saveProgress();
+  if (page >= 1 && page <= 8) {
+    showScreen('scQuestions');
+    renderCurrentPage();
+  } else if (page === 9) {
+    showScreen('scConfirm');
+    document.getElementById('hdPage').textContent = '';
+    document.getElementById('hdTest').classList.remove('visible');
   }
-  document.getElementById('qContainer').innerHTML = html;
-  var btns = document.getElementById('qContainer').querySelectorAll('.choice-btn');
-  for (var k = 0; k < btns.length; k++) {
-    btns[k].onclick = function() {
-      var no = parseInt(this.getAttribute('data-no'));
-      var score = parseInt(this.getAttribute('data-score'));
-      answers[no] = score;
-      var card = document.getElementById('qcard' + no);
-      card.classList.add('answered');
-      var siblings = card.querySelectorAll('.choice-btn');
-      for (var m = 0; m < siblings.length; m++) siblings[m].classList.remove('selected');
-      this.classList.add('selected');
-      updateProgress();
-    };
-  }
-  document.getElementById('btnPrev').disabled = curSec === 0;
-  document.getElementById('btnNext').textContent = curSec === SECTIONS.length - 1 ? '結果を見る ✓' : '次へ →';
-  updateProgress();
-  window.scrollTo(0, 0);
 }
 
-function nextSection() {
-  var nos = SECTIONS[curSec].questions.map(function(q){return q.no;});
-  var unans = nos.filter(function(no){return answers[no] === undefined;});
-  if (unans.length > 0) {
+function onNext() {
+  if (!checkPageComplete(currentPage)) {
     document.getElementById('warnMsg').style.display = 'block';
-    var el = document.getElementById('qcard' + unans[0]);
-    if (el) el.scrollIntoView({behavior:'smooth', block:'center'});
+    // 未回答の最初の問へスクロール
+    var qs = getQuestionsForPage(currentPage);
+    for (var i = 0; i < qs.length; i++) {
+      if (answers[qs[i].no] === undefined) {
+        var el = document.getElementById('qcard' + qs[i].no);
+        if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'});
+        break;
+      }
+    }
     return;
   }
   document.getElementById('warnMsg').style.display = 'none';
-  if (curSec < SECTIONS.length - 1) { curSec++; renderSection(); }
-  else showResults();
-}
-
-function prevSection() {
-  document.getElementById('warnMsg').style.display = 'none';
-  if (curSec > 0) { curSec--; renderSection(); }
-}
-
-function startSurvey() {
-  answers = {}; curSec = 0;
-  showScreen('scQuestions');
-  document.getElementById('hdProg').style.display = 'flex';
-  renderSection();
-}
-
-function startTest() {
-  answers = {};
-  for (var i = 0; i < QUESTIONS.length; i++) {
-    answers[QUESTIONS[i].no] = Math.floor(Math.random() * 4) + 1;
+  if (currentPage < 8) {
+    goToPage(currentPage + 1);
+  } else {
+    goToPage(9);
   }
-  showScreen('scResult');
-  document.getElementById('hdProg').style.display = 'none';
-  buildResult();
 }
 
-function showResults() {
-  showScreen('scResult');
-  document.getElementById('hdProg').style.display = 'none';
-  buildResult();
+function onPrev() {
+  document.getElementById('warnMsg').style.display = 'none';
+  if (currentPage > 1) goToPage(currentPage - 1);
 }
 
+// ─── 開始 ──────────────────────────────────────────
+function startSurvey() {
+  loadProgress();
+  showScreen('scQuestions');
+  renderCurrentPage();
+}
+
+function startTestMode() {
+  answers = {};
+  currentPage = 1;
+  showScreen('scQuestions');
+  renderCurrentPage();
+}
+
+// ─── 採点・送信 ────────────────────────────────────
 function buildResult() {
   var scaleResults = calcScaleResults(answers);
-  var sTotal=0,sMax=0,rTotal=0,rMax=0,oTotal=0,oMax=0;
+  var sTotal=0, sMax=0, rTotal=0, rMax=0, oTotal=0, oMax=0;
   for (var k in scaleResults) {
     var cat = scaleResults[k].category;
-    if (cat.indexOf('1.') === 0) { sTotal += scaleResults[k].score; sMax += scaleResults[k].maxScore; }
-    else if (cat.indexOf('2') === 0) { rTotal += scaleResults[k].score; rMax += scaleResults[k].maxScore; }
-    else { oTotal += scaleResults[k].score; oMax += scaleResults[k].maxScore; }
+    var first = cat.charAt(0);
+    if (first === '1') {
+      sTotal += scaleResults[k].score; sMax += scaleResults[k].maxScore;
+    } else if (first === '2') {
+      rTotal += scaleResults[k].score; rMax += scaleResults[k].maxScore;
+    } else {
+      oTotal += scaleResults[k].score; oMax += scaleResults[k].maxScore;
+    }
   }
   var level = getStressLevel(scaleResults);
-  var levelLbl = level === 'high' ? '高ストレス' : level === 'mid' ? '中程度のストレス' : '低ストレス';
-  var date = new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
-  saveToSupabase(answers, {level:level, sTotal:sTotal, sMax:sMax, rTotal:rTotal, rMax:rMax, oTotal:oTotal, oMax:oMax});
+  saveToSupabase(answers, {
+    level: level,
+    sTotal: sTotal, sMax: sMax,
+    rTotal: rTotal, rMax: rMax,
+    oTotal: oTotal, oMax: oMax
+  });
   sessionStorage.setItem('stressResult', JSON.stringify({
     level: level,
     answers: answers,
     scaleResults: scaleResults
   }));
-  window.location.href = 'result.html';
-  return;
-
-  var html = '<div class="r-head">';
-  html += '<div class="r-badge ' + level + '">' + levelLbl + '</div>';
-  html += '<h2 class="r-title">ストレスチェック結果</h2>';
-  html += '<p class="r-sub">実施日：' + date + '　全141問回答済み</p></div>';
-  if (level === 'high') {
-    html += '<div class="high-box"><div class="high-title">⚠ 高ストレスの可能性があります</div>';
-    html += '<div class="high-desc">回答結果から仕事上のストレスが高い状態にある可能性があります。産業医・保健師・カウンセラーへの相談をご検討ください。</div></div>';
-    html += '<div style="background:#fde8e8;border:1px solid #e0a0a0;border-radius:8px;padding:14px 18px;margin-top:16px;font-size:.85rem;line-height:1.7;color:#1a1a2e;">'
-      + '🏥 <strong>面接指導のご案内</strong><br>'
-      + '高ストレスと判定されました。産業医・保健師への面接指導の申出をご検討ください。<br>'
-      + '面接指導の申出は労働者の権利であり、それを理由に不利益な取扱いを受けることは法律で禁止されています。'
-      + '</div>';
-  }
-  html += '<div class="overview">';
-  html += '<div class="ov-card s"><div class="ov-lbl">ストレッサー</div><div class="ov-val">' + sTotal + '</div><div class="ov-max">/ ' + sMax + '点</div></div>';
-  html += '<div class="ov-card r"><div class="ov-lbl">仕事のリソース</div><div class="ov-val">' + rTotal + '</div><div class="ov-max">/ ' + rMax + '点</div></div>';
-  html += '<div class="ov-card o"><div class="ov-lbl">ストレス反応</div><div class="ov-val">' + oTotal + '</div><div class="ov-max">/ ' + oMax + '点</div></div>';
-  html += '</div>';
-
-  var groups = [
-    {name:'ストレッサー（仕事の負担）', color:'#b5373a', cats:['1.ストレッサー（仕事の負担）']},
-    {name:'作業リソース', color:'#2d6a4f', cats:['2-1.作業リソース（仕事の資源）']},
-    {name:'部署・会社リソース', color:'#1a4d3a', cats:['2-2.部署リソース（仕事の資源）','2-3.会社リソース（仕事の資源）']},
-    {name:'精神的ストレス', color:'#c77c3e', cats:['3-1.精神的ストレス（アウトカム）']},
-    {name:'身体的ストレス', color:'#9e5a3e', cats:['3-2.身体的ストレス（アウトカム）']},
-    {name:'その他（アウトカム）', color:'#4a6fa5', cats:['3-3.その他（アウトカム）']}
-  ];
-
-  for (var g = 0; g < groups.length; g++) {
-    var grp = groups[g];
-    var items = [];
-    for (var k in scaleResults) {
-      var sr = scaleResults[k];
-      for (var c = 0; c < grp.cats.length; c++) {
-        if (sr.category === grp.cats[c]) { items.push({scale:k, sr:sr}); break; }
-      }
-    }
-    if (items.length === 0) continue;
-    html += '<div class="r-section"><div class="r-sec-title">' + grp.name + '</div>';
-    for (var ii = 0; ii < items.length; ii++) {
-      var it = items[ii];
-      var scaleName = it.scale.replace(/^\d+[\.\-\s]+/, '').trim();
-      var pct = (it.sr.avg / 4 * 100).toFixed(1);
-      var avgPct = it.sr.questions[0].avg ? (it.sr.questions[0].avg / 4 * 100).toFixed(1) : null;
-      html += '<div class="sc-item"><div class="sc-row">';
-      html += '<span class="sc-name">' + scaleName + '</span>';
-      html += '<span class="sc-val">' + it.sr.avg.toFixed(2) + ' / 4.00</span></div>';
-      html += '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:' + grp.color + '"></div>';
-      if (avgPct) html += '<div class="bar-avg" style="left:' + avgPct + '%"></div>';
-      html += '</div></div>';
-    }
-    html += '</div>';
-  }
-  html += '<p style="font-size:.72rem;color:#aaa;text-align:center;margin-top:12px">｜ は全国平均値を示します　この結果は医療診断ではありません</p>';
-  html += '<div class="r-actions">';
-  html += '<button class="btn-act primary" id="btnPrint">🖨 PDFとして保存・印刷</button>';
-  html += '<button class="btn-act" id="btnRetake">↩ もう一度回答する</button>';
-  html += '</div>';
-
-  document.getElementById('rContainer').innerHTML = html;
-  window.scrollTo(0, 0);
-  document.getElementById('btnPrint').onclick = function(){ window.print(); };
-  document.getElementById('btnRetake').onclick = function(){ answers={}; curSec=0; showScreen('scStart'); document.getElementById('hdProg').style.display='none'; };
 }
 
 function saveToSupabase(answersObj, scores) {
   var employeeId = sessionStorage.getItem('employee_id');
   var companyId  = sessionStorage.getItem('company_id');
-  if (!employeeId || !companyId) return; // テストモード or 直接アクセス時はスキップ
+  if (!employeeId || !companyId) return;
   supabase.from('survey_responses').insert({
     employee_id:  employeeId,
     company_id:   companyId,
@@ -360,10 +424,29 @@ function saveToSupabase(answersObj, scores) {
   }).then(function(r){ if(r.error) console.error('保存エラー:', r.error); });
 }
 
-document.getElementById('btnStart').onclick = startSurvey;
-document.getElementById('btnTest').onclick = startTest;
-document.getElementById('btnPrev').onclick = prevSection;
-document.getElementById('btnNext').onclick = nextSection;
+function onSubmit() {
+  var btn  = document.getElementById('btnSubmit');
+  var back = document.getElementById('btnConfirmBack');
+  var msg  = document.getElementById('submitMsg');
+  btn.disabled = true;
+  back.disabled = true;
+  msg.textContent = '送信中...';
+  try { buildResult(); } catch(e) { console.error('buildResult error:', e); }
+  clearProgress();
+  window.location.href = 'result.html';
+}
+
+// ─── イベント登録 ──────────────────────────────────
+document.getElementById('btnStart').onclick        = startSurvey;
+document.getElementById('btnTestStart').onclick    = startTestMode;
+document.getElementById('btnNext').onclick         = onNext;
+document.getElementById('btnPrev').onclick         = onPrev;
+document.getElementById('btnConfirmBack').onclick  = function(){ goToPage(8); };
+document.getElementById('btnSubmit').onclick       = onSubmit;
+</script>
+
+<script>
+var QUESTIONS = [{"no": 1, "category": "1.ストレッサー（仕事の負担）", "scale": "01.   仕事の量的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "非常にたくさんの仕事をしなければならない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1396, "sd": 0.76}, {"no": 2, "category": "1.ストレッサー（仕事の負担）", "scale": "01.   仕事の量的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "時間内に仕事が処理しきれない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1396, "sd": 0.76}, {"no": 3, "category": "1.ストレッサー（仕事の負担）", "scale": "01.   仕事の量的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "一生懸命働かなければならない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1396, "sd": 0.76}, {"no": 4, "category": "1.ストレッサー（仕事の負担）", "scale": "02.   仕事の質的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "かなり注意を集中する必要がある", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.16, "sd": 0.71}, {"no": 5, "category": "1.ストレッサー（仕事の負担）", "scale": "02.   仕事の質的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "高度の知識や技術が必要なむずかしい仕事だ", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.16, "sd": 0.71}, {"no": 6, "category": "1.ストレッサー（仕事の負担）", "scale": "02.   仕事の質的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "勤務時間中はいつも仕事のことを考えていなければならない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.16, "sd": 0.71}, {"no": 7, "category": "1.ストレッサー（仕事の負担）", "scale": "03.   身体的負担度", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "からだを大変よく使う仕事だ", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4923, "sd": 1.08}, {"no": 8, "category": "2-1.作業リソース（仕事の資源）", "scale": "09.   仕事のコントロール", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分のペースで仕事ができる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5315, "sd": 0.74}, {"no": 9, "category": "2-1.作業リソース（仕事の資源）", "scale": "09.   仕事のコントロール", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分で仕事の順番・やり方を決めることができる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5315, "sd": 0.74}, {"no": 10, "category": "2-1.作業リソース（仕事の資源）", "scale": "09.   仕事のコントロール", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場の仕事の方針に自分の意見を反映できる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5315, "sd": 0.74}, {"no": 11, "category": "2-1.作業リソース（仕事の資源）", "scale": "11.  技能の活用度", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の技能や知識を仕事で使うことが少ない（あるいは、使うことはない）", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.0012, "sd": 0.85}, {"no": 12, "category": "1.ストレッサー（仕事の負担）", "scale": "04.   職場での対人関係", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私の部署内で意見のくい違いがある", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 13, "category": "1.ストレッサー（仕事の負担）", "scale": "04.   職場での対人関係", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私の部署と他の部署とはうまが合わない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 14, "category": "1.ストレッサー（仕事の負担）", "scale": "04.   職場での対人関係", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私の職場の雰囲気は友好的である", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.8822, "sd": 0.66}, {"no": 15, "category": "1.ストレッサー（仕事の負担）", "scale": "05.   職場環境", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私の職場の作業環境（騒音、照明、温度、換気など）はよくない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7812, "sd": 0.98952}, {"no": 16, "category": "2-1.作業リソース（仕事の資源）", "scale": "10.  仕事の適性", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の内容は自分に合っている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.9165, "sd": 0.8}, {"no": 17, "category": "2-1.作業リソース（仕事の資源）", "scale": "12.  仕事の意義", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "働きがいのある仕事だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.0907, "sd": 0.67}, {"no": 18, "category": "2-1.作業リソース（仕事の資源）", "scale": "12.  仕事の意義", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事は意味のあるものだ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.0907, "sd": 0.67}, {"no": 19, "category": "2-1.作業リソース（仕事の資源）", "scale": "12.  仕事の意義", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事は重要だと思う", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.0907, "sd": 0.67}, {"no": 20, "category": "3-1.精神的ストレス（アウトカム）", "scale": "36.  活気", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "活気がわいてくる", "direction": "1234", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.2568, "sd": 0.79}, {"no": 21, "category": "3-1.精神的ストレス（アウトカム）", "scale": "36.  活気", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "元気がいっぱいだ", "direction": "1234", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.2568, "sd": 0.79}, {"no": 22, "category": "3-1.精神的ストレス（アウトカム）", "scale": "36.  活気", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": " 生き生きする", "direction": "1234", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.2568, "sd": 0.79}, {"no": 23, "category": "3-1.精神的ストレス（アウトカム）", "scale": "37.  イライラ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "怒りを感じる", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6974, "sd": 0.85}, {"no": 24, "category": "3-1.精神的ストレス（アウトカム）", "scale": "37.  イライラ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "内心腹立たしい", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6974, "sd": 0.85}, {"no": 25, "category": "3-1.精神的ストレス（アウトカム）", "scale": "37.  イライラ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "イライラしている", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6974, "sd": 0.85}, {"no": 26, "category": "3-1.精神的ストレス（アウトカム）", "scale": "38.  疲労感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "ひどく疲れた", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6987, "sd": 0.88}, {"no": 27, "category": "3-1.精神的ストレス（アウトカム）", "scale": "38.  疲労感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "へとへとだ", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6987, "sd": 0.88}, {"no": 28, "category": "3-1.精神的ストレス（アウトカム）", "scale": "38.  疲労感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "だるい", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6987, "sd": 0.88}, {"no": 29, "category": "3-1.精神的ストレス（アウトカム）", "scale": "39.  不安感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "気がはりつめている", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.8679, "sd": 0.8}, {"no": 30, "category": "3-1.精神的ストレス（アウトカム）", "scale": "39.  不安感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "不安だ", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.8679, "sd": 0.8}, {"no": 31, "category": "3-1.精神的ストレス（アウトカム）", "scale": "39.  不安感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "落着かない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.8679, "sd": 0.8}, {"no": 32, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "ゆううつだ", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 33, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "何をするのも面倒だ", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 34, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "物事に集中できない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 35, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "気分が晴れない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 36, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "仕事が手につかない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 37, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "悲しいと感じる", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 38, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "めまいがする", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 39, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "体のふしぶしが痛む", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 40, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "頭が重かったり頭痛がする", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 41, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "首筋や肩がこる", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 42, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "腰が痛い", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 43, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "目が疲れる", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 44, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "動悸や息切れがする", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 45, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "胃腸の具合が悪い", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 46, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "食欲がない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 47, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "便秘や下痢をする", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 48, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "よく眠れない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 49, "category": "2-2.部署リソース（仕事の資源）", "scale": "17.  上司からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。次の人たちはどのくらい気軽に話ができますか？", "question": "上司　", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.3706, "sd": 0.75}, {"no": 50, "category": "2-2.部署リソース（仕事の資源）", "scale": "18.  同僚からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。次の人たちはどのくらい気軽に話ができますか？", "question": "職場の同僚", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.6788, "sd": 0.7}, {"no": 51, "category": "2-2.部署リソース（仕事の資源）", "scale": "19.  [家族・友人からのサポート]", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。次の人たちはどのくらい気軽に話ができますか？", "question": "配偶者、家族、友人等", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 3.314, "sd": 0.68}, {"no": 52, "category": "2-2.部署リソース（仕事の資源）", "scale": "17.  上司からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたが困った時、次の人たちはどのくらい頼りになりますか？", "question": "上司", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.3706, "sd": 0.75}, {"no": 53, "category": "2-2.部署リソース（仕事の資源）", "scale": "18.  同僚からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたが困った時、次の人たちはどのくらい頼りになりますか？", "question": "職場の同僚", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.6788, "sd": 0.7}, {"no": 54, "category": "2-2.部署リソース（仕事の資源）", "scale": "19.  [家族・友人からのサポート]", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたが困った時、次の人たちはどのくらい頼りになりますか？", "question": "配偶者、家族、友人等", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 3.314, "sd": 0.68}, {"no": 55, "category": "2-2.部署リソース（仕事の資源）", "scale": "17.  上司からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたの個人的な問題を相談したら、次の人たちはどのくらいきいてくれますか？", "question": "上司　", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.3706, "sd": 0.75}, {"no": 56, "category": "2-2.部署リソース（仕事の資源）", "scale": "18.  同僚からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたの個人的な問題を相談したら、次の人たちはどのくらいきいてくれますか？", "question": "職場の同僚", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.6788, "sd": 0.7}, {"no": 57, "category": "2-2.部署リソース（仕事の資源）", "scale": "19.  [家族・友人からのサポート]", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたの個人的な問題を相談したら、次の人たちはどのくらいきいてくれますか？", "question": "配偶者、家族、友人等", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 3.314, "sd": 0.68}, {"no": 58, "category": "3-3.その他（アウトカム）", "scale": "42.  仕事満足度", "section": "Ｄ．満足度についてうかがいます。最もあてはまるものに○を付けてください。", "question": "仕事に満足だ", "direction": "4321", "choices": ["満足", "まあ満足", "やや不満足", "不満足"], "avg": 2.6, "sd": 0.85}, {"no": 59, "category": "3-3.その他（アウトカム）", "scale": "43.  [家庭満足度]", "section": "Ｄ．満足度についてうかがいます。最もあてはまるものに○を付けてください。", "question": "家庭生活に満足だ", "direction": "4321", "choices": ["満足", "まあ満足", "やや不満足", "不満足"], "avg": 3.0583, "sd": 0.81}, {"no": 60, "category": "1.ストレッサー（仕事の負担）", "scale": "06.   情緒的負担", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の上で、気持ちや感情がかき乱されることがある", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6486, "sd": 0.82}, {"no": 61, "category": "1.ストレッサー（仕事の負担）", "scale": "06.   情緒的負担", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "感情面で負担になる仕事だ", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6486, "sd": 0.82}, {"no": 62, "category": "1.ストレッサー（仕事の負担）", "scale": "06.   情緒的負担", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "感情的に巻き込まれやすい仕事だ", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6486, "sd": 0.82}, {"no": 63, "category": "1.ストレッサー（仕事の負担）", "scale": "07.   役割葛藤", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "自分が正しいと思うのとは違ったやり方で仕事をしなければならない-", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7829, "sd": 0.77}, {"no": 64, "category": "1.ストレッサー（仕事の負担）", "scale": "07.   役割葛藤", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "複数の人からお互いに矛盾したことを要求される", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7829, "sd": 0.77}, {"no": 65, "category": "1.ストレッサー（仕事の負担）", "scale": "07.   役割葛藤", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "十分な人やモノがないまま仕事を割り当てられる", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7829, "sd": 0.77}, {"no": 66, "category": "2-1.作業リソース（仕事の資源）", "scale": "13.  役割明確さ", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の職務や責任が何であるか分かっている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.1593, "sd": 0.59}, {"no": 67, "category": "2-1.作業リソース（仕事の資源）", "scale": "13.  役割明確さ", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "自分にどれくらい権限があるのかはっきりしている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.1593, "sd": 0.59}, {"no": 68, "category": "2-1.作業リソース（仕事の資源）", "scale": "13.  役割明確さ", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事で何をするべきかについて説明されている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.1593, "sd": 0.59}, {"no": 69, "category": "2-1.作業リソース（仕事の資源）", "scale": "14.  成長の機会", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事で新しいことを学ぶ機会がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1807, "sd": 0.77}, {"no": 70, "category": "2-1.作業リソース（仕事の資源）", "scale": "14.  成長の機会", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事で自分の長所をのばす機会がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.2644, "sd": 0.78}, {"no": 71, "category": "2-1.作業リソース（仕事の資源）", "scale": "14.  成長の機会", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "職場では、自分の技能を十分に高めることができる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4628, "sd": 0.75}, {"no": 72, "category": "2-1.作業リソース（仕事の資源）", "scale": "15.  新奇性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "これまでしたことのない種類の仕事をすることが多い", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7754, "sd": 0.8}, {"no": 73, "category": "2-1.作業リソース（仕事の資源）", "scale": "15.  新奇性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "毎回、新しい技術や知識を必要とする仕事である", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7754, "sd": 0.8}, {"no": 74, "category": "2-1.作業リソース（仕事の資源）", "scale": "15.  新奇性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の上で、以前に経験したことのないことに出会う", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7754, "sd": 0.8}, {"no": 75, "category": "2-1.作業リソース（仕事の資源）", "scale": "16.  予測可能性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "いつごろ、自分の仕事量が増えるか分かっている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4646, "sd": 0.73}, {"no": 76, "category": "2-1.作業リソース（仕事の資源）", "scale": "16.  予測可能性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "いつごろ、自分の仕事が一段落するか見通しがついている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4646, "sd": 0.73}, {"no": 77, "category": "2-1.作業リソース（仕事の資源）", "scale": "16.  予測可能性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "いつごろ、仕事上でトラブルが生じるか予想できる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4646, "sd": 0.73}, {"no": 78, "category": "2-2.部署リソース（仕事の資源）", "scale": "20.  経済・地位報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事に見合う給料やボーナスをもらっている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4072, "sd": 0.79}, {"no": 79, "category": "2-2.部署リソース（仕事の資源）", "scale": "20.  経済・地位報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の能力や経験に見合った地位・職務に就いている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4072, "sd": 0.79}, {"no": 80, "category": "2-2.部署リソース（仕事の資源）", "scale": "21.  尊重報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私は上司からふさわしい評価を受けている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7234, "sd": 0.67}, {"no": 81, "category": "2-2.部署リソース（仕事の資源）", "scale": "21.  尊重報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "同僚から、自分の仕事上のふさわしい扱いを受けている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7234, "sd": 0.67}, {"no": 82, "category": "2-2.部署リソース（仕事の資源）", "scale": "22.  安定報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "昇進の見込みは少ない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4628, "sd": 0.75}, {"no": 83, "category": "2-2.部署リソース（仕事の資源）", "scale": "22.  安定報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職を失う恐れがある", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4628, "sd": 0.75}, {"no": 84, "category": "2-2.部署リソース（仕事の資源）", "scale": "22.  安定報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場で好ましくない変化を経験している。もしくは今後そういう状況が起こりうる", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4628, "sd": 0.75}, {"no": 85, "category": "2-2.部署リソース（仕事の資源）", "scale": "23.  上司のリーダーシップ", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の出来ばえについて、上司からフィードバックをもらっている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1807, "sd": 0.77}, {"no": 86, "category": "2-2.部署リソース（仕事の資源）", "scale": "23.  上司のリーダーシップ", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は、部下が能力をのばす機会を持てるように、取り計らってくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6751, "sd": 0.81}, {"no": 87, "category": "2-2.部署リソース（仕事の資源）", "scale": "23.  上司のリーダーシップ", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は、私が自分で問題解決できるように励ましてくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": null, "sd": null}, {"no": 88, "category": "2-2.部署リソース（仕事の資源）", "scale": "24.  上司の公正な態度", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は独りよがりなものの見方をしないようにすることができる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": null, "sd": null}, {"no": 89, "category": "2-2.部署リソース（仕事の資源）", "scale": "24.  上司の公正な態度", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は親切心と思いやりをもって接してくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7425, "sd": 0.69}, {"no": 90, "category": "2-2.部署リソース（仕事の資源）", "scale": "24.  上司の公正な態度", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は誠実な態度で対応してくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5489, "sd": 0.8}, {"no": 91, "category": "2-2.部署リソース（仕事の資源）", "scale": "25.  ほめてもらえる職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事をきちんとすれば、ほめてもらえる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4239, "sd": 0.82}, {"no": 92, "category": "2-2.部署リソース（仕事の資源）", "scale": "25.  ほめてもらえる職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "努力して仕事をすれば、ほめてもらえる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4239, "sd": 0.82}, {"no": 93, "category": "2-2.部署リソース（仕事の資源）", "scale": "25.  ほめてもらえる職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "あたりまえのことでも、できたらほめてもらえる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4239, "sd": 0.82}, {"no": 94, "category": "2-2.部署リソース（仕事の資源）", "scale": "26.  失敗を認める職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "ピンチをチャンスに変えられる職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 95, "category": "2-2.部署リソース（仕事の資源）", "scale": "26.  失敗を認める職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "失敗しても挽回(ばんかい)するチャンスがある職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.2644, "sd": 0.78}, {"no": 96, "category": "2-2.部署リソース（仕事の資源）", "scale": "27.  グループの有能感", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分のグループは仕事の遂行能力がとても高いという自信がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4934, "sd": 0.74}, {"no": 97, "category": "2-2.部署リソース（仕事の資源）", "scale": "27.  グループの有能感", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分のグループは不測の事態をうまく処理できるという自信がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 98, "category": "2-2.部署リソース（仕事の資源）", "scale": "27.  グループの有能感", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分のグループは全体的に見て、課題の解決能力が高い", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.2696, "sd": 0.73}, {"no": 99, "category": "2-3.会社リソース（仕事の資源）", "scale": "28.  経営層との信頼関係", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "経営層は従業員の仕事ぶりを信頼している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5284, "sd": 0.71}, {"no": 100, "category": "2-3.会社リソース（仕事の資源）", "scale": "28.  経営層との信頼関係", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "経営層からの情報は信頼できる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5284, "sd": 0.71}, {"no": 101, "category": "2-3.会社リソース（仕事の資源）", "scale": "28.  経営層との信頼関係", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "経営層は従業員からの提案を真剣に取り扱ってくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5284, "sd": 0.71}, {"no": 102, "category": "2-3.会社リソース（仕事の資源）", "scale": "29.  変化への対応", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場や仕事でどんな変化があるか、上司にたずねる機会がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 103, "category": "2-3.会社リソース（仕事の資源）", "scale": "29.  変化への対応", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場や仕事で変化があるときには、従業員の意見が聞かれている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.476, "sd": 0.72}, {"no": 104, "category": "2-3.会社リソース（仕事の資源）", "scale": "29.  変化への対応", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場や仕事の変化がある場合、事前に説明がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.476, "sd": 0.72}, {"no": 105, "category": "2-3.会社リソース（仕事の資源）", "scale": "30.  手続きの公正性※", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "意思決定によって影響を受ける全ての関係者が、意思決定に参加している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1463, "sd": 0.77}, {"no": 106, "category": "2-3.会社リソース（仕事の資源）", "scale": "30.  手続きの公正性※", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "意思決定は一貫している(全ての従業員に対し規則が同様に適用される)", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1463, "sd": 0.77}, {"no": 107, "category": "2-3.会社リソース（仕事の資源）", "scale": "30.  手続きの公正性※", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "意思決定が行われる前に、影響を受ける人たちの考えが聞かれている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1807, "sd": 0.77}, {"no": 108, "category": "2-3.会社リソース（仕事の資源）", "scale": "31.  個人の尊重", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "一人ひとりの長所や得意分野を考えて仕事が与えられている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1189, "sd": 0.72}, {"no": 109, "category": "2-3.会社リソース（仕事の資源）", "scale": "31.  個人の尊重", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "一人ひとりの価値観を大事にしてくれる職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1189, "sd": 0.72}, {"no": 110, "category": "2-3.会社リソース（仕事の資源）", "scale": "31.  個人の尊重", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分に合った仕事や職場を社内で見つける機会がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.2696, "sd": 0.73}, {"no": 111, "category": "2-3.会社リソース（仕事の資源）", "scale": "32.  公正な人事評価", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "人事評価の結果について十分な説明がなされている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 112, "category": "2-3.会社リソース（仕事の資源）", "scale": "32.  公正な人事評価", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の方針と役割について納得できるような説明がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 113, "category": "2-3.会社リソース（仕事の資源）", "scale": "32.  公正な人事評価", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "人事評価の基準が明確にされている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6751, "sd": 0.81}, {"no": 114, "category": "2-3.会社リソース（仕事の資源）", "scale": "33. 多様な労働者への対応", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "女性、高齢者あるいは障がい者が働きやすい職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.8822, "sd": 0.66}, {"no": 115, "category": "2-3.会社リソース（仕事の資源）", "scale": "33. 多様な労働者への対応", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "若い人が働きやすい職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1189, "sd": 0.72}, {"no": 116, "category": "2-3.会社リソース（仕事の資源）", "scale": "33. 多様な労働者への対応", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場では、（正規、非正規、アルバイトなど）いろいろな立場の人が職場の一員として尊重されている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1463, "sd": 0.77}, {"no": 117, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "意欲を引き出したり、キャリアに役立つ教育が行われている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.476, "sd": 0.72}, {"no": 118, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "若いうちから将来の進路を考えて人事管理が行われている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4934, "sd": 0.74}, {"no": 119, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "グループや個人ごとに、教育・訓練の目標が明確にされている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4934, "sd": 0.74}, {"no": 120, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の職場では、誰でも必要なときに必要な教育・訓練が受けられる-", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5489, "sd": 0.8}, {"no": 121, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の職場では、従業員を育てることが大切だと考えられている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5489, "sd": 0.8}, {"no": 122, "category": "1.ストレッサー（仕事の負担）", "scale": "08.   ワーク・セルフ・バランス（ネガティブ）", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事のことを考えているため自分の生活を充実させられない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7765, "sd": 0.86}, {"no": 123, "category": "1.ストレッサー（仕事の負担）", "scale": "08.   ワーク・セルフ・バランス（ネガティブ）", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事のスケジュールのために自分の生活を充実させられない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7765, "sd": 0.86}, {"no": 124, "category": "2-3.会社リソース（仕事の資源）", "scale": "35.  ワーク・セルフ・バランス（ポジティブ）", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事で学んだことを活かして自分の生活を充実させている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.0986, "sd": 0.78}, {"no": 125, "category": "2-3.会社リソース（仕事の資源）", "scale": "35.  ワーク・セルフ・バランス（ポジティブ）", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事でエネルギーをもらうことで、自分の生活がさらに充実している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.0986, "sd": 0.78}, {"no": 126, "category": "3-3.その他（アウトカム）", "scale": "44.  職場のハラスメント", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場で自分がいじめにあっている (セクハラ、パワハラを含む)", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.576, "sd": 0.67}, {"no": 127, "category": "3-3.その他（アウトカム）", "scale": "44.  職場のハラスメント", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場でいじめにあっている人がいる (セクハラ、パワハラを含む)", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.576, "sd": 0.67}, {"no": 128, "category": "3-3.その他（アウトカム）", "scale": "45.  職場の一体感（ソーシャル・キャピタル）", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私たちの職場では、ともに働こうという姿勢がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7425, "sd": 0.69}, {"no": 129, "category": "3-3.その他（アウトカム）", "scale": "45.  職場の一体感（ソーシャル・キャピタル）", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私たちの職場では、お互いに理解し認め合っている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7425, "sd": 0.69}, {"no": 130, "category": "3-3.その他（アウトカム）", "scale": "45.  職場の一体感（ソーシャル・キャピタル）", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私たちの職場では、仕事に関連した情報の共有ができている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7425, "sd": 0.69}, {"no": 131, "category": "3-3.その他（アウトカム）", "scale": "46.  ワーク・エンゲイジメント", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事をしていると、活力がみなぎるように感じる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.516, "sd": 0.77}, {"no": 132, "category": "3-3.その他（アウトカム）", "scale": "46.  ワーク・エンゲイジメント", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事に誇りを感じる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.516, "sd": 0.77}, {"no": 133, "category": "3-3.その他（アウトカム）", "scale": "47.  職務の遂行", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "今月の自分の仕事の出来は、他の人にくらべて良かったと思う", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.9779, "sd": 0.57}, {"no": 134, "category": "3-3.その他（アウトカム）", "scale": "47.  職務の遂行", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "指示された仕事をきちんとやりとげている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.9779, "sd": 0.57}, {"no": 135, "category": "3-3.その他（アウトカム）", "scale": "47.  職務の遂行", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分に期待されている仕事は十分にこなしている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.9779, "sd": 0.57}, {"no": 136, "category": "3-3.その他（アウトカム）", "scale": "48.  創造性の発揮", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事でいろいろ工夫したり、アイデアを出している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 137, "category": "3-3.その他（アウトカム）", "scale": "48.  創造性の発揮", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事上の問題に対して新しい解決策を考えている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 138, "category": "3-3.その他（アウトカム）", "scale": "48.  創造性の発揮", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事について新しいやり方を提案している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 139, "category": "3-3.その他（アウトカム）", "scale": "49.  積極的な学習", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事で自分を上手に高めることができている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5457, "sd": 0.72}, {"no": 140, "category": "3-3.その他（アウトカム）", "scale": "49.  積極的な学習", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "新しい事をマスターすることで刺激を受けている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5457, "sd": 0.72}, {"no": 141, "category": "3-3.その他（アウトカム）", "scale": "49.  積極的な学習", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "新しいことを経験して成長している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5457, "sd": 0.72}];
 </script>
 </body>
 </html>
