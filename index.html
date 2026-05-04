@@ -4,275 +4,189 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ストレスチェック フリー</title>
+<script>
+(function() {
+  var hash = window.location.hash;
+  if (hash && hash.indexOf('type=recovery') !== -1) {
+    window.location.replace('/admin/reset-password' + hash);
+  }
+})();
+</script>
 <style>
-:root {
-  --teal:   #5DCAA5;
-  --coral:  #F0997B;
-  --ink:    #1a1a2e;
-  --ink2:   #4a4a6a;
-  --paper:  #faf9f6;
-  --warm:   #f3f0e8;
-  --border: #d6d0c4;
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;600&display=swap');
+:root{
+  --ink:#1a1a2e;--ink2:#4a4a6a;--paper:#faf9f6;--warm:#f3f0e8;
+  --green:#2d6a4f;--green2:#52b788;--green3:#d8f3dc;
+  --warn:#c77c3e;--warn2:#fff3e0;--red:#b5373a;
+  --border:#d6d0c4;--sh:rgba(26,26,46,0.08)
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
-  background: var(--paper); color: var(--ink); line-height: 1.7;
-}
-.screen { display: none; }
-.screen.active { display: block; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;line-height:1.7}
 
-/* ── ローディング ── */
-.loading-wrap {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; min-height: 100vh; gap: 16px;
-}
-.spinner {
-  width: 38px; height: 38px;
-  border: 3px solid var(--border); border-top-color: var(--teal);
-  border-radius: 50%; animation: spin .8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+/* ── ヘッダー ── */
+.hd{background:var(--ink);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.hd-logo{font-family:'Shippori Mincho',serif;font-size:1.2rem;font-weight:600;flex:1}
+.hd-logo span{color:var(--green2)}
+.hd-page{color:rgba(255,255,255,.7);font-size:.82rem;white-space:nowrap}
+.hd-test{display:none;flex-wrap:wrap;gap:6px;align-items:center}
+.hd-test.visible{display:flex}
+.test-btn{padding:4px 10px;border-radius:5px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);font-size:.72rem;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all .15s}
+.test-btn:hover{background:rgba(255,255,255,.2)}
 
-/* ── スタート画面 ── */
-.start-wrap { max-width: 520px; margin: 0 auto; padding: 40px 20px 80px; }
-.start-title    { font-size: 1.6rem; font-weight: 700; text-align: center; margin-bottom: 4px; }
-.start-subtitle { font-size: .85rem; color: var(--teal); text-align: center; margin-bottom: 28px; }
-.start-desc {
-  background: #fff; border: 1px solid var(--border); border-radius: 12px;
-  padding: 18px 20px; margin-bottom: 18px; font-size: .88rem; line-height: 1.9;
-}
-.start-desc li { margin-left: 1.4em; margin-bottom: 2px; }
-.legal-box {
-  background: var(--warm); border-radius: 10px; padding: 14px 16px;
-  font-size: .75rem; color: var(--ink2); line-height: 1.8; margin-bottom: 24px;
-}
-.btn-start {
-  display: block; width: 100%; background: var(--teal); color: #fff;
-  border: none; border-radius: 10px; padding: 15px; font-size: 1rem;
-  font-weight: 700; cursor: pointer; margin-bottom: 20px; transition: background .2s;
-}
-.btn-start:hover { background: #3db88a; }
-.test-section-lbl { text-align: center; font-size: .73rem; color: var(--ink2); margin-bottom: 8px; }
-.test-btn-row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
-.btn-test {
-  padding: 5px 11px; border-radius: 6px; border: 1px solid var(--border);
-  background: #fff; font-size: .73rem; cursor: pointer; color: var(--ink2); transition: background .2s;
-}
-.btn-test:hover { background: var(--warm); }
+/* ── 画面切り替え ── */
+.screen{display:none}.screen.active{display:block}
 
-/* ── 回答画面：ヘッダー ── */
-.q-header {
-  position: sticky; top: 0; z-index: 10;
-  background: #fff; border-bottom: 1px solid var(--border); padding: 10px 16px 0;
-}
-.q-header-top {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;
-}
-.q-header-title { font-size: .88rem; font-weight: 700; }
-.q-header-page  { font-size: .84rem; color: var(--ink2); font-weight: 700; }
-.q-test-row     { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
-.prog-bar       { height: 3px; background: var(--warm); }
-.prog-fill      { height: 100%; background: var(--teal); transition: width .4s ease; }
+/* ── P1 スタート画面 ── */
+.start-wrap{max-width:680px;margin:60px auto;padding:0 20px}
+.start-card{background:#fff;border-radius:14px;padding:48px;box-shadow:0 4px 24px var(--sh);border:1px solid var(--border)}
+.start-title{font-family:'Shippori Mincho',serif;font-size:1.9rem;line-height:1.4;margin-bottom:8px}
+.start-time{font-size:.82rem;color:var(--ink2);margin-bottom:28px}
+.privacy-box{background:#f0f7f4;border:1px solid #52b788;border-radius:10px;padding:16px 20px;margin-bottom:16px;font-size:.84rem;line-height:1.9;color:var(--ink)}
+.privacy-box strong{display:block;margin-bottom:6px;font-size:.9rem}
+.privacy-box ul{list-style:none;padding:0}
+.privacy-box ul li::before{content:"✓ ";color:var(--green);font-weight:700}
+.notice-box{background:var(--warm);border-left:3px solid var(--border);border-radius:6px;padding:12px 16px;margin-bottom:28px;font-size:.8rem;color:var(--ink2);line-height:1.9}
+.btn-start{display:block;width:100%;padding:16px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;letter-spacing:.08em;transition:all .2s}
+.btn-start:hover{background:#1b5e3f;transform:translateY(-1px)}
+.btn-test-start{display:block;width:100%;padding:11px;margin-top:10px;background:transparent;color:var(--ink2);border:2px dashed var(--border);border-radius:10px;font-size:.82rem;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all .2s}
+.btn-test-start:hover{background:var(--warm);border-color:var(--warn);color:var(--warn)}
 
-/* ── 回答画面：本文 ── */
-.q-wrap { max-width: 680px; margin: 0 auto; padding: 16px 16px 110px; }
-.warn-msg {
-  display: none; background: #fde8e8; border: 1px solid #f5a5a7; border-radius: 8px;
-  padding: 10px 14px; font-size: .84rem; color: #b5373a; margin-bottom: 14px;
-}
-.q-card {
-  background: #fff; border: 1.5px solid var(--border); border-radius: 10px;
-  padding: 16px; margin-bottom: 12px; transition: border-color .2s;
-}
-.q-card.answered { border-color: var(--teal); }
-.q-num  { font-size: .73rem; color: var(--ink2); font-weight: 700; margin-bottom: 5px; }
-.q-text { font-size: .91rem; line-height: 1.65; margin-bottom: 12px; }
-.choices {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
-}
-.choice-btn {
-  padding: 8px 6px; border: 1.5px solid var(--border); border-radius: 7px;
-  background: #fff; font-size: .8rem; cursor: pointer; text-align: center;
-  line-height: 1.4; transition: all .15s; color: var(--ink);
-  font-family: inherit;
-}
-.choice-btn:hover    { background: var(--warm); border-color: #b0a898; }
-.choice-btn.selected { background: var(--teal); color: #fff; border-color: var(--teal); }
+/* ── P2〜P9 回答画面 ── */
+.q-wrap{max-width:740px;margin:36px auto;padding:0 20px 100px}
+.sec-hd{padding:12px 18px;background:var(--ink);color:#fff;border-radius:10px;margin-bottom:18px;font-size:.8rem;font-weight:500;letter-spacing:.05em}
+.sec-inst{font-size:.86rem;color:var(--ink2);background:var(--warm);padding:12px 18px;border-radius:8px;margin-bottom:18px;border-left:3px solid var(--border);line-height:1.8}
+.q-card{background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:10px;border:2px solid var(--border);transition:border-color .2s}
+.q-card.answered{border-color:var(--green3);background:#fafffe}
+.q-row{display:flex;align-items:flex-start;gap:14px}
+.q-num{font-size:.7rem;color:#fff;background:var(--ink2);padding:2px 8px;border-radius:10px;font-weight:700;flex-shrink:0;margin-top:3px;min-width:36px;text-align:center}
+.q-card.answered .q-num{background:var(--green)}
+.q-text{font-size:.9rem;line-height:1.7;flex:1}
+.choices{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.choice-btn{flex:1;min-width:72px;padding:9px 6px;border:2px solid var(--border);border-radius:8px;background:var(--warm);font-size:.78rem;font-family:'Noto Sans JP',sans-serif;color:var(--ink2);cursor:pointer;transition:all .15s;text-align:center;line-height:1.3}
+.choice-btn:hover{border-color:var(--green2);color:var(--green);background:var(--green3)}
+.choice-btn.selected{border-color:var(--green);background:var(--green);color:#fff;font-weight:700}
 
-/* ── 回答画面：フッター ── */
-.q-footer-outer {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: #fff; border-top: 1px solid var(--border); padding: 10px 16px;
-}
-.q-footer {
-  max-width: 680px; margin: 0 auto; display: flex; gap: 10px;
-}
-.btn-prev {
-  flex: 1; padding: 11px; border-radius: 8px; border: 2px solid var(--border);
-  background: #fff; font-size: .88rem; font-weight: 700; cursor: pointer;
-  color: var(--ink2); font-family: inherit;
-}
-.btn-prev:disabled { opacity: .4; cursor: default; }
-.btn-next {
-  flex: 2; padding: 11px; border-radius: 8px; border: none;
-  background: var(--teal); color: #fff; font-size: .88rem; font-weight: 700;
-  cursor: pointer; transition: background .2s; font-family: inherit;
-}
-.btn-next:disabled            { background: #ccc; cursor: default; }
-.btn-next:not(:disabled):hover { background: #3db88a; }
+/* ── ナビバー ── */
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:12px 20px;display:flex;gap:10px;justify-content:center;align-items:center;box-shadow:0 -4px 16px var(--sh);z-index:50}
+.warn-msg{color:var(--red);font-size:.78rem;text-align:center;padding:4px;display:none;flex:1}
+.btn-nav{padding:11px 28px;border-radius:8px;border:2px solid var(--border);background:#fff;font-family:'Noto Sans JP',sans-serif;font-size:.86rem;font-weight:700;cursor:pointer;transition:all .2s;color:var(--ink)}
+.btn-nav:hover{background:var(--warm)}
+.btn-nav.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-nav.primary:hover{background:#1b5e3f}
+.btn-nav:disabled{opacity:.4;cursor:not-allowed}
 
-/* ── 確認画面 ── */
-.confirm-wrap {
-  max-width: 520px; margin: 0 auto; padding: 60px 20px; text-align: center;
-}
-.confirm-icon  { font-size: 2.4rem; margin-bottom: 14px; }
-.confirm-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 10px; }
-.confirm-desc  { color: var(--ink2); font-size: .9rem; margin-bottom: 32px; }
-.confirm-btns  { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-.btn-back {
-  padding: 12px 24px; border-radius: 8px; border: 2px solid var(--border);
-  background: #fff; font-size: .9rem; font-weight: 700; cursor: pointer; font-family: inherit;
-}
-.btn-submit {
-  padding: 12px 28px; border-radius: 8px; border: none;
-  background: var(--teal); color: #fff; font-size: .9rem; font-weight: 700;
-  cursor: pointer; transition: background .2s; font-family: inherit;
-}
-.btn-submit:disabled            { background: #ccc; cursor: default; }
-.btn-submit:not(:disabled):hover { background: #3db88a; }
-.submit-msg { margin-top: 18px; color: var(--ink2); font-size: .85rem; min-height: 20px; }
-
-@media (max-width: 400px) {
-  .choices { grid-template-columns: 1fr 1fr; }
-}
+/* ── P10 確認画面 ── */
+.confirm-wrap{max-width:560px;margin:80px auto;padding:0 20px}
+.confirm-card{background:#fff;border-radius:14px;padding:48px;text-align:center;box-shadow:0 4px 24px var(--sh);border:1px solid var(--border)}
+.confirm-icon{font-size:3rem;margin-bottom:16px}
+.confirm-title{font-family:'Shippori Mincho',serif;font-size:1.4rem;margin-bottom:10px}
+.confirm-desc{font-size:.88rem;color:var(--ink2);margin-bottom:32px;line-height:1.9}
+.confirm-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-confirm{padding:13px 28px;border-radius:8px;border:2px solid var(--border);background:#fff;font-family:'Noto Sans JP',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;color:var(--ink)}
+.btn-confirm:hover{background:var(--warm)}
+.btn-confirm.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-confirm.primary:hover{background:#1b5e3f}
+.btn-confirm:disabled{opacity:.5;cursor:not-allowed}
+.submit-msg{margin-top:16px;font-size:.82rem;color:var(--ink2)}
 </style>
-</head>
-<body>
-
-<!-- ローディング -->
-<div id="scLoading" class="screen active">
-  <div class="loading-wrap">
-    <div class="spinner"></div>
-    <div style="color:#999;font-size:.84rem">読み込み中...</div>
-  </div>
-</div>
-
-<!-- P1：スタート画面 -->
-<div id="scStart" class="screen">
-  <div class="start-wrap">
-    <div class="start-title">ストレスチェック フリー</div>
-    <div class="start-subtitle">― 職場のストレス状態を確認する ―</div>
-    <div class="start-desc">
-      <ul>
-        <li>職場のストレス状態を無料で確認できます</li>
-        <li>141問・所要時間15〜20分</li>
-        <li>回答は匿名で処理されます</li>
-      </ul>
-    </div>
-    <div class="legal-box">
-      本ツールはストレスチェック実施を支援するWebサービスです。<br>
-      質問や採点方法は厚生労働省が発表している調査票・全国平均データセットに基づき、実施規定・実施マニュアルに準拠しています。<br>
-      結果の管理・面接指導の実施は、各事業者の責任において行われます。
-    </div>
-    <button class="btn-start" id="btnStartMain">調査をはじめる →</button>
-    <div class="test-section-lbl">テストモード</div>
-    <div class="test-btn-row">
-      <button class="btn-test" onclick="setTestDataAndStart(1)">全ネガ</button>
-      <button class="btn-test" onclick="setTestDataAndStart(2)">ややネガ</button>
-      <button class="btn-test" onclick="setTestDataAndStart(3)">ややポジ</button>
-      <button class="btn-test" onclick="setTestDataAndStart(4)">全ポジ</button>
-      <button class="btn-test" onclick="setTestDataAndStart('random')">ランダム</button>
-    </div>
-  </div>
-</div>
-
-<!-- P2〜P9：回答画面 -->
-<div id="scQuestions" class="screen">
-  <div class="q-header">
-    <div class="q-header-top">
-      <span class="q-header-title">ストレスチェック フリー</span>
-      <span class="q-header-page" id="hdPage"></span>
-    </div>
-    <div class="q-test-row">
-      <button class="btn-test" onclick="setTestData(1)">全ネガ</button>
-      <button class="btn-test" onclick="setTestData(2)">ややネガ</button>
-      <button class="btn-test" onclick="setTestData(3)">ややポジ</button>
-      <button class="btn-test" onclick="setTestData(4)">全ポジ</button>
-      <button class="btn-test" onclick="setTestData('random')">ランダム</button>
-    </div>
-    <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
-  </div>
-  <div class="q-wrap">
-    <div id="warnMsg" class="warn-msg">未回答の質問があります</div>
-    <div id="qContainer"></div>
-  </div>
-  <div class="q-footer-outer">
-    <div class="q-footer">
-      <button class="btn-prev" id="btnPrev" onclick="onPrev()">← 戻る</button>
-      <button class="btn-next" id="btnNext" onclick="onNext()">次へ →</button>
-    </div>
-  </div>
-</div>
-
-<!-- P10：確認画面 -->
-<div id="scConfirm" class="screen">
-  <div class="confirm-wrap">
-    <div class="confirm-icon">✅</div>
-    <div class="confirm-title">141問すべて回答しました</div>
-    <div class="confirm-desc">送信して結果を確認しますか？</div>
-    <div class="confirm-btns">
-      <button class="btn-back" onclick="goToPage(9)">戻る</button>
-      <button class="btn-submit" id="btnSubmit" onclick="onSubmit()">送信して結果を見る →</button>
-    </div>
-    <div class="submit-msg" id="submitMsg"></div>
-  </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
 <script src="js/scoring.js"></script>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header class="hd">
+  <div class="hd-logo">ストレスチェック <span>フリー</span></div>
+  <div class="hd-page" id="hdPage"></div>
+  <div class="hd-test" id="hdTest">
+    <span style="font-size:.7rem;color:rgba(255,255,255,.5);margin-right:4px">テスト:</span>
+    <button class="test-btn" onclick="setTestData(1)">全ネガ</button>
+    <button class="test-btn" onclick="setTestData(2)">ややネガ</button>
+    <button class="test-btn" onclick="setTestData(3)">ややポジ</button>
+    <button class="test-btn" onclick="setTestData(4)">全ポジ</button>
+    <button class="test-btn" onclick="setTestData('random')">ランダム</button>
+  </div>
+</header>
+
+<!-- P1: スタート画面 -->
+<div id="scStart" class="screen active">
+  <div class="start-wrap">
+    <div class="start-card">
+      <h1 class="start-title">ストレスチェック<br>フリー</h1>
+      <p class="start-time">所要時間：約15分</p>
+      <div class="privacy-box">
+        <strong>🔒 プライバシーについて</strong>
+        <ul>
+          <li>結果はあなただけに通知されます</li>
+          <li>会社が個人の結果を閲覧することはできません</li>
+          <li>氏名の入力はなく、特定できません</li>
+          <li>集団分析の結果は会社が閲覧できますが、10名未満の場合は非表示です</li>
+        </ul>
+      </div>
+      <div class="notice-box">
+        本ツールはストレスチェック実施を支援するWebサービスです。<br>
+        質問や採点方法は厚生労働省が発表している調査票・全国平均データセットに基づき、実施規定・実施マニュアルに準拠しています。<br>
+        結果の管理・面接指導の実施は、各事業者の責任において行われます。
+      </div>
+      <button class="btn-start" id="btnStart">調査をはじめる →</button>
+      <button class="btn-test-start" id="btnTestStart">🧪 テストモードで開始</button>
+    </div>
+  </div>
+</div>
+
+<!-- P2〜P9: 回答画面 -->
+<div id="scQuestions" class="screen">
+  <div class="q-wrap" id="qContainer"></div>
+  <div class="nav-bar">
+    <div style="flex:1;text-align:center">
+      <div class="warn-msg" id="warnMsg">未回答の質問があります。すべて回答してから次へ進んでください。</div>
+    </div>
+    <button class="btn-nav" id="btnPrev">← 前へ</button>
+    <button class="btn-nav primary" id="btnNext" disabled>次へ →</button>
+  </div>
+</div>
+
+<!-- P10: 確認画面 -->
+<div id="scConfirm" class="screen">
+  <div class="confirm-wrap">
+    <div class="confirm-card">
+      <div class="confirm-icon">✅</div>
+      <h2 class="confirm-title">141問すべて回答しました</h2>
+      <p class="confirm-desc">送信して結果を確認しますか？<br>送信後は回答を変更できません。</p>
+      <div class="confirm-btns">
+        <button class="btn-confirm" id="btnConfirmBack">← 戻る</button>
+        <button class="btn-confirm primary" id="btnSubmit">送信して結果を見る →</button>
+      </div>
+      <p class="submit-msg" id="submitMsg"></p>
+    </div>
+  </div>
+</div>
+
 <script>
-// ─── 状態 ────────────────────────────────────────────
-var answers     = {};  // { [q141番号]: 生の選択肢番号(1〜4) }
-var questions   = [];  // questions_master 全件
-var master      = null;
-var currentPage = 1;   // 1=スタート, 2〜9=回答, 10=確認
+// ─── セクション定義（指示書準拠）───────────────────────
+var SECTIONS = [
+  { id: 1, start: 1,   end: 19  },
+  { id: 2, start: 20,  end: 37  },
+  { id: 3, start: 38,  end: 48  },
+  { id: 4, start: 49,  end: 59  },
+  { id: 5, start: 60,  end: 77  },
+  { id: 6, start: 78,  end: 98  },
+  { id: 7, start: 99,  end: 121 },
+  { id: 8, start: 122, end: 141 }
+];
 
-// ─── ページ定義（q141の範囲） ─────────────────────────
-var PAGE_RANGES = {
-  2: [1, 19], 3: [20, 37], 4: [38, 57],
-  5: [58, 71], 6: [72, 83], 7: [84, 103],
-  8: [104, 121], 9: [122, 141]
-};
+// ─── 状態 ──────────────────────────────────────────
+var answers = {};        // { [no]: score } 逆転採点済み
+var choiceIndexes = {};  // { [no]: idx } 何番目の選択肢を選んだか（0始まり）
+var currentPage = 1;     // 1〜8=回答ページ、9=確認画面
 
-// ─── 初期化 ──────────────────────────────────────────
-async function init() {
-  try {
-    master    = await loadMaster();
-    questions = master.questions;
-    loadProgress();
-    showScreen('scStart');
-  } catch(e) {
-    document.getElementById('scLoading').innerHTML =
-      '<div class="loading-wrap">'
-      + '<div style="color:#e24b4a;text-align:center;padding:24px;max-width:340px">'
-      + 'データの読み込みに失敗しました。<br>'
-      + '<small style="color:#999">' + e.message + '</small><br><br>'
-      + '<button onclick="location.reload()" style="padding:9px 22px;border-radius:7px;'
-      + 'border:1px solid #ccc;cursor:pointer;font-size:.88rem">再読み込み</button>'
-      + '</div></div>';
-  }
+// ─── 逆転採点（既存ロジック維持）────────────────────
+function getScore(q, idx) {
+  return q.direction === '1234' ? idx + 1 : 4 - idx;
 }
 
-// ─── 画面切り替え ──────────────────────────────────────
-function showScreen(id) {
-  var screens = document.querySelectorAll('.screen');
-  for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
-  document.getElementById(id).classList.add('active');
-}
-
-// ─── localStorage ─────────────────────────────────────
+// ─── localStorage 保存/復元 ─────────────────────────
 function saveProgress() {
   try {
     localStorage.setItem('sc_answers', JSON.stringify(answers));
@@ -282,7 +196,7 @@ function saveProgress() {
 
 function loadProgress() {
   try {
-    var saved     = localStorage.getItem('sc_answers');
+    var saved = localStorage.getItem('sc_answers');
     var savedPage = localStorage.getItem('sc_page');
     if (saved) {
       Object.assign(answers, JSON.parse(saved));
@@ -298,114 +212,106 @@ function clearProgress() {
   } catch(e) {}
 }
 
-// ─── ページ制御 ───────────────────────────────────────
+// ─── テストモード（全141問一括セット）────────────────
+function setTestData(score) {
+  for (var i = 0; i < QUESTIONS.length; i++) {
+    var q = QUESTIONS[i];
+    var s = score === 'random' ? Math.floor(Math.random() * 4) + 1 : score;
+    answers[q.no] = s;
+    // choiceIndexes: score から choices の index を逆引き
+    for (var j = 0; j < q.choices.length; j++) {
+      if (getScore(q, j) === s) { choiceIndexes[q.no] = j; break; }
+    }
+  }
+  saveProgress();
+  renderCurrentPage();
+}
+
+// ─── ページ制御ユーティリティ ─────────────────────────
 function getQuestionsForPage(page) {
-  var r = PAGE_RANGES[page];
-  if (!r) return [];
-  return questions.filter(function(q) {
-    return q.q141 >= r[0] && q.q141 <= r[1];
-  });
+  var sec = SECTIONS[page - 1];
+  return QUESTIONS.filter(function(q) { return q.no >= sec.start && q.no <= sec.end; });
 }
 
 function checkPageComplete(page) {
   var qs = getQuestionsForPage(page);
   for (var i = 0; i < qs.length; i++) {
-    if (answers[qs[i].q141] === undefined) return false;
+    if (answers[qs[i].no] === undefined) return false;
   }
   return true;
 }
 
-function goToPage(page) {
-  currentPage = page;
-  if (page >= 2 && page <= 9) {
-    showScreen('scQuestions');
-    renderQuestionPage(page);
-  } else if (page === 10) {
-    showScreen('scConfirm');
-    document.getElementById('btnSubmit').disabled = false;
-    document.getElementById('submitMsg').textContent = '';
+function updateNextBtn() {
+  var btn = document.getElementById('btnNext');
+  var complete = checkPageComplete(currentPage);
+  btn.disabled = !complete;
+  btn.textContent = currentPage === 8 ? '確認へ →' : '次へ →';
+}
+
+function updateHeader() {
+  var el = document.getElementById('hdPage');
+  if (currentPage >= 1 && currentPage <= 8) {
+    el.textContent = currentPage + ' / 8ページ';
   } else {
-    showScreen('scStart');
+    el.textContent = '';
   }
 }
 
-// ─── 開始 ─────────────────────────────────────────────
-function startSurvey() {
-  var hasProgress = Object.keys(answers).length > 0
-    && currentPage >= 2 && currentPage <= 9;
-  goToPage(hasProgress ? currentPage : 2);
-}
-
-// ─── テストモード ─────────────────────────────────────
-function setTestData(score) {
-  questions.forEach(function(q) {
-    answers[q.q141] = score === 'random'
-      ? Math.floor(Math.random() * 4) + 1
-      : score;
-  });
-  saveProgress();
-  renderCurrentPage();
-}
-
-function setTestDataAndStart(score) {
-  questions.forEach(function(q) {
-    answers[q.q141] = score === 'random'
-      ? Math.floor(Math.random() * 4) + 1
-      : score;
-  });
-  saveProgress();
-  currentPage = 2;
-  goToPage(2);
-}
-
-// ─── 選択肢テキスト解析 ──────────────────────────────
-function parseChoices(str) {
-  // "1234　そうだ まあそうだ ややちがう ちがう" → ["そうだ", "まあそうだ", "ややちがう", "ちがう"]
-  var parts = str.trim().split(/\s+/);
-  if (/^\d+$/.test(parts[0])) parts.shift();
-  return parts;
-}
-
-// ─── 描画 ─────────────────────────────────────────────
+// ─── 描画 ─────────────────────────────────────────
 function renderCurrentPage() {
-  if (currentPage >= 2 && currentPage <= 9) renderQuestionPage(currentPage);
+  if (currentPage >= 1 && currentPage <= 8) {
+    renderQuestionPage(currentPage);
+  }
 }
 
 function renderQuestionPage(page) {
-  var qs      = getQuestionsForPage(page);
-  var pageNum = page - 1;  // 表示用 1〜8
+  var qs = getQuestionsForPage(page);
+  var sec = SECTIONS[page - 1];
 
-  document.getElementById('hdPage').textContent = pageNum + ' / 8 ページ';
-  var answered = Object.keys(answers).length;
-  document.getElementById('progFill').style.width = (answered / 141 * 100) + '%';
-  document.getElementById('warnMsg').style.display = 'none';
+  // セクション指示文はページ内の最初の問から取る
+  var sectionTitle = qs.length > 0 ? qs[0].section : '';
 
-  var html = '';
+  function stripPrefix(s) {
+    return s.replace(/^[Ａ-Ｈ]．/, '').trim();
+  }
+
+  var html = '<div class="sec-hd">セクション ' + page + ' / 8　（Q' + sec.start + '〜Q' + sec.end + '）</div>';
+  html += '<div class="sec-inst">' + stripPrefix(sectionTitle) + '</div>';
+
+  var lastSection = sectionTitle;
   for (var i = 0; i < qs.length; i++) {
-    var q      = qs[i];
-    var texts  = parseChoices(q.choices);
-    var isDone = answers[q.q141] !== undefined;
-    html += '<div class="q-card' + (isDone ? ' answered' : '') + '" id="qcard' + q.q141 + '">';
-    html += '<div class="q-num">Q' + q.q141 + '</div>';
+    var q = qs[i];
+    if (i > 0 && q.section !== lastSection) {
+      html += '<div class="sec-inst" style="margin-top:20px">' + stripPrefix(q.section) + '</div>';
+      lastSection = q.section;
+    }
+    var answered = answers[q.no] !== undefined;
+    html += '<div class="q-card' + (answered ? ' answered' : '') + '" id="qcard' + q.no + '">';
+    html += '<div class="q-row">';
+    html += '<span class="q-num">Q' + q.no + '</span>';
     html += '<div class="q-text">' + q.question.trim() + '</div>';
+    html += '</div>';
     html += '<div class="choices">';
-    for (var j = 0; j < texts.length; j++) {
-      var idx = j + 1;  // 生の選択肢番号 1〜4
-      var sel = answers[q.q141] === idx;
+    for (var j = 0; j < q.choices.length; j++) {
+      var score = getScore(q, j);
+      var sel = answers[q.no] === score;
       html += '<button class="choice-btn' + (sel ? ' selected' : '') + '"'
-        + ' data-no="' + q.q141 + '" data-idx="' + idx + '">'
-        + texts[j] + '</button>';
+            + ' data-no="' + q.no + '" data-score="' + score + '" data-idx="' + j + '">'
+            + q.choices[j] + '</button>';
     }
     html += '</div></div>';
   }
+
   document.getElementById('qContainer').innerHTML = html;
 
+  // 選択肢クリックイベント
   var btns = document.getElementById('qContainer').querySelectorAll('.choice-btn');
   for (var k = 0; k < btns.length; k++) {
     btns[k].onclick = function() {
-      var no  = parseInt(this.getAttribute('data-no'));
-      var idx = parseInt(this.getAttribute('data-idx'));
-      answers[no] = idx;
+      var no    = parseInt(this.getAttribute('data-no'));
+      var score = parseInt(this.getAttribute('data-score'));
+      answers[no] = score;
+      choiceIndexes[no] = parseInt(this.getAttribute('data-idx'));
 
       var card = document.getElementById('qcard' + no);
       card.classList.add('answered');
@@ -413,97 +319,612 @@ function renderQuestionPage(page) {
       for (var m = 0; m < siblings.length; m++) siblings[m].classList.remove('selected');
       this.classList.add('selected');
 
-      var prog = Object.keys(answers).length;
-      document.getElementById('progFill').style.width = (prog / 141 * 100) + '%';
       document.getElementById('warnMsg').style.display = 'none';
       saveProgress();
       updateNextBtn();
     };
   }
 
-  document.getElementById('btnPrev').disabled = (page === 2);
+  document.getElementById('btnPrev').disabled = (currentPage === 1);
+  document.getElementById('hdTest').classList.add('visible');
   updateNextBtn();
+  updateHeader();
   window.scrollTo(0, 0);
 }
 
-function updateNextBtn() {
-  var btn      = document.getElementById('btnNext');
-  var complete = checkPageComplete(currentPage);
-  btn.disabled    = !complete;
-  btn.textContent = currentPage === 9 ? '確認へ →' : '次へ →';
+// ─── 画面切り替え ──────────────────────────────────
+function showScreen(id) {
+  var screens = document.querySelectorAll('.screen');
+  for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
+  document.getElementById(id).classList.add('active');
 }
 
-// ─── ナビゲーション ───────────────────────────────────
+// ─── ページ遷移 ────────────────────────────────────
+function goToPage(page) {
+  currentPage = page;
+  saveProgress();
+  if (page >= 1 && page <= 8) {
+    showScreen('scQuestions');
+    renderCurrentPage();
+  } else if (page === 9) {
+    showScreen('scConfirm');
+    document.getElementById('hdPage').textContent = '';
+    document.getElementById('hdTest').classList.remove('visible');
+  }
+}
+
 function onNext() {
   if (!checkPageComplete(currentPage)) {
     document.getElementById('warnMsg').style.display = 'block';
+    // 未回答の最初の問へスクロール
     var qs = getQuestionsForPage(currentPage);
     for (var i = 0; i < qs.length; i++) {
-      if (answers[qs[i].q141] === undefined) {
-        var el = document.getElementById('qcard' + qs[i].q141);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (answers[qs[i].no] === undefined) {
+        var el = document.getElementById('qcard' + qs[i].no);
+        if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'});
         break;
       }
     }
     return;
   }
   document.getElementById('warnMsg').style.display = 'none';
-  goToPage(currentPage < 9 ? currentPage + 1 : 10);
+  if (currentPage < 8) {
+    goToPage(currentPage + 1);
+  } else {
+    goToPage(9);
+  }
 }
 
 function onPrev() {
   document.getElementById('warnMsg').style.display = 'none';
-  if (currentPage > 2) goToPage(currentPage - 1);
+  if (currentPage > 1) goToPage(currentPage - 1);
 }
 
-// ─── 採点・送信 ───────────────────────────────────────
-async function buildResult() {
-  var scaleResults = calcScaleResults(answers, master.questions);
-  var deviations   = calcAllDeviations(scaleResults, master.scales);
-  var level        = getStressLevel(deviations);
+// ─── 開始 ──────────────────────────────────────────
+function startSurvey() {
+  loadProgress();
+  showScreen('scQuestions');
+  renderCurrentPage();
+}
 
-  await saveToSupabase(answers, level);
+function startTestMode() {
+  answers = {};
+  currentPage = 1;
+  showScreen('scQuestions');
+  renderCurrentPage();
+}
 
+// ─── 採点・送信 ────────────────────────────────────
+function buildResult() {
+  var scaleResults = calcScaleResults(answers);
+  var sTotal=0, sMax=0, rTotal=0, rMax=0, oTotal=0, oMax=0;
+  for (var k in scaleResults) {
+    var cat = scaleResults[k].category;
+    var first = cat.charAt(0);
+    if (first === '1') {
+      sTotal += scaleResults[k].score; sMax += scaleResults[k].maxScore;
+    } else if (first === '2') {
+      rTotal += scaleResults[k].score; rMax += scaleResults[k].maxScore;
+    } else {
+      oTotal += scaleResults[k].score; oMax += scaleResults[k].maxScore;
+    }
+  }
+  var level = getStressLevel(scaleResults);
+  saveToSupabase(answers, {
+    level: level,
+    sTotal: sTotal, sMax: sMax,
+    rTotal: rTotal, rMax: rMax,
+    oTotal: oTotal, oMax: oMax
+  });
   sessionStorage.setItem('stressResult', JSON.stringify({
-    level:      level,
-    answers:    answers,
-    deviations: deviations
+    level: level,
+    answers: answers,
+    choiceIndexes: choiceIndexes,
+    scaleResults: scaleResults
   }));
-
-  window.location.href = 'result.html';
 }
 
-async function saveToSupabase(answersObj, level) {
+function saveToSupabase(answersObj, scores) {
   var employeeId = sessionStorage.getItem('employee_id');
   var companyId  = sessionStorage.getItem('company_id');
   if (!employeeId || !companyId) return;
-  var result = await supabase.from('survey_responses').insert({
+  supabase.from('survey_responses').insert({
     employee_id:  employeeId,
     company_id:   companyId,
     answers:      answersObj,
-    stress_level: level
-  });
-  if (result.error) console.error('保存エラー:', result.error);
+    stress_level: scores.level,
+    s_total: scores.sTotal, s_max: scores.sMax,
+    r_total: scores.rTotal, r_max: scores.rMax,
+    o_total: scores.oTotal, o_max: scores.oMax
+  }).then(function(r){ if(r.error) console.error('保存エラー:', r.error); });
 }
 
-async function onSubmit() {
-  var btn = document.getElementById('btnSubmit');
-  var msg = document.getElementById('submitMsg');
-  btn.disabled     = true;
-  msg.textContent  = '送信中...';
+function onSubmit() {
+  var btn  = document.getElementById('btnSubmit');
+  var back = document.getElementById('btnConfirmBack');
+  var msg  = document.getElementById('submitMsg');
+  btn.disabled = true;
+  back.disabled = true;
+  msg.textContent = '送信中...';
+  try { buildResult(); } catch(e) { console.error('buildResult error:', e); }
+  clearProgress();
+  window.location.href = 'result.html';
+}
+
+// ─── イベント登録 ──────────────────────────────────
+document.getElementById('btnStart').onclick        = startSurvey;
+document.getElementById('btnTestStart').onclick    = startTestMode;
+document.getElementById('btnNext').onclick         = onNext;
+document.getElementById('btnPrev').onclick         = onPrev;
+document.getElementById('btnConfirmBack').onclick  = function(){ goToPage(8); };
+document.getElementById('btnSubmit').onclick       = onSubmit;
+</script>
+
+<script>
+var QUESTIONS = [{"no": 1, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "01.\u00a0\u00a0 \u4ed5\u4e8b\u306e\u91cf\u7684\u8ca0\u62c5", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u975e\u5e38\u306b\u305f\u304f\u3055\u3093\u306e\u4ed5\u4e8b\u3092\u3057\u306a\u3051\u308c\u3070\u306a\u3089\u306a\u3044", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1396, "sd": 0.76}, {"no": 2, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "01.\u00a0\u00a0 \u4ed5\u4e8b\u306e\u91cf\u7684\u8ca0\u62c5", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u6642\u9593\u5185\u306b\u4ed5\u4e8b\u304c\u51e6\u7406\u3057\u304d\u308c\u306a\u3044", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1396, "sd": 0.76}, {"no": 3, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "01.\u00a0\u00a0 \u4ed5\u4e8b\u306e\u91cf\u7684\u8ca0\u62c5", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4e00\u751f\u61f8\u547d\u50cd\u304b\u306a\u3051\u308c\u3070\u306a\u3089\u306a\u3044", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1396, "sd": 0.76}, {"no": 4, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "02.\u00a0\u00a0 \u4ed5\u4e8b\u306e\u8cea\u7684\u8ca0\u62c5", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u304b\u306a\u308a\u6ce8\u610f\u3092\u96c6\u4e2d\u3059\u308b\u5fc5\u8981\u304c\u3042\u308b", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.16, "sd": 0.71}, {"no": 5, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "02.\u00a0\u00a0 \u4ed5\u4e8b\u306e\u8cea\u7684\u8ca0\u62c5", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u9ad8\u5ea6\u306e\u77e5\u8b58\u3084\u6280\u8853\u304c\u5fc5\u8981\u306a\u3080\u305a\u304b\u3057\u3044\u4ed5\u4e8b\u3060", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.16, "sd": 0.71}, {"no": 6, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "02.\u00a0\u00a0 \u4ed5\u4e8b\u306e\u8cea\u7684\u8ca0\u62c5", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u52e4\u52d9\u6642\u9593\u4e2d\u306f\u3044\u3064\u3082\u4ed5\u4e8b\u306e\u3053\u3068\u3092\u8003\u3048\u3066\u3044\u306a\u3051\u308c\u3070\u306a\u3089\u306a\u3044", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.16, "sd": 0.71}, {"no": 7, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "03.\u00a0\u00a0 \u8eab\u4f53\u7684\u8ca0\u62c5\u5ea6", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u304b\u3089\u3060\u3092\u5927\u5909\u3088\u304f\u4f7f\u3046\u4ed5\u4e8b\u3060", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4923, "sd": 1.08}, {"no": 8, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "09.\u00a0\u00a0 \u4ed5\u4e8b\u306e\u30b3\u30f3\u30c8\u30ed\u30fc\u30eb", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306e\u30da\u30fc\u30b9\u3067\u4ed5\u4e8b\u304c\u3067\u304d\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5315, "sd": 0.74}, {"no": 9, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "09.\u00a0\u00a0 \u4ed5\u4e8b\u306e\u30b3\u30f3\u30c8\u30ed\u30fc\u30eb", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u3067\u4ed5\u4e8b\u306e\u9806\u756a\u30fb\u3084\u308a\u65b9\u3092\u6c7a\u3081\u308b\u3053\u3068\u304c\u3067\u304d\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5315, "sd": 0.74}, {"no": 10, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "09.\u00a0\u00a0 \u4ed5\u4e8b\u306e\u30b3\u30f3\u30c8\u30ed\u30fc\u30eb", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u8077\u5834\u306e\u4ed5\u4e8b\u306e\u65b9\u91dd\u306b\u81ea\u5206\u306e\u610f\u898b\u3092\u53cd\u6620\u3067\u304d\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5315, "sd": 0.74}, {"no": 11, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "11.\u00a0 \u6280\u80fd\u306e\u6d3b\u7528\u5ea6", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306e\u6280\u80fd\u3084\u77e5\u8b58\u3092\u4ed5\u4e8b\u3067\u4f7f\u3046\u3053\u3068\u304c\u5c11\u306a\u3044\uff08\u3042\u308b\u3044\u306f\u3001\u4f7f\u3046\u3053\u3068\u306f\u306a\u3044\uff09", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 3.0012, "sd": 0.85}, {"no": 12, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "04.\u00a0\u00a0 \u8077\u5834\u3067\u306e\u5bfe\u4eba\u95a2\u4fc2", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u79c1\u306e\u90e8\u7f72\u5185\u3067\u610f\u898b\u306e\u304f\u3044\u9055\u3044\u304c\u3042\u308b", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.8822, "sd": 0.66}, {"no": 13, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "04.\u00a0\u00a0 \u8077\u5834\u3067\u306e\u5bfe\u4eba\u95a2\u4fc2", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u79c1\u306e\u90e8\u7f72\u3068\u4ed6\u306e\u90e8\u7f72\u3068\u306f\u3046\u307e\u304c\u5408\u308f\u306a\u3044", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.8822, "sd": 0.66}, {"no": 14, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "04.\u00a0\u00a0 \u8077\u5834\u3067\u306e\u5bfe\u4eba\u95a2\u4fc2", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u79c1\u306e\u8077\u5834\u306e\u96f0\u56f2\u6c17\u306f\u53cb\u597d\u7684\u3067\u3042\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.8822, "sd": 0.66}, {"no": 15, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "05.\u00a0\u00a0 \u8077\u5834\u74b0\u5883", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u79c1\u306e\u8077\u5834\u306e\u4f5c\u696d\u74b0\u5883\uff08\u9a12\u97f3\u3001\u7167\u660e\u3001\u6e29\u5ea6\u3001\u63db\u6c17\u306a\u3069\uff09\u306f\u3088\u304f\u306a\u3044", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.7812, "sd": 0.98952}, {"no": 16, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "10.\u00a0 \u4ed5\u4e8b\u306e\u9069\u6027", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u306e\u5185\u5bb9\u306f\u81ea\u5206\u306b\u5408\u3063\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.9165, "sd": 0.8}, {"no": 17, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "12.\u00a0 \u4ed5\u4e8b\u306e\u610f\u7fa9", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u50cd\u304d\u304c\u3044\u306e\u3042\u308b\u4ed5\u4e8b\u3060", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 3.0907, "sd": 0.67}, {"no": 18, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "12.\u00a0 \u4ed5\u4e8b\u306e\u610f\u7fa9", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306e\u4ed5\u4e8b\u306f\u610f\u5473\u306e\u3042\u308b\u3082\u306e\u3060", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 3.0907, "sd": 0.67}, {"no": 19, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "12.\u00a0 \u4ed5\u4e8b\u306e\u610f\u7fa9", "section": "\uff21\uff0e\u3042\u306a\u305f\u306e\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306e\u4ed5\u4e8b\u306f\u91cd\u8981\u3060\u3068\u601d\u3046", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 3.0907, "sd": 0.67}, {"no": 20, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "36.\u00a0 \u6d3b\u6c17", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u6d3b\u6c17\u304c\u308f\u3044\u3066\u304f\u308b", "direction": "1234", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 2.2568, "sd": 0.79}, {"no": 21, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "36.\u00a0 \u6d3b\u6c17", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u5143\u6c17\u304c\u3044\u3063\u3071\u3044\u3060", "direction": "1234", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 2.2568, "sd": 0.79}, {"no": 22, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "36.\u00a0 \u6d3b\u6c17", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": " \u751f\u304d\u751f\u304d\u3059\u308b", "direction": "1234", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 2.2568, "sd": 0.79}, {"no": 23, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "37.\u00a0 \u30a4\u30e9\u30a4\u30e9\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u6012\u308a\u3092\u611f\u3058\u308b", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 2.6974, "sd": 0.85}, {"no": 24, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "37.\u00a0 \u30a4\u30e9\u30a4\u30e9\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u5185\u5fc3\u8179\u7acb\u305f\u3057\u3044", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 2.6974, "sd": 0.85}, {"no": 25, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "37.\u00a0 \u30a4\u30e9\u30a4\u30e9\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u30a4\u30e9\u30a4\u30e9\u3057\u3066\u3044\u308b", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 2.6974, "sd": 0.85}, {"no": 26, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "38.\u00a0 \u75b2\u52b4\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u3072\u3069\u304f\u75b2\u308c\u305f", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 2.6987, "sd": 0.88}, {"no": 27, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "38.\u00a0 \u75b2\u52b4\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u3078\u3068\u3078\u3068\u3060", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 2.6987, "sd": 0.88}, {"no": 28, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "38.\u00a0 \u75b2\u52b4\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u3060\u308b\u3044", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 2.6987, "sd": 0.88}, {"no": 29, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "39.\u00a0 \u4e0d\u5b89\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u6c17\u304c\u306f\u308a\u3064\u3081\u3066\u3044\u308b", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 2.8679, "sd": 0.8}, {"no": 30, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "39.\u00a0 \u4e0d\u5b89\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4e0d\u5b89\u3060", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 2.8679, "sd": 0.8}, {"no": 31, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "39.\u00a0 \u4e0d\u5b89\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u843d\u7740\u304b\u306a\u3044", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 2.8679, "sd": 0.8}, {"no": 32, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "40.\u00a0 \u6291\u3046\u3064\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u3086\u3046\u3046\u3064\u3060", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2737, "sd": 0.67}, {"no": 33, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "40.\u00a0 \u6291\u3046\u3064\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4f55\u3092\u3059\u308b\u306e\u3082\u9762\u5012\u3060", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2737, "sd": 0.67}, {"no": 34, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "40.\u00a0 \u6291\u3046\u3064\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u7269\u4e8b\u306b\u96c6\u4e2d\u3067\u304d\u306a\u3044", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2737, "sd": 0.67}, {"no": 35, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "40.\u00a0 \u6291\u3046\u3064\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u6c17\u5206\u304c\u6674\u308c\u306a\u3044", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2737, "sd": 0.67}, {"no": 36, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "40.\u00a0 \u6291\u3046\u3064\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u304c\u624b\u306b\u3064\u304b\u306a\u3044", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2737, "sd": 0.67}, {"no": 37, "category": "3-1.\u7cbe\u795e\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "40.\u00a0 \u6291\u3046\u3064\u611f", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u60b2\u3057\u3044\u3068\u611f\u3058\u308b", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2737, "sd": 0.67}, {"no": 38, "category": "3-2.\u8eab\u4f53\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "41.\u00a0 \u8eab\u4f53\u6101\u8a34", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u3081\u307e\u3044\u304c\u3059\u308b", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2195, "sd": 0.54}, {"no": 39, "category": "3-2.\u8eab\u4f53\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "41.\u00a0 \u8eab\u4f53\u6101\u8a34", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4f53\u306e\u3075\u3057\u3076\u3057\u304c\u75db\u3080", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2195, "sd": 0.54}, {"no": 40, "category": "3-2.\u8eab\u4f53\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "41.\u00a0 \u8eab\u4f53\u6101\u8a34", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u982d\u304c\u91cd\u304b\u3063\u305f\u308a\u982d\u75db\u304c\u3059\u308b", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2195, "sd": 0.54}, {"no": 41, "category": "3-2.\u8eab\u4f53\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "41.\u00a0 \u8eab\u4f53\u6101\u8a34", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u9996\u7b4b\u3084\u80a9\u304c\u3053\u308b", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2195, "sd": 0.54}, {"no": 42, "category": "3-2.\u8eab\u4f53\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "41.\u00a0 \u8eab\u4f53\u6101\u8a34", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u8170\u304c\u75db\u3044", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2195, "sd": 0.54}, {"no": 43, "category": "3-2.\u8eab\u4f53\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "41.\u00a0 \u8eab\u4f53\u6101\u8a34", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u76ee\u304c\u75b2\u308c\u308b", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2195, "sd": 0.54}, {"no": 44, "category": "3-2.\u8eab\u4f53\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "41.\u00a0 \u8eab\u4f53\u6101\u8a34", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u52d5\u60b8\u3084\u606f\u5207\u308c\u304c\u3059\u308b", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2195, "sd": 0.54}, {"no": 45, "category": "3-2.\u8eab\u4f53\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "41.\u00a0 \u8eab\u4f53\u6101\u8a34", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u80c3\u8178\u306e\u5177\u5408\u304c\u60aa\u3044", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2195, "sd": 0.54}, {"no": 46, "category": "3-2.\u8eab\u4f53\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "41.\u00a0 \u8eab\u4f53\u6101\u8a34", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u98df\u6b32\u304c\u306a\u3044", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2195, "sd": 0.54}, {"no": 47, "category": "3-2.\u8eab\u4f53\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "41.\u00a0 \u8eab\u4f53\u6101\u8a34", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4fbf\u79d8\u3084\u4e0b\u75e2\u3092\u3059\u308b", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2195, "sd": 0.54}, {"no": 48, "category": "3-2.\u8eab\u4f53\u7684\u30b9\u30c8\u30ec\u30b9\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "41.\u00a0 \u8eab\u4f53\u6101\u8a34", "section": "\uff22\uff0e\u6700\u8fd11\u304b\u6708\u9593\u306e\u3042\u306a\u305f\u306e\u72b6\u614b\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u3088\u304f\u7720\u308c\u306a\u3044", "direction": "4321", "choices": ["\u307b\u3068\u3093\u3069\u306a\u304b\u3063\u305f", "\u3068\u304d\u3069\u304d\u3042\u3063\u305f", "\u3057\u3070\u3057\u3070\u3042\u3063\u305f", "\u307b\u3068\u3093\u3069\u3044\u3064\u3082\u3042\u3063\u305f"], "avg": 3.2195, "sd": 0.54}, {"no": 49, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "17.\u00a0 \u4e0a\u53f8\u304b\u3089\u306e\u30b5\u30dd\u30fc\u30c8", "section": "\uff23\uff0e\u3042\u306a\u305f\u306e\u5468\u308a\u306e\u65b9\u3005\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002\u6b21\u306e\u4eba\u305f\u3061\u306f\u3069\u306e\u304f\u3089\u3044\u6c17\u8efd\u306b\u8a71\u304c\u3067\u304d\u307e\u3059\u304b\uff1f", "question": "\u4e0a\u53f8\u3000", "direction": "4321", "choices": ["\u975e\u5e38\u306b", "\u304b\u306a\u308a", "\u591a\u5c11", "\u5168\u304f\u306a\u3044"], "avg": 2.3706, "sd": 0.75}, {"no": 50, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "18.\u00a0 \u540c\u50da\u304b\u3089\u306e\u30b5\u30dd\u30fc\u30c8", "section": "\uff23\uff0e\u3042\u306a\u305f\u306e\u5468\u308a\u306e\u65b9\u3005\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002\u6b21\u306e\u4eba\u305f\u3061\u306f\u3069\u306e\u304f\u3089\u3044\u6c17\u8efd\u306b\u8a71\u304c\u3067\u304d\u307e\u3059\u304b\uff1f", "question": "\u8077\u5834\u306e\u540c\u50da", "direction": "4321", "choices": ["\u975e\u5e38\u306b", "\u304b\u306a\u308a", "\u591a\u5c11", "\u5168\u304f\u306a\u3044"], "avg": 2.6788, "sd": 0.7}, {"no": 51, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "19.\u00a0 [\u5bb6\u65cf\u30fb\u53cb\u4eba\u304b\u3089\u306e\u30b5\u30dd\u30fc\u30c8]", "section": "\uff23\uff0e\u3042\u306a\u305f\u306e\u5468\u308a\u306e\u65b9\u3005\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002\u6b21\u306e\u4eba\u305f\u3061\u306f\u3069\u306e\u304f\u3089\u3044\u6c17\u8efd\u306b\u8a71\u304c\u3067\u304d\u307e\u3059\u304b\uff1f", "question": "\u914d\u5076\u8005\u3001\u5bb6\u65cf\u3001\u53cb\u4eba\u7b49", "direction": "4321", "choices": ["\u975e\u5e38\u306b", "\u304b\u306a\u308a", "\u591a\u5c11", "\u5168\u304f\u306a\u3044"], "avg": 3.314, "sd": 0.68}, {"no": 52, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "17.\u00a0 \u4e0a\u53f8\u304b\u3089\u306e\u30b5\u30dd\u30fc\u30c8", "section": "\uff23\uff0e\u3042\u306a\u305f\u306e\u5468\u308a\u306e\u65b9\u3005\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002\u3042\u306a\u305f\u304c\u56f0\u3063\u305f\u6642\u3001\u6b21\u306e\u4eba\u305f\u3061\u306f\u3069\u306e\u304f\u3089\u3044\u983c\u308a\u306b\u306a\u308a\u307e\u3059\u304b\uff1f", "question": "\u4e0a\u53f8", "direction": "4321", "choices": ["\u975e\u5e38\u306b", "\u304b\u306a\u308a", "\u591a\u5c11", "\u5168\u304f\u306a\u3044"], "avg": 2.3706, "sd": 0.75}, {"no": 53, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "18.\u00a0 \u540c\u50da\u304b\u3089\u306e\u30b5\u30dd\u30fc\u30c8", "section": "\uff23\uff0e\u3042\u306a\u305f\u306e\u5468\u308a\u306e\u65b9\u3005\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002\u3042\u306a\u305f\u304c\u56f0\u3063\u305f\u6642\u3001\u6b21\u306e\u4eba\u305f\u3061\u306f\u3069\u306e\u304f\u3089\u3044\u983c\u308a\u306b\u306a\u308a\u307e\u3059\u304b\uff1f", "question": "\u8077\u5834\u306e\u540c\u50da", "direction": "4321", "choices": ["\u975e\u5e38\u306b", "\u304b\u306a\u308a", "\u591a\u5c11", "\u5168\u304f\u306a\u3044"], "avg": 2.6788, "sd": 0.7}, {"no": 54, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "19.\u00a0 [\u5bb6\u65cf\u30fb\u53cb\u4eba\u304b\u3089\u306e\u30b5\u30dd\u30fc\u30c8]", "section": "\uff23\uff0e\u3042\u306a\u305f\u306e\u5468\u308a\u306e\u65b9\u3005\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002\u3042\u306a\u305f\u304c\u56f0\u3063\u305f\u6642\u3001\u6b21\u306e\u4eba\u305f\u3061\u306f\u3069\u306e\u304f\u3089\u3044\u983c\u308a\u306b\u306a\u308a\u307e\u3059\u304b\uff1f", "question": "\u914d\u5076\u8005\u3001\u5bb6\u65cf\u3001\u53cb\u4eba\u7b49", "direction": "4321", "choices": ["\u975e\u5e38\u306b", "\u304b\u306a\u308a", "\u591a\u5c11", "\u5168\u304f\u306a\u3044"], "avg": 3.314, "sd": 0.68}, {"no": 55, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "17.\u00a0 \u4e0a\u53f8\u304b\u3089\u306e\u30b5\u30dd\u30fc\u30c8", "section": "\uff23\uff0e\u3042\u306a\u305f\u306e\u5468\u308a\u306e\u65b9\u3005\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002\u3042\u306a\u305f\u306e\u500b\u4eba\u7684\u306a\u554f\u984c\u3092\u76f8\u8ac7\u3057\u305f\u3089\u3001\u6b21\u306e\u4eba\u305f\u3061\u306f\u3069\u306e\u304f\u3089\u3044\u304d\u3044\u3066\u304f\u308c\u307e\u3059\u304b\uff1f", "question": "\u4e0a\u53f8\u3000", "direction": "4321", "choices": ["\u975e\u5e38\u306b", "\u304b\u306a\u308a", "\u591a\u5c11", "\u5168\u304f\u306a\u3044"], "avg": 2.3706, "sd": 0.75}, {"no": 56, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "18.\u00a0 \u540c\u50da\u304b\u3089\u306e\u30b5\u30dd\u30fc\u30c8", "section": "\uff23\uff0e\u3042\u306a\u305f\u306e\u5468\u308a\u306e\u65b9\u3005\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002\u3042\u306a\u305f\u306e\u500b\u4eba\u7684\u306a\u554f\u984c\u3092\u76f8\u8ac7\u3057\u305f\u3089\u3001\u6b21\u306e\u4eba\u305f\u3061\u306f\u3069\u306e\u304f\u3089\u3044\u304d\u3044\u3066\u304f\u308c\u307e\u3059\u304b\uff1f", "question": "\u8077\u5834\u306e\u540c\u50da", "direction": "4321", "choices": ["\u975e\u5e38\u306b", "\u304b\u306a\u308a", "\u591a\u5c11", "\u5168\u304f\u306a\u3044"], "avg": 2.6788, "sd": 0.7}, {"no": 57, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "19.\u00a0 [\u5bb6\u65cf\u30fb\u53cb\u4eba\u304b\u3089\u306e\u30b5\u30dd\u30fc\u30c8]", "section": "\uff23\uff0e\u3042\u306a\u305f\u306e\u5468\u308a\u306e\u65b9\u3005\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002\u3042\u306a\u305f\u306e\u500b\u4eba\u7684\u306a\u554f\u984c\u3092\u76f8\u8ac7\u3057\u305f\u3089\u3001\u6b21\u306e\u4eba\u305f\u3061\u306f\u3069\u306e\u304f\u3089\u3044\u304d\u3044\u3066\u304f\u308c\u307e\u3059\u304b\uff1f", "question": "\u914d\u5076\u8005\u3001\u5bb6\u65cf\u3001\u53cb\u4eba\u7b49", "direction": "4321", "choices": ["\u975e\u5e38\u306b", "\u304b\u306a\u308a", "\u591a\u5c11", "\u5168\u304f\u306a\u3044"], "avg": 3.314, "sd": 0.68}, {"no": 58, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "42.\u00a0 \u4ed5\u4e8b\u6e80\u8db3\u5ea6", "section": "\uff24\uff0e\u6e80\u8db3\u5ea6\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u306b\u6e80\u8db3\u3060", "direction": "4321", "choices": ["\u6e80\u8db3", "\u307e\u3042\u6e80\u8db3", "\u3084\u3084\u4e0d\u6e80\u8db3", "\u4e0d\u6e80\u8db3"], "avg": 2.6, "sd": 0.85}, {"no": 59, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "43.\u00a0 [\u5bb6\u5ead\u6e80\u8db3\u5ea6]", "section": "\uff24\uff0e\u6e80\u8db3\u5ea6\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u4ed8\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u5bb6\u5ead\u751f\u6d3b\u306b\u6e80\u8db3\u3060", "direction": "4321", "choices": ["\u6e80\u8db3", "\u307e\u3042\u6e80\u8db3", "\u3084\u3084\u4e0d\u6e80\u8db3", "\u4e0d\u6e80\u8db3"], "avg": 3.0583, "sd": 0.81}, {"no": 60, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "06.\u00a0\u00a0 \u60c5\u7dd2\u7684\u8ca0\u62c5", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u306e\u4e0a\u3067\u3001\u6c17\u6301\u3061\u3084\u611f\u60c5\u304c\u304b\u304d\u4e71\u3055\u308c\u308b\u3053\u3068\u304c\u3042\u308b", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.6486, "sd": 0.82}, {"no": 61, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "06.\u00a0\u00a0 \u60c5\u7dd2\u7684\u8ca0\u62c5", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u611f\u60c5\u9762\u3067\u8ca0\u62c5\u306b\u306a\u308b\u4ed5\u4e8b\u3060", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.6486, "sd": 0.82}, {"no": 62, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "06.\u00a0\u00a0 \u60c5\u7dd2\u7684\u8ca0\u62c5", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u611f\u60c5\u7684\u306b\u5dfb\u304d\u8fbc\u307e\u308c\u3084\u3059\u3044\u4ed5\u4e8b\u3060", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.6486, "sd": 0.82}, {"no": 63, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "07.\u00a0\u00a0 \u5f79\u5272\u845b\u85e4", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u304c\u6b63\u3057\u3044\u3068\u601d\u3046\u306e\u3068\u306f\u9055\u3063\u305f\u3084\u308a\u65b9\u3067\u4ed5\u4e8b\u3092\u3057\u306a\u3051\u308c\u3070\u306a\u3089\u306a\u3044-", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.7829, "sd": 0.77}, {"no": 64, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "07.\u00a0\u00a0 \u5f79\u5272\u845b\u85e4", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u8907\u6570\u306e\u4eba\u304b\u3089\u304a\u4e92\u3044\u306b\u77db\u76fe\u3057\u305f\u3053\u3068\u3092\u8981\u6c42\u3055\u308c\u308b", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.7829, "sd": 0.77}, {"no": 65, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "07.\u00a0\u00a0 \u5f79\u5272\u845b\u85e4", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u5341\u5206\u306a\u4eba\u3084\u30e2\u30ce\u304c\u306a\u3044\u307e\u307e\u4ed5\u4e8b\u3092\u5272\u308a\u5f53\u3066\u3089\u308c\u308b", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.7829, "sd": 0.77}, {"no": 66, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "13.\u00a0 \u5f79\u5272\u660e\u78ba\u3055", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306e\u8077\u52d9\u3084\u8cac\u4efb\u304c\u4f55\u3067\u3042\u308b\u304b\u5206\u304b\u3063\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 3.1593, "sd": 0.59}, {"no": 67, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "13.\u00a0 \u5f79\u5272\u660e\u78ba\u3055", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306b\u3069\u308c\u304f\u3089\u3044\u6a29\u9650\u304c\u3042\u308b\u306e\u304b\u306f\u3063\u304d\u308a\u3057\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 3.1593, "sd": 0.59}, {"no": 68, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "13.\u00a0 \u5f79\u5272\u660e\u78ba\u3055", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306e\u4ed5\u4e8b\u3067\u4f55\u3092\u3059\u308b\u3079\u304d\u304b\u306b\u3064\u3044\u3066\u8aac\u660e\u3055\u308c\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 3.1593, "sd": 0.59}, {"no": 69, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "14.  \u6210\u9577\u306e\u6a5f\u4f1a", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u3067\u65b0\u3057\u3044\u3053\u3068\u3092\u5b66\u3076\u6a5f\u4f1a\u304c\u3042\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.6751, "sd": 0.80872}, {"no": 70, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "14.  \u6210\u9577\u306e\u6a5f\u4f1a", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u3067\u81ea\u5206\u306e\u9577\u6240\u3092\u306e\u3070\u3059\u6a5f\u4f1a\u304c\u3042\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.6751, "sd": 0.80872}, {"no": 71, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "14.  \u6210\u9577\u306e\u6a5f\u4f1a", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u8077\u5834\u3067\u306f\u3001\u81ea\u5206\u306e\u6280\u80fd\u3092\u5341\u5206\u306b\u9ad8\u3081\u308b\u3053\u3068\u304c\u3067\u304d\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.6751, "sd": 0.80872}, {"no": 72, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "15.\u00a0 \u65b0\u5947\u6027", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u3053\u308c\u307e\u3067\u3057\u305f\u3053\u3068\u306e\u306a\u3044\u7a2e\u985e\u306e\u4ed5\u4e8b\u3092\u3059\u308b\u3053\u3068\u304c\u591a\u3044", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.7754, "sd": 0.8}, {"no": 73, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "15.\u00a0 \u65b0\u5947\u6027", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u6bce\u56de\u3001\u65b0\u3057\u3044\u6280\u8853\u3084\u77e5\u8b58\u3092\u5fc5\u8981\u3068\u3059\u308b\u4ed5\u4e8b\u3067\u3042\u308b", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.7754, "sd": 0.8}, {"no": 74, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "15.\u00a0 \u65b0\u5947\u6027", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u306e\u4e0a\u3067\u3001\u4ee5\u524d\u306b\u7d4c\u9a13\u3057\u305f\u3053\u3068\u306e\u306a\u3044\u3053\u3068\u306b\u51fa\u4f1a\u3046", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.7754, "sd": 0.8}, {"no": 75, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "16.\u00a0 \u4e88\u6e2c\u53ef\u80fd\u6027", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u3044\u3064\u3054\u308d\u3001\u81ea\u5206\u306e\u4ed5\u4e8b\u91cf\u304c\u5897\u3048\u308b\u304b\u5206\u304b\u3063\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4646, "sd": 0.73}, {"no": 76, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "16.\u00a0 \u4e88\u6e2c\u53ef\u80fd\u6027", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u3044\u3064\u3054\u308d\u3001\u81ea\u5206\u306e\u4ed5\u4e8b\u304c\u4e00\u6bb5\u843d\u3059\u308b\u304b\u898b\u901a\u3057\u304c\u3064\u3044\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4646, "sd": 0.73}, {"no": 77, "category": "2-1.\u4f5c\u696d\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "16.\u00a0 \u4e88\u6e2c\u53ef\u80fd\u6027", "section": "\uff25\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u3001\u3082\u3046\u5c11\u3057\u8a73\u3057\u304f\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u3044\u3064\u3054\u308d\u3001\u4ed5\u4e8b\u4e0a\u3067\u30c8\u30e9\u30d6\u30eb\u304c\u751f\u3058\u308b\u304b\u4e88\u60f3\u3067\u304d\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4646, "sd": 0.73}, {"no": 78, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "20.\u00a0 \u7d4c\u6e08\u30fb\u5730\u4f4d\u5831\u916c", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306e\u4ed5\u4e8b\u306b\u898b\u5408\u3046\u7d66\u6599\u3084\u30dc\u30fc\u30ca\u30b9\u3092\u3082\u3089\u3063\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4072, "sd": 0.79}, {"no": 79, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "20.\u00a0 \u7d4c\u6e08\u30fb\u5730\u4f4d\u5831\u916c", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306e\u80fd\u529b\u3084\u7d4c\u9a13\u306b\u898b\u5408\u3063\u305f\u5730\u4f4d\u30fb\u8077\u52d9\u306b\u5c31\u3044\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4072, "sd": 0.79}, {"no": 80, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "21.\u00a0 \u5c0a\u91cd\u5831\u916c", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u79c1\u306f\u4e0a\u53f8\u304b\u3089\u3075\u3055\u308f\u3057\u3044\u8a55\u4fa1\u3092\u53d7\u3051\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.7234, "sd": 0.67}, {"no": 81, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "21.\u00a0 \u5c0a\u91cd\u5831\u916c", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u540c\u50da\u304b\u3089\u3001\u81ea\u5206\u306e\u4ed5\u4e8b\u4e0a\u306e\u3075\u3055\u308f\u3057\u3044\u6271\u3044\u3092\u53d7\u3051\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.7234, "sd": 0.67}, {"no": 82, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "22.\u00a0 \u5b89\u5b9a\u5831\u916c", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u6607\u9032\u306e\u898b\u8fbc\u307f\u306f\u5c11\u306a\u3044", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4628, "sd": 0.75}, {"no": 83, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "22.\u00a0 \u5b89\u5b9a\u5831\u916c", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u8077\u3092\u5931\u3046\u6050\u308c\u304c\u3042\u308b", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4628, "sd": 0.75}, {"no": 84, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "22.\u00a0 \u5b89\u5b9a\u5831\u916c", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u8077\u5834\u3067\u597d\u307e\u3057\u304f\u306a\u3044\u5909\u5316\u3092\u7d4c\u9a13\u3057\u3066\u3044\u308b\u3002\u3082\u3057\u304f\u306f\u4eca\u5f8c\u305d\u3046\u3044\u3046\u72b6\u6cc1\u304c\u8d77\u3053\u308a\u3046\u308b", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4628, "sd": 0.75}, {"no": 85, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "23.\u00a0 \u4e0a\u53f8\u306e\u30ea\u30fc\u30c0\u30fc\u30b7\u30c3\u30d7", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u306e\u51fa\u6765\u3070\u3048\u306b\u3064\u3044\u3066\u3001\u4e0a\u53f8\u304b\u3089\u30d5\u30a3\u30fc\u30c9\u30d0\u30c3\u30af\u3092\u3082\u3089\u3063\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1807, "sd": 0.77}, {"no": 86, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "23.\u00a0 \u4e0a\u53f8\u306e\u30ea\u30fc\u30c0\u30fc\u30b7\u30c3\u30d7", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4e0a\u53f8\u306f\u3001\u90e8\u4e0b\u304c\u80fd\u529b\u3092\u306e\u3070\u3059\u6a5f\u4f1a\u3092\u6301\u3066\u308b\u3088\u3046\u306b\u3001\u53d6\u308a\u8a08\u3089\u3063\u3066\u304f\u308c\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1807, "sd": 0.77}, {"no": 87, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "23.\u00a0 \u4e0a\u53f8\u306e\u30ea\u30fc\u30c0\u30fc\u30b7\u30c3\u30d7", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4e0a\u53f8\u306f\u3001\u79c1\u304c\u81ea\u5206\u3067\u554f\u984c\u89e3\u6c7a\u3067\u304d\u308b\u3088\u3046\u306b\u52b1\u307e\u3057\u3066\u304f\u308c\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1807, "sd": 0.77}, {"no": 88, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "24.\u00a0 \u4e0a\u53f8\u306e\u516c\u6b63\u306a\u614b\u5ea6", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4e0a\u53f8\u306f\u72ec\u308a\u3088\u304c\u308a\u306a\u3082\u306e\u306e\u898b\u65b9\u3092\u3057\u306a\u3044\u3088\u3046\u306b\u3059\u308b\u3053\u3068\u304c\u3067\u304d\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5489, "sd": 0.79995}, {"no": 89, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "24.\u00a0 \u4e0a\u53f8\u306e\u516c\u6b63\u306a\u614b\u5ea6", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4e0a\u53f8\u306f\u89aa\u5207\u5fc3\u3068\u601d\u3044\u3084\u308a\u3092\u3082\u3063\u3066\u63a5\u3057\u3066\u304f\u308c\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5489, "sd": 0.79995}, {"no": 90, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "24.\u00a0 \u4e0a\u53f8\u306e\u516c\u6b63\u306a\u614b\u5ea6", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4e0a\u53f8\u306f\u8aa0\u5b9f\u306a\u614b\u5ea6\u3067\u5bfe\u5fdc\u3057\u3066\u304f\u308c\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5489, "sd": 0.79995}, {"no": 91, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "25.\u00a0 \u307b\u3081\u3066\u3082\u3089\u3048\u308b\u8077\u5834", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u3092\u304d\u3061\u3093\u3068\u3059\u308c\u3070\u3001\u307b\u3081\u3066\u3082\u3089\u3048\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4239, "sd": 0.82}, {"no": 92, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "25.\u00a0 \u307b\u3081\u3066\u3082\u3089\u3048\u308b\u8077\u5834", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u52aa\u529b\u3057\u3066\u4ed5\u4e8b\u3092\u3059\u308c\u3070\u3001\u307b\u3081\u3066\u3082\u3089\u3048\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4239, "sd": 0.82}, {"no": 93, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "25.\u00a0 \u307b\u3081\u3066\u3082\u3089\u3048\u308b\u8077\u5834", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u3042\u305f\u308a\u307e\u3048\u306e\u3053\u3068\u3067\u3082\u3001\u3067\u304d\u305f\u3089\u307b\u3081\u3066\u3082\u3089\u3048\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4239, "sd": 0.82}, {"no": 94, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "26.\u00a0 \u5931\u6557\u3092\u8a8d\u3081\u308b\u8077\u5834", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u30d4\u30f3\u30c1\u3092\u30c1\u30e3\u30f3\u30b9\u306b\u5909\u3048\u3089\u308c\u308b\u8077\u5834\u3060", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.2644, "sd": 0.78}, {"no": 95, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "26.\u00a0 \u5931\u6557\u3092\u8a8d\u3081\u308b\u8077\u5834", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u5931\u6557\u3057\u3066\u3082\u633d\u56de(\u3070\u3093\u304b\u3044)\u3059\u308b\u30c1\u30e3\u30f3\u30b9\u304c\u3042\u308b\u8077\u5834\u3060", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.2644, "sd": 0.78}, {"no": 96, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "27.\u00a0 \u30b0\u30eb\u30fc\u30d7\u306e\u6709\u80fd\u611f", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306e\u30b0\u30eb\u30fc\u30d7\u306f\u4ed5\u4e8b\u306e\u9042\u884c\u80fd\u529b\u304c\u3068\u3066\u3082\u9ad8\u3044\u3068\u3044\u3046\u81ea\u4fe1\u304c\u3042\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4934, "sd": 0.74}, {"no": 97, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "27.\u00a0 \u30b0\u30eb\u30fc\u30d7\u306e\u6709\u80fd\u611f", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306e\u30b0\u30eb\u30fc\u30d7\u306f\u4e0d\u6e2c\u306e\u4e8b\u614b\u3092\u3046\u307e\u304f\u51e6\u7406\u3067\u304d\u308b\u3068\u3044\u3046\u81ea\u4fe1\u304c\u3042\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4934, "sd": 0.74}, {"no": 98, "category": "2-2.\u90e8\u7f72\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "27.\u00a0 \u30b0\u30eb\u30fc\u30d7\u306e\u6709\u80fd\u611f", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306e\u30b0\u30eb\u30fc\u30d7\u306f\u5168\u4f53\u7684\u306b\u898b\u3066\u3001\u8ab2\u984c\u306e\u89e3\u6c7a\u80fd\u529b\u304c\u9ad8\u3044", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.4934, "sd": 0.74}, {"no": 99, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "28.\u00a0 \u7d4c\u55b6\u5c64\u3068\u306e\u4fe1\u983c\u95a2\u4fc2", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u7d4c\u55b6\u5c64\u306f\u5f93\u696d\u54e1\u306e\u4ed5\u4e8b\u3076\u308a\u3092\u4fe1\u983c\u3057\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5284, "sd": 0.71}, {"no": 100, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "28.\u00a0 \u7d4c\u55b6\u5c64\u3068\u306e\u4fe1\u983c\u95a2\u4fc2", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u7d4c\u55b6\u5c64\u304b\u3089\u306e\u60c5\u5831\u306f\u4fe1\u983c\u3067\u304d\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5284, "sd": 0.71}, {"no": 101, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "28.\u00a0 \u7d4c\u55b6\u5c64\u3068\u306e\u4fe1\u983c\u95a2\u4fc2", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u7d4c\u55b6\u5c64\u306f\u5f93\u696d\u54e1\u304b\u3089\u306e\u63d0\u6848\u3092\u771f\u5263\u306b\u53d6\u308a\u6271\u3063\u3066\u304f\u308c\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5284, "sd": 0.71}, {"no": 102, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "29.\u00a0 \u5909\u5316\u3078\u306e\u5bfe\u5fdc", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u8077\u5834\u3084\u4ed5\u4e8b\u3067\u3069\u3093\u306a\u5909\u5316\u304c\u3042\u308b\u304b\u3001\u4e0a\u53f8\u306b\u305f\u305a\u306d\u308b\u6a5f\u4f1a\u304c\u3042\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1904, "sd": 0.74}, {"no": 103, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "29.\u00a0 \u5909\u5316\u3078\u306e\u5bfe\u5fdc", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u8077\u5834\u3084\u4ed5\u4e8b\u3067\u5909\u5316\u304c\u3042\u308b\u3068\u304d\u306b\u306f\u3001\u5f93\u696d\u54e1\u306e\u610f\u898b\u304c\u805e\u304b\u308c\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.476, "sd": 0.72}, {"no": 104, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "29.\u00a0 \u5909\u5316\u3078\u306e\u5bfe\u5fdc", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u8077\u5834\u3084\u4ed5\u4e8b\u306e\u5909\u5316\u304c\u3042\u308b\u5834\u5408\u3001\u4e8b\u524d\u306b\u8aac\u660e\u304c\u3042\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.476, "sd": 0.72}, {"no": 105, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "30.\u00a0 \u624b\u7d9a\u304d\u306e\u516c\u6b63\u6027\u203b", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u610f\u601d\u6c7a\u5b9a\u306b\u3088\u3063\u3066\u5f71\u97ff\u3092\u53d7\u3051\u308b\u5168\u3066\u306e\u95a2\u4fc2\u8005\u304c\u3001\u610f\u601d\u6c7a\u5b9a\u306b\u53c2\u52a0\u3057\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.2696, "sd": 0.73148}, {"no": 106, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "30.\u00a0 \u624b\u7d9a\u304d\u306e\u516c\u6b63\u6027\u203b", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u610f\u601d\u6c7a\u5b9a\u306f\u4e00\u8cab\u3057\u3066\u3044\u308b(\u5168\u3066\u306e\u5f93\u696d\u54e1\u306b\u5bfe\u3057\u898f\u5247\u304c\u540c\u69d8\u306b\u9069\u7528\u3055\u308c\u308b)", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.2696, "sd": 0.73148}, {"no": 107, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "30.\u00a0 \u624b\u7d9a\u304d\u306e\u516c\u6b63\u6027\u203b", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u610f\u601d\u6c7a\u5b9a\u304c\u884c\u308f\u308c\u308b\u524d\u306b\u3001\u5f71\u97ff\u3092\u53d7\u3051\u308b\u4eba\u305f\u3061\u306e\u8003\u3048\u304c\u805e\u304b\u308c\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.2696, "sd": 0.73148}, {"no": 108, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "31.\u00a0 \u500b\u4eba\u306e\u5c0a\u91cd", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4e00\u4eba\u3072\u3068\u308a\u306e\u9577\u6240\u3084\u5f97\u610f\u5206\u91ce\u3092\u8003\u3048\u3066\u4ed5\u4e8b\u304c\u4e0e\u3048\u3089\u308c\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1189, "sd": 0.7162}, {"no": 109, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "31.\u00a0 \u500b\u4eba\u306e\u5c0a\u91cd", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4e00\u4eba\u3072\u3068\u308a\u306e\u4fa1\u5024\u89b3\u3092\u5927\u4e8b\u306b\u3057\u3066\u304f\u308c\u308b\u8077\u5834\u3060", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1189, "sd": 0.7162}, {"no": 110, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "31.\u00a0 \u500b\u4eba\u306e\u5c0a\u91cd", "section": "\uff26\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u8077\u5834\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306b\u5408\u3063\u305f\u4ed5\u4e8b\u3084\u8077\u5834\u3092\u793e\u5185\u3067\u898b\u3064\u3051\u308b\u6a5f\u4f1a\u304c\u3042\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1189, "sd": 0.7162}, {"no": 111, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "32.\u00a0 \u516c\u6b63\u306a\u4eba\u4e8b\u8a55\u4fa1", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4eba\u4e8b\u8a55\u4fa1\u306e\u7d50\u679c\u306b\u3064\u3044\u3066\u5341\u5206\u306a\u8aac\u660e\u304c\u306a\u3055\u308c\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1463, "sd": 0.77167}, {"no": 112, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "32.\u00a0 \u516c\u6b63\u306a\u4eba\u4e8b\u8a55\u4fa1", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u306e\u65b9\u91dd\u3068\u5f79\u5272\u306b\u3064\u3044\u3066\u7d0d\u5f97\u3067\u304d\u308b\u3088\u3046\u306a\u8aac\u660e\u304c\u3042\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1463, "sd": 0.77167}, {"no": 113, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "32.\u00a0 \u516c\u6b63\u306a\u4eba\u4e8b\u8a55\u4fa1", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4eba\u4e8b\u8a55\u4fa1\u306e\u57fa\u6e96\u304c\u660e\u78ba\u306b\u3055\u308c\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1463, "sd": 0.77167}, {"no": 114, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "33. \u591a\u69d8\u306a\u52b4\u50cd\u8005\u3078\u306e\u5bfe\u5fdc", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u5973\u6027\u3001\u9ad8\u9f62\u8005\u3042\u308b\u3044\u306f\u969c\u304c\u3044\u8005\u304c\u50cd\u304d\u3084\u3059\u3044\u8077\u5834\u3060", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5189, "sd": 0.70302}, {"no": 115, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "33. \u591a\u69d8\u306a\u52b4\u50cd\u8005\u3078\u306e\u5bfe\u5fdc", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u82e5\u3044\u4eba\u304c\u50cd\u304d\u3084\u3059\u3044\u8077\u5834\u3060", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5189, "sd": 0.70302}, {"no": 116, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "33. \u591a\u69d8\u306a\u52b4\u50cd\u8005\u3078\u306e\u5bfe\u5fdc", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u8077\u5834\u3067\u306f\u3001\uff08\u6b63\u898f\u3001\u975e\u6b63\u898f\u3001\u30a2\u30eb\u30d0\u30a4\u30c8\u306a\u3069\uff09\u3044\u308d\u3044\u308d\u306a\u7acb\u5834\u306e\u4eba\u304c\u8077\u5834\u306e\u4e00\u54e1\u3068\u3057\u3066\u5c0a\u91cd\u3055\u308c\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5189, "sd": 0.70302}, {"no": 117, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "34. \u30ad\u30e3\u30ea\u30a2\u5f62\u6210", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u610f\u6b32\u3092\u5f15\u304d\u51fa\u3057\u305f\u308a\u3001\u30ad\u30e3\u30ea\u30a2\u306b\u5f79\u7acb\u3064\u6559\u80b2\u304c\u884c\u308f\u308c\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1904, "sd": 0.73744}, {"no": 118, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "34. \u30ad\u30e3\u30ea\u30a2\u5f62\u6210", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u82e5\u3044\u3046\u3061\u304b\u3089\u5c06\u6765\u306e\u9032\u8def\u3092\u8003\u3048\u3066\u4eba\u4e8b\u7ba1\u7406\u304c\u884c\u308f\u308c\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1904, "sd": 0.73744}, {"no": 119, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "34. \u30ad\u30e3\u30ea\u30a2\u5f62\u6210", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u30b0\u30eb\u30fc\u30d7\u3084\u500b\u4eba\u3054\u3068\u306b\u3001\u6559\u80b2\u30fb\u8a13\u7df4\u306e\u76ee\u6a19\u304c\u660e\u78ba\u306b\u3055\u308c\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1904, "sd": 0.73744}, {"no": 120, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "34. \u30ad\u30e3\u30ea\u30a2\u5f62\u6210", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306e\u8077\u5834\u3067\u306f\u3001\u8ab0\u3067\u3082\u5fc5\u8981\u306a\u3068\u304d\u306b\u5fc5\u8981\u306a\u6559\u80b2\u30fb\u8a13\u7df4\u304c\u53d7\u3051\u3089\u308c\u308b-", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1904, "sd": 0.73744}, {"no": 121, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "34. \u30ad\u30e3\u30ea\u30a2\u5f62\u6210", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306e\u8077\u5834\u3067\u306f\u3001\u5f93\u696d\u54e1\u3092\u80b2\u3066\u308b\u3053\u3068\u304c\u5927\u5207\u3060\u3068\u8003\u3048\u3089\u308c\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.1904, "sd": 0.73744}, {"no": 122, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "08.\u00a0\u00a0 \u30ef\u30fc\u30af\u30fb\u30bb\u30eb\u30d5\u30fb\u30d0\u30e9\u30f3\u30b9\uff08\u30cd\u30ac\u30c6\u30a3\u30d6\uff09", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u306e\u3053\u3068\u3092\u8003\u3048\u3066\u3044\u308b\u305f\u3081\u81ea\u5206\u306e\u751f\u6d3b\u3092\u5145\u5b9f\u3055\u305b\u3089\u308c\u306a\u3044", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.7765, "sd": 0.86}, {"no": 123, "category": "1.\u30b9\u30c8\u30ec\u30c3\u30b5\u30fc\uff08\u4ed5\u4e8b\u306e\u8ca0\u62c5\uff09", "scale": "08.\u00a0\u00a0 \u30ef\u30fc\u30af\u30fb\u30bb\u30eb\u30d5\u30fb\u30d0\u30e9\u30f3\u30b9\uff08\u30cd\u30ac\u30c6\u30a3\u30d6\uff09", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u306e\u30b9\u30b1\u30b8\u30e5\u30fc\u30eb\u306e\u305f\u3081\u306b\u81ea\u5206\u306e\u751f\u6d3b\u3092\u5145\u5b9f\u3055\u305b\u3089\u308c\u306a\u3044", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.7765, "sd": 0.86}, {"no": 124, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "35.\u00a0 \u30ef\u30fc\u30af\u30fb\u30bb\u30eb\u30d5\u30fb\u30d0\u30e9\u30f3\u30b9\uff08\u30dd\u30b8\u30c6\u30a3\u30d6\uff09", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u3067\u5b66\u3093\u3060\u3053\u3068\u3092\u6d3b\u304b\u3057\u3066\u81ea\u5206\u306e\u751f\u6d3b\u3092\u5145\u5b9f\u3055\u305b\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.0986, "sd": 0.78}, {"no": 125, "category": "2-3.\u4f1a\u793e\u30ea\u30bd\u30fc\u30b9\uff08\u4ed5\u4e8b\u306e\u8cc7\u6e90\uff09", "scale": "35.\u00a0 \u30ef\u30fc\u30af\u30fb\u30bb\u30eb\u30d5\u30fb\u30d0\u30e9\u30f3\u30b9\uff08\u30dd\u30b8\u30c6\u30a3\u30d6\uff09", "section": "\uff27\uff0e\u3042\u306a\u305f\u306e\u50cd\u3044\u3066\u3044\u308b\u4f1a\u793e\u3084\u7d44\u7e54\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u3067\u30a8\u30cd\u30eb\u30ae\u30fc\u3092\u3082\u3089\u3046\u3053\u3068\u3067\u3001\u81ea\u5206\u306e\u751f\u6d3b\u304c\u3055\u3089\u306b\u5145\u5b9f\u3057\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.0986, "sd": 0.78}, {"no": 126, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "44.\u00a0 \u8077\u5834\u306e\u30cf\u30e9\u30b9\u30e1\u30f3\u30c8", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u8077\u5834\u3067\u81ea\u5206\u304c\u3044\u3058\u3081\u306b\u3042\u3063\u3066\u3044\u308b (\u30bb\u30af\u30cf\u30e9\u3001\u30d1\u30ef\u30cf\u30e9\u3092\u542b\u3080)", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 3.576, "sd": 0.67}, {"no": 127, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "44.\u00a0 \u8077\u5834\u306e\u30cf\u30e9\u30b9\u30e1\u30f3\u30c8", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u8077\u5834\u3067\u3044\u3058\u3081\u306b\u3042\u3063\u3066\u3044\u308b\u4eba\u304c\u3044\u308b (\u30bb\u30af\u30cf\u30e9\u3001\u30d1\u30ef\u30cf\u30e9\u3092\u542b\u3080)", "direction": "1234", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 3.576, "sd": 0.67}, {"no": 128, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "45.\u00a0 \u8077\u5834\u306e\u4e00\u4f53\u611f\uff08\u30bd\u30fc\u30b7\u30e3\u30eb\u30fb\u30ad\u30e3\u30d4\u30bf\u30eb\uff09", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u79c1\u305f\u3061\u306e\u8077\u5834\u3067\u306f\u3001\u3068\u3082\u306b\u50cd\u3053\u3046\u3068\u3044\u3046\u59ff\u52e2\u304c\u3042\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.7425, "sd": 0.69}, {"no": 129, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "45.\u00a0 \u8077\u5834\u306e\u4e00\u4f53\u611f\uff08\u30bd\u30fc\u30b7\u30e3\u30eb\u30fb\u30ad\u30e3\u30d4\u30bf\u30eb\uff09", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u79c1\u305f\u3061\u306e\u8077\u5834\u3067\u306f\u3001\u304a\u4e92\u3044\u306b\u7406\u89e3\u3057\u8a8d\u3081\u5408\u3063\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.7425, "sd": 0.69}, {"no": 130, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "45.\u00a0 \u8077\u5834\u306e\u4e00\u4f53\u611f\uff08\u30bd\u30fc\u30b7\u30e3\u30eb\u30fb\u30ad\u30e3\u30d4\u30bf\u30eb\uff09", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u79c1\u305f\u3061\u306e\u8077\u5834\u3067\u306f\u3001\u4ed5\u4e8b\u306b\u95a2\u9023\u3057\u305f\u60c5\u5831\u306e\u5171\u6709\u304c\u3067\u304d\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.7425, "sd": 0.69}, {"no": 131, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "46.\u00a0 \u30ef\u30fc\u30af\u30fb\u30a8\u30f3\u30b2\u30a4\u30b8\u30e1\u30f3\u30c8", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u3092\u3057\u3066\u3044\u308b\u3068\u3001\u6d3b\u529b\u304c\u307f\u306a\u304e\u308b\u3088\u3046\u306b\u611f\u3058\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.516, "sd": 0.77}, {"no": 132, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "46.\u00a0 \u30ef\u30fc\u30af\u30fb\u30a8\u30f3\u30b2\u30a4\u30b8\u30e1\u30f3\u30c8", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306e\u4ed5\u4e8b\u306b\u8a87\u308a\u3092\u611f\u3058\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.516, "sd": 0.77}, {"no": 133, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "47.\u00a0 \u8077\u52d9\u306e\u9042\u884c", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4eca\u6708\u306e\u81ea\u5206\u306e\u4ed5\u4e8b\u306e\u51fa\u6765\u306f\u3001\u4ed6\u306e\u4eba\u306b\u304f\u3089\u3079\u3066\u826f\u304b\u3063\u305f\u3068\u601d\u3046", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.9779, "sd": 0.57}, {"no": 134, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "47.\u00a0 \u8077\u52d9\u306e\u9042\u884c", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u6307\u793a\u3055\u308c\u305f\u4ed5\u4e8b\u3092\u304d\u3061\u3093\u3068\u3084\u308a\u3068\u3052\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.9779, "sd": 0.57}, {"no": 135, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "47.\u00a0 \u8077\u52d9\u306e\u9042\u884c", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u81ea\u5206\u306b\u671f\u5f85\u3055\u308c\u3066\u3044\u308b\u4ed5\u4e8b\u306f\u5341\u5206\u306b\u3053\u306a\u3057\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.9779, "sd": 0.57}, {"no": 136, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "48.\u00a0 \u5275\u9020\u6027\u306e\u767a\u63ee", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u3067\u3044\u308d\u3044\u308d\u5de5\u592b\u3057\u305f\u308a\u3001\u30a2\u30a4\u30c7\u30a2\u3092\u51fa\u3057\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.6712, "sd": 0.72}, {"no": 137, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "48.\u00a0 \u5275\u9020\u6027\u306e\u767a\u63ee", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u4e0a\u306e\u554f\u984c\u306b\u5bfe\u3057\u3066\u65b0\u3057\u3044\u89e3\u6c7a\u7b56\u3092\u8003\u3048\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.6712, "sd": 0.72}, {"no": 138, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "48.\u00a0 \u5275\u9020\u6027\u306e\u767a\u63ee", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u306b\u3064\u3044\u3066\u65b0\u3057\u3044\u3084\u308a\u65b9\u3092\u63d0\u6848\u3057\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.6712, "sd": 0.72}, {"no": 139, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "49.\u00a0 \u7a4d\u6975\u7684\u306a\u5b66\u7fd2", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u4ed5\u4e8b\u3067\u81ea\u5206\u3092\u4e0a\u624b\u306b\u9ad8\u3081\u308b\u3053\u3068\u304c\u3067\u304d\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5457, "sd": 0.72}, {"no": 140, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "49.\u00a0 \u7a4d\u6975\u7684\u306a\u5b66\u7fd2", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u65b0\u3057\u3044\u4e8b\u3092\u30de\u30b9\u30bf\u30fc\u3059\u308b\u3053\u3068\u3067\u523a\u6fc0\u3092\u53d7\u3051\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5457, "sd": 0.72}, {"no": 141, "category": "3-3.\u305d\u306e\u4ed6\uff08\u30a2\u30a6\u30c8\u30ab\u30e0\uff09", "scale": "49.\u00a0 \u7a4d\u6975\u7684\u306a\u5b66\u7fd2", "section": "\uff28\uff0e\u3042\u306a\u305f\u306e\u304a\u4ed5\u4e8b\u306e\u72b6\u6cc1\u3084\u6210\u679c\u306b\u3064\u3044\u3066\u3046\u304b\u304c\u3044\u307e\u3059\u3002\u6700\u3082\u3042\u3066\u306f\u307e\u308b\u3082\u306e\u306b\u25cb\u3092\u3064\u3051\u3066\u304f\u3060\u3055\u3044\u3002", "question": "\u65b0\u3057\u3044\u3053\u3068\u3092\u7d4c\u9a13\u3057\u3066\u6210\u9577\u3057\u3066\u3044\u308b", "direction": "4321", "choices": ["\u305d\u3046\u3060", "\u307e\u3042\u305d\u3046\u3060", "\u3084\u3084\u3061\u304c\u3046", "\u3061\u304c\u3046"], "avg": 2.5457, "sd": 0.72}];!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ストレスチェック フリー</title>
+<script>
+(function() {
+  var hash = window.location.hash;
+  if (hash && hash.indexOf('type=recovery') !== -1) {
+    window.location.replace('/admin/reset-password' + hash);
+  }
+})();
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;600&display=swap');
+:root{
+  --ink:#1a1a2e;--ink2:#4a4a6a;--paper:#faf9f6;--warm:#f3f0e8;
+  --green:#2d6a4f;--green2:#52b788;--green3:#d8f3dc;
+  --warn:#c77c3e;--warn2:#fff3e0;--red:#b5373a;
+  --border:#d6d0c4;--sh:rgba(26,26,46,0.08)
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;line-height:1.7}
+
+/* ── ヘッダー ── */
+.hd{background:var(--ink);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.hd-logo{font-family:'Shippori Mincho',serif;font-size:1.2rem;font-weight:600;flex:1}
+.hd-logo span{color:var(--green2)}
+.hd-page{color:rgba(255,255,255,.7);font-size:.82rem;white-space:nowrap}
+.hd-test{display:none;flex-wrap:wrap;gap:6px;align-items:center}
+.hd-test.visible{display:flex}
+.test-btn{padding:4px 10px;border-radius:5px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);font-size:.72rem;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all .15s}
+.test-btn:hover{background:rgba(255,255,255,.2)}
+
+/* ── 画面切り替え ── */
+.screen{display:none}.screen.active{display:block}
+
+/* ── P1 スタート画面 ── */
+.start-wrap{max-width:680px;margin:60px auto;padding:0 20px}
+.start-card{background:#fff;border-radius:14px;padding:48px;box-shadow:0 4px 24px var(--sh);border:1px solid var(--border)}
+.start-title{font-family:'Shippori Mincho',serif;font-size:1.9rem;line-height:1.4;margin-bottom:8px}
+.start-time{font-size:.82rem;color:var(--ink2);margin-bottom:28px}
+.privacy-box{background:#f0f7f4;border:1px solid #52b788;border-radius:10px;padding:16px 20px;margin-bottom:16px;font-size:.84rem;line-height:1.9;color:var(--ink)}
+.privacy-box strong{display:block;margin-bottom:6px;font-size:.9rem}
+.privacy-box ul{list-style:none;padding:0}
+.privacy-box ul li::before{content:"✓ ";color:var(--green);font-weight:700}
+.notice-box{background:var(--warm);border-left:3px solid var(--border);border-radius:6px;padding:12px 16px;margin-bottom:28px;font-size:.8rem;color:var(--ink2);line-height:1.9}
+.btn-start{display:block;width:100%;padding:16px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;letter-spacing:.08em;transition:all .2s}
+.btn-start:hover{background:#1b5e3f;transform:translateY(-1px)}
+.btn-test-start{display:block;width:100%;padding:11px;margin-top:10px;background:transparent;color:var(--ink2);border:2px dashed var(--border);border-radius:10px;font-size:.82rem;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all .2s}
+.btn-test-start:hover{background:var(--warm);border-color:var(--warn);color:var(--warn)}
+
+/* ── P2〜P9 回答画面 ── */
+.q-wrap{max-width:740px;margin:36px auto;padding:0 20px 100px}
+.sec-hd{padding:12px 18px;background:var(--ink);color:#fff;border-radius:10px;margin-bottom:18px;font-size:.8rem;font-weight:500;letter-spacing:.05em}
+.sec-inst{font-size:.86rem;color:var(--ink2);background:var(--warm);padding:12px 18px;border-radius:8px;margin-bottom:18px;border-left:3px solid var(--border);line-height:1.8}
+.q-card{background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:10px;border:2px solid var(--border);transition:border-color .2s}
+.q-card.answered{border-color:var(--green3);background:#fafffe}
+.q-row{display:flex;align-items:flex-start;gap:14px}
+.q-num{font-size:.7rem;color:#fff;background:var(--ink2);padding:2px 8px;border-radius:10px;font-weight:700;flex-shrink:0;margin-top:3px;min-width:36px;text-align:center}
+.q-card.answered .q-num{background:var(--green)}
+.q-text{font-size:.9rem;line-height:1.7;flex:1}
+.choices{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.choice-btn{flex:1;min-width:72px;padding:9px 6px;border:2px solid var(--border);border-radius:8px;background:var(--warm);font-size:.78rem;font-family:'Noto Sans JP',sans-serif;color:var(--ink2);cursor:pointer;transition:all .15s;text-align:center;line-height:1.3}
+.choice-btn:hover{border-color:var(--green2);color:var(--green);background:var(--green3)}
+.choice-btn.selected{border-color:var(--green);background:var(--green);color:#fff;font-weight:700}
+
+/* ── ナビバー ── */
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:12px 20px;display:flex;gap:10px;justify-content:center;align-items:center;box-shadow:0 -4px 16px var(--sh);z-index:50}
+.warn-msg{color:var(--red);font-size:.78rem;text-align:center;padding:4px;display:none;flex:1}
+.btn-nav{padding:11px 28px;border-radius:8px;border:2px solid var(--border);background:#fff;font-family:'Noto Sans JP',sans-serif;font-size:.86rem;font-weight:700;cursor:pointer;transition:all .2s;color:var(--ink)}
+.btn-nav:hover{background:var(--warm)}
+.btn-nav.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-nav.primary:hover{background:#1b5e3f}
+.btn-nav:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── P10 確認画面 ── */
+.confirm-wrap{max-width:560px;margin:80px auto;padding:0 20px}
+.confirm-card{background:#fff;border-radius:14px;padding:48px;text-align:center;box-shadow:0 4px 24px var(--sh);border:1px solid var(--border)}
+.confirm-icon{font-size:3rem;margin-bottom:16px}
+.confirm-title{font-family:'Shippori Mincho',serif;font-size:1.4rem;margin-bottom:10px}
+.confirm-desc{font-size:.88rem;color:var(--ink2);margin-bottom:32px;line-height:1.9}
+.confirm-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-confirm{padding:13px 28px;border-radius:8px;border:2px solid var(--border);background:#fff;font-family:'Noto Sans JP',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;color:var(--ink)}
+.btn-confirm:hover{background:var(--warm)}
+.btn-confirm.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-confirm.primary:hover{background:#1b5e3f}
+.btn-confirm:disabled{opacity:.5;cursor:not-allowed}
+.submit-msg{margin-top:16px;font-size:.82rem;color:var(--ink2)}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/scoring.js"></script>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header class="hd">
+  <div class="hd-logo">ストレスチェック <span>フリー</span></div>
+  <div class="hd-page" id="hdPage"></div>
+  <div class="hd-test" id="hdTest">
+    <span style="font-size:.7rem;color:rgba(255,255,255,.5);margin-right:4px">テスト:</span>
+    <button class="test-btn" onclick="setTestData(1)">全ネガ</button>
+    <button class="test-btn" onclick="setTestData(2)">ややネガ</button>
+    <button class="test-btn" onclick="setTestData(3)">ややポジ</button>
+    <button class="test-btn" onclick="setTestData(4)">全ポジ</button>
+    <button class="test-btn" onclick="setTestData('random')">ランダム</button>
+  </div>
+</header>
+
+<!-- P1: スタート画面 -->
+<div id="scStart" class="screen active">
+  <div class="start-wrap">
+    <div class="start-card">
+      <h1 class="start-title">ストレスチェック<br>フリー</h1>
+      <p class="start-time">所要時間：約15分</p>
+      <div class="privacy-box">
+        <strong>🔒 プライバシーについて</strong>
+        <ul>
+          <li>結果はあなただけに通知されます</li>
+          <li>会社が個人の結果を閲覧することはできません</li>
+          <li>氏名の入力はなく、特定できません</li>
+          <li>集団分析の結果は会社が閲覧できますが、10名未満の場合は非表示です</li>
+        </ul>
+      </div>
+      <div class="notice-box">
+        本ツールはストレスチェック実施を支援するWebサービスです。<br>
+        質問や採点方法は厚生労働省が発表している調査票・全国平均データセットに基づき、実施規定・実施マニュアルに準拠しています。<br>
+        結果の管理・面接指導の実施は、各事業者の責任において行われます。
+      </div>
+      <button class="btn-start" id="btnStart">調査をはじめる →</button>
+      <button class="btn-test-start" id="btnTestStart">🧪 テストモードで開始</button>
+    </div>
+  </div>
+</div>
+
+<!-- P2〜P9: 回答画面 -->
+<div id="scQuestions" class="screen">
+  <div class="q-wrap" id="qContainer"></div>
+  <div class="nav-bar">
+    <div style="flex:1;text-align:center">
+      <div class="warn-msg" id="warnMsg">未回答の質問があります。すべて回答してから次へ進んでください。</div>
+    </div>
+    <button class="btn-nav" id="btnPrev">← 前へ</button>
+    <button class="btn-nav primary" id="btnNext" disabled>次へ →</button>
+  </div>
+</div>
+
+<!-- P10: 確認画面 -->
+<div id="scConfirm" class="screen">
+  <div class="confirm-wrap">
+    <div class="confirm-card">
+      <div class="confirm-icon">✅</div>
+      <h2 class="confirm-title">141問すべて回答しました</h2>
+      <p class="confirm-desc">送信して結果を確認しますか？<br>送信後は回答を変更できません。</p>
+      <div class="confirm-btns">
+        <button class="btn-confirm" id="btnConfirmBack">← 戻る</button>
+        <button class="btn-confirm primary" id="btnSubmit">送信して結果を見る →</button>
+      </div>
+      <p class="submit-msg" id="submitMsg"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── セクション定義（指示書準拠）───────────────────────
+var SECTIONS = [
+  { id: 1, start: 1,   end: 19  },
+  { id: 2, start: 20,  end: 37  },
+  { id: 3, start: 38,  end: 48  },
+  { id: 4, start: 49,  end: 59  },
+  { id: 5, start: 60,  end: 77  },
+  { id: 6, start: 78,  end: 98  },
+  { id: 7, start: 99,  end: 121 },
+  { id: 8, start: 122, end: 141 }
+];
+
+// ─── 状態 ──────────────────────────────────────────
+var answers = {};        // { [no]: score } 逆転採点済み
+var choiceIndexes = {};  // { [no]: idx } 何番目の選択肢を選んだか（0始まり）
+var currentPage = 1;     // 1〜8=回答ページ、9=確認画面
+
+// ─── 逆転採点（既存ロジック維持）────────────────────
+function getScore(q, idx) {
+  return q.direction === '1234' ? idx + 1 : 4 - idx;
+}
+
+// ─── localStorage 保存/復元 ─────────────────────────
+function saveProgress() {
   try {
-    clearProgress();
-    await buildResult();
-  } catch(e) {
-    btn.disabled    = false;
-    msg.textContent = 'エラーが発生しました。もう一度お試しください。';
-    console.error('送信エラー:', e);
+    localStorage.setItem('sc_answers', JSON.stringify(answers));
+    localStorage.setItem('sc_page', currentPage);
+  } catch(e) {}
+}
+
+function loadProgress() {
+  try {
+    var saved = localStorage.getItem('sc_answers');
+    var savedPage = localStorage.getItem('sc_page');
+    if (saved) {
+      Object.assign(answers, JSON.parse(saved));
+      currentPage = parseInt(savedPage) || 1;
+    }
+  } catch(e) {}
+}
+
+function clearProgress() {
+  try {
+    localStorage.removeItem('sc_answers');
+    localStorage.removeItem('sc_page');
+  } catch(e) {}
+}
+
+// ─── テストモード（全141問一括セット）────────────────
+function setTestData(score) {
+  for (var i = 0; i < QUESTIONS.length; i++) {
+    var q = QUESTIONS[i];
+    var s = score === 'random' ? Math.floor(Math.random() * 4) + 1 : score;
+    answers[q.no] = s;
+    // choiceIndexes: score から choices の index を逆引き
+    for (var j = 0; j < q.choices.length; j++) {
+      if (getScore(q, j) === s) { choiceIndexes[q.no] = j; break; }
+    }
+  }
+  saveProgress();
+  renderCurrentPage();
+}
+
+// ─── ページ制御ユーティリティ ─────────────────────────
+function getQuestionsForPage(page) {
+  var sec = SECTIONS[page - 1];
+  return QUESTIONS.filter(function(q) { return q.no >= sec.start && q.no <= sec.end; });
+}
+
+function checkPageComplete(page) {
+  var qs = getQuestionsForPage(page);
+  for (var i = 0; i < qs.length; i++) {
+    if (answers[qs[i].no] === undefined) return false;
+  }
+  return true;
+}
+
+function updateNextBtn() {
+  var btn = document.getElementById('btnNext');
+  var complete = checkPageComplete(currentPage);
+  btn.disabled = !complete;
+  btn.textContent = currentPage === 8 ? '確認へ →' : '次へ →';
+}
+
+function updateHeader() {
+  var el = document.getElementById('hdPage');
+  if (currentPage >= 1 && currentPage <= 8) {
+    el.textContent = currentPage + ' / 8ページ';
+  } else {
+    el.textContent = '';
   }
 }
 
-// ─── 起動 ────────────────────────────────────────────
-document.getElementById('btnStartMain').onclick = startSurvey;
-init();
+// ─── 描画 ─────────────────────────────────────────
+function renderCurrentPage() {
+  if (currentPage >= 1 && currentPage <= 8) {
+    renderQuestionPage(currentPage);
+  }
+}
+
+function renderQuestionPage(page) {
+  var qs = getQuestionsForPage(page);
+  var sec = SECTIONS[page - 1];
+
+  // セクション指示文はページ内の最初の問から取る
+  var sectionTitle = qs.length > 0 ? qs[0].section : '';
+
+  function stripPrefix(s) {
+    return s.replace(/^[Ａ-Ｈ]．/, '').trim();
+  }
+
+  var html = '<div class="sec-hd">セクション ' + page + ' / 8　（Q' + sec.start + '〜Q' + sec.end + '）</div>';
+  html += '<div class="sec-inst">' + stripPrefix(sectionTitle) + '</div>';
+
+  var lastSection = sectionTitle;
+  for (var i = 0; i < qs.length; i++) {
+    var q = qs[i];
+    if (i > 0 && q.section !== lastSection) {
+      html += '<div class="sec-inst" style="margin-top:20px">' + stripPrefix(q.section) + '</div>';
+      lastSection = q.section;
+    }
+    var answered = answers[q.no] !== undefined;
+    html += '<div class="q-card' + (answered ? ' answered' : '') + '" id="qcard' + q.no + '">';
+    html += '<div class="q-row">';
+    html += '<span class="q-num">Q' + q.no + '</span>';
+    html += '<div class="q-text">' + q.question.trim() + '</div>';
+    html += '</div>';
+    html += '<div class="choices">';
+    for (var j = 0; j < q.choices.length; j++) {
+      var score = getScore(q, j);
+      var sel = answers[q.no] === score;
+      html += '<button class="choice-btn' + (sel ? ' selected' : '') + '"'
+            + ' data-no="' + q.no + '" data-score="' + score + '" data-idx="' + j + '">'
+            + q.choices[j] + '</button>';
+    }
+    html += '</div></div>';
+  }
+
+  document.getElementById('qContainer').innerHTML = html;
+
+  // 選択肢クリックイベント
+  var btns = document.getElementById('qContainer').querySelectorAll('.choice-btn');
+  for (var k = 0; k < btns.length; k++) {
+    btns[k].onclick = function() {
+      var no    = parseInt(this.getAttribute('data-no'));
+      var score = parseInt(this.getAttribute('data-score'));
+      answers[no] = score;
+      choiceIndexes[no] = parseInt(this.getAttribute('data-idx'));
+
+      var card = document.getElementById('qcard' + no);
+      card.classList.add('answered');
+      var siblings = card.querySelectorAll('.choice-btn');
+      for (var m = 0; m < siblings.length; m++) siblings[m].classList.remove('selected');
+      this.classList.add('selected');
+
+      document.getElementById('warnMsg').style.display = 'none';
+      saveProgress();
+      updateNextBtn();
+    };
+  }
+
+  document.getElementById('btnPrev').disabled = (currentPage === 1);
+  document.getElementById('hdTest').classList.add('visible');
+  updateNextBtn();
+  updateHeader();
+  window.scrollTo(0, 0);
+}
+
+// ─── 画面切り替え ──────────────────────────────────
+function showScreen(id) {
+  var screens = document.querySelectorAll('.screen');
+  for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
+  document.getElementById(id).classList.add('active');
+}
+
+// ─── ページ遷移 ────────────────────────────────────
+function goToPage(page) {
+  currentPage = page;
+  saveProgress();
+  if (page >= 1 && page <= 8) {
+    showScreen('scQuestions');
+    renderCurrentPage();
+  } else if (page === 9) {
+    showScreen('scConfirm');
+    document.getElementById('hdPage').textContent = '';
+    document.getElementById('hdTest').classList.remove('visible');
+  }
+}
+
+function onNext() {
+  if (!checkPageComplete(currentPage)) {
+    document.getElementById('warnMsg').style.display = 'block';
+    // 未回答の最初の問へスクロール
+    var qs = getQuestionsForPage(currentPage);
+    for (var i = 0; i < qs.length; i++) {
+      if (answers[qs[i].no] === undefined) {
+        var el = document.getElementById('qcard' + qs[i].no);
+        if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'});
+        break;
+      }
+    }
+    return;
+  }
+  document.getElementById('warnMsg').style.display = 'none';
+  if (currentPage < 8) {
+    goToPage(currentPage + 1);
+  } else {
+    goToPage(9);
+  }
+}
+
+function onPrev() {
+  document.getElementById('warnMsg').style.display = 'none';
+  if (currentPage > 1) goToPage(currentPage - 1);
+}
+
+// ─── 開始 ──────────────────────────────────────────
+function startSurvey() {
+  loadProgress();
+  showScreen('scQuestions');
+  renderCurrentPage();
+}
+
+function startTestMode() {
+  answers = {};
+  currentPage = 1;
+  showScreen('scQuestions');
+  renderCurrentPage();
+}
+
+// ─── 採点・送信 ────────────────────────────────────
+function buildResult() {
+  var scaleResults = calcScaleResults(answers);
+  var sTotal=0, sMax=0, rTotal=0, rMax=0, oTotal=0, oMax=0;
+  for (var k in scaleResults) {
+    var cat = scaleResults[k].category;
+    var first = cat.charAt(0);
+    if (first === '1') {
+      sTotal += scaleResults[k].score; sMax += scaleResults[k].maxScore;
+    } else if (first === '2') {
+      rTotal += scaleResults[k].score; rMax += scaleResults[k].maxScore;
+    } else {
+      oTotal += scaleResults[k].score; oMax += scaleResults[k].maxScore;
+    }
+  }
+  var level = getStressLevel(scaleResults);
+  saveToSupabase(answers, {
+    level: level,
+    sTotal: sTotal, sMax: sMax,
+    rTotal: rTotal, rMax: rMax,
+    oTotal: oTotal, oMax: oMax
+  });
+  sessionStorage.setItem('stressResult', JSON.stringify({
+    level: level,
+    answers: answers,
+    choiceIndexes: choiceIndexes,
+    scaleResults: scaleResults
+  }));
+}
+
+function saveToSupabase(answersObj, scores) {
+  var employeeId = sessionStorage.getItem('employee_id');
+  var companyId  = sessionStorage.getItem('company_id');
+  if (!employeeId || !companyId) return;
+  supabase.from('survey_responses').insert({
+    employee_id:  employeeId,
+    company_id:   companyId,
+    answers:      answersObj,
+    stress_level: scores.level,
+    s_total: scores.sTotal, s_max: scores.sMax,
+    r_total: scores.rTotal, r_max: scores.rMax,
+    o_total: scores.oTotal, o_max: scores.oMax
+  }).then(function(r){ if(r.error) console.error('保存エラー:', r.error); });
+}
+
+function onSubmit() {
+  var btn  = document.getElementById('btnSubmit');
+  var back = document.getElementById('btnConfirmBack');
+  var msg  = document.getElementById('submitMsg');
+  btn.disabled = true;
+  back.disabled = true;
+  msg.textContent = '送信中...';
+  try { buildResult(); } catch(e) { console.error('buildResult error:', e); }
+  clearProgress();
+  window.location.href = 'result.html';
+}
+
+// ─── イベント登録 ──────────────────────────────────
+document.getElementById('btnStart').onclick        = startSurvey;
+document.getElementById('btnTestStart').onclick    = startTestMode;
+document.getElementById('btnNext').onclick         = onNext;
+document.getElementById('btnPrev').onclick         = onPrev;
+document.getElementById('btnConfirmBack').onclick  = function(){ goToPage(8); };
+document.getElementById('btnSubmit').onclick       = onSubmit;
+</script>
+
+<script>
+var QUESTIONS = [{"no": 1, "category": "1.ストレッサー（仕事の負担）", "scale": "01.   仕事の量的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "非常にたくさんの仕事をしなければならない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1396, "sd": 0.76}, {"no": 2, "category": "1.ストレッサー（仕事の負担）", "scale": "01.   仕事の量的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "時間内に仕事が処理しきれない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1396, "sd": 0.76}, {"no": 3, "category": "1.ストレッサー（仕事の負担）", "scale": "01.   仕事の量的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "一生懸命働かなければならない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1396, "sd": 0.76}, {"no": 4, "category": "1.ストレッサー（仕事の負担）", "scale": "02.   仕事の質的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "かなり注意を集中する必要がある", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.16, "sd": 0.71}, {"no": 5, "category": "1.ストレッサー（仕事の負担）", "scale": "02.   仕事の質的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "高度の知識や技術が必要なむずかしい仕事だ", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.16, "sd": 0.71}, {"no": 6, "category": "1.ストレッサー（仕事の負担）", "scale": "02.   仕事の質的負担", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "勤務時間中はいつも仕事のことを考えていなければならない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.16, "sd": 0.71}, {"no": 7, "category": "1.ストレッサー（仕事の負担）", "scale": "03.   身体的負担度", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "からだを大変よく使う仕事だ", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4923, "sd": 1.08}, {"no": 8, "category": "2-1.作業リソース（仕事の資源）", "scale": "09.   仕事のコントロール", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分のペースで仕事ができる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5315, "sd": 0.74}, {"no": 9, "category": "2-1.作業リソース（仕事の資源）", "scale": "09.   仕事のコントロール", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分で仕事の順番・やり方を決めることができる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5315, "sd": 0.74}, {"no": 10, "category": "2-1.作業リソース（仕事の資源）", "scale": "09.   仕事のコントロール", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場の仕事の方針に自分の意見を反映できる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5315, "sd": 0.74}, {"no": 11, "category": "2-1.作業リソース（仕事の資源）", "scale": "11.  技能の活用度", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の技能や知識を仕事で使うことが少ない（あるいは、使うことはない）", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.0012, "sd": 0.85}, {"no": 12, "category": "1.ストレッサー（仕事の負担）", "scale": "04.   職場での対人関係", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私の部署内で意見のくい違いがある", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 13, "category": "1.ストレッサー（仕事の負担）", "scale": "04.   職場での対人関係", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私の部署と他の部署とはうまが合わない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 14, "category": "1.ストレッサー（仕事の負担）", "scale": "04.   職場での対人関係", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私の職場の雰囲気は友好的である", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.8822, "sd": 0.66}, {"no": 15, "category": "1.ストレッサー（仕事の負担）", "scale": "05.   職場環境", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私の職場の作業環境（騒音、照明、温度、換気など）はよくない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7812, "sd": 0.98952}, {"no": 16, "category": "2-1.作業リソース（仕事の資源）", "scale": "10.  仕事の適性", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の内容は自分に合っている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.9165, "sd": 0.8}, {"no": 17, "category": "2-1.作業リソース（仕事の資源）", "scale": "12.  仕事の意義", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "働きがいのある仕事だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.0907, "sd": 0.67}, {"no": 18, "category": "2-1.作業リソース（仕事の資源）", "scale": "12.  仕事の意義", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事は意味のあるものだ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.0907, "sd": 0.67}, {"no": 19, "category": "2-1.作業リソース（仕事の資源）", "scale": "12.  仕事の意義", "section": "Ａ．あなたの仕事についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事は重要だと思う", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.0907, "sd": 0.67}, {"no": 20, "category": "3-1.精神的ストレス（アウトカム）", "scale": "36.  活気", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "活気がわいてくる", "direction": "1234", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.2568, "sd": 0.79}, {"no": 21, "category": "3-1.精神的ストレス（アウトカム）", "scale": "36.  活気", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "元気がいっぱいだ", "direction": "1234", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.2568, "sd": 0.79}, {"no": 22, "category": "3-1.精神的ストレス（アウトカム）", "scale": "36.  活気", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": " 生き生きする", "direction": "1234", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.2568, "sd": 0.79}, {"no": 23, "category": "3-1.精神的ストレス（アウトカム）", "scale": "37.  イライラ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "怒りを感じる", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6974, "sd": 0.85}, {"no": 24, "category": "3-1.精神的ストレス（アウトカム）", "scale": "37.  イライラ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "内心腹立たしい", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6974, "sd": 0.85}, {"no": 25, "category": "3-1.精神的ストレス（アウトカム）", "scale": "37.  イライラ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "イライラしている", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6974, "sd": 0.85}, {"no": 26, "category": "3-1.精神的ストレス（アウトカム）", "scale": "38.  疲労感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "ひどく疲れた", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6987, "sd": 0.88}, {"no": 27, "category": "3-1.精神的ストレス（アウトカム）", "scale": "38.  疲労感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "へとへとだ", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6987, "sd": 0.88}, {"no": 28, "category": "3-1.精神的ストレス（アウトカム）", "scale": "38.  疲労感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "だるい", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.6987, "sd": 0.88}, {"no": 29, "category": "3-1.精神的ストレス（アウトカム）", "scale": "39.  不安感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "気がはりつめている", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.8679, "sd": 0.8}, {"no": 30, "category": "3-1.精神的ストレス（アウトカム）", "scale": "39.  不安感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "不安だ", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.8679, "sd": 0.8}, {"no": 31, "category": "3-1.精神的ストレス（アウトカム）", "scale": "39.  不安感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "落着かない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 2.8679, "sd": 0.8}, {"no": 32, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "ゆううつだ", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 33, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "何をするのも面倒だ", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 34, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "物事に集中できない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 35, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "気分が晴れない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 36, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "仕事が手につかない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 37, "category": "3-1.精神的ストレス（アウトカム）", "scale": "40.  抑うつ感", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "悲しいと感じる", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2737, "sd": 0.67}, {"no": 38, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "めまいがする", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 39, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "体のふしぶしが痛む", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 40, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "頭が重かったり頭痛がする", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 41, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "首筋や肩がこる", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 42, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "腰が痛い", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 43, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "目が疲れる", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 44, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "動悸や息切れがする", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 45, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "胃腸の具合が悪い", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 46, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "食欲がない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 47, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "便秘や下痢をする", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 48, "category": "3-2.身体的ストレス（アウトカム）", "scale": "41.  身体愁訴", "section": "Ｂ．最近1か月間のあなたの状態についてうかがいます。最もあてはまるものに○を付けてください。", "question": "よく眠れない", "direction": "4321", "choices": ["ほとんどなかった", "ときどきあった", "しばしばあった", "ほとんどいつもあった"], "avg": 3.2195, "sd": 0.54}, {"no": 49, "category": "2-2.部署リソース（仕事の資源）", "scale": "17.  上司からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。次の人たちはどのくらい気軽に話ができますか？", "question": "上司　", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.3706, "sd": 0.75}, {"no": 50, "category": "2-2.部署リソース（仕事の資源）", "scale": "18.  同僚からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。次の人たちはどのくらい気軽に話ができますか？", "question": "職場の同僚", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.6788, "sd": 0.7}, {"no": 51, "category": "2-2.部署リソース（仕事の資源）", "scale": "19.  [家族・友人からのサポート]", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。次の人たちはどのくらい気軽に話ができますか？", "question": "配偶者、家族、友人等", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 3.314, "sd": 0.68}, {"no": 52, "category": "2-2.部署リソース（仕事の資源）", "scale": "17.  上司からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたが困った時、次の人たちはどのくらい頼りになりますか？", "question": "上司", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.3706, "sd": 0.75}, {"no": 53, "category": "2-2.部署リソース（仕事の資源）", "scale": "18.  同僚からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたが困った時、次の人たちはどのくらい頼りになりますか？", "question": "職場の同僚", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.6788, "sd": 0.7}, {"no": 54, "category": "2-2.部署リソース（仕事の資源）", "scale": "19.  [家族・友人からのサポート]", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたが困った時、次の人たちはどのくらい頼りになりますか？", "question": "配偶者、家族、友人等", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 3.314, "sd": 0.68}, {"no": 55, "category": "2-2.部署リソース（仕事の資源）", "scale": "17.  上司からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたの個人的な問題を相談したら、次の人たちはどのくらいきいてくれますか？", "question": "上司　", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.3706, "sd": 0.75}, {"no": 56, "category": "2-2.部署リソース（仕事の資源）", "scale": "18.  同僚からのサポート", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたの個人的な問題を相談したら、次の人たちはどのくらいきいてくれますか？", "question": "職場の同僚", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 2.6788, "sd": 0.7}, {"no": 57, "category": "2-2.部署リソース（仕事の資源）", "scale": "19.  [家族・友人からのサポート]", "section": "Ｃ．あなたの周りの方々についてうかがいます。最もあてはまるものに○を付けてください。あなたの個人的な問題を相談したら、次の人たちはどのくらいきいてくれますか？", "question": "配偶者、家族、友人等", "direction": "4321", "choices": ["非常に", "かなり", "多少", "全くない"], "avg": 3.314, "sd": 0.68}, {"no": 58, "category": "3-3.その他（アウトカム）", "scale": "42.  仕事満足度", "section": "Ｄ．満足度についてうかがいます。最もあてはまるものに○を付けてください。", "question": "仕事に満足だ", "direction": "4321", "choices": ["満足", "まあ満足", "やや不満足", "不満足"], "avg": 2.6, "sd": 0.85}, {"no": 59, "category": "3-3.その他（アウトカム）", "scale": "43.  [家庭満足度]", "section": "Ｄ．満足度についてうかがいます。最もあてはまるものに○を付けてください。", "question": "家庭生活に満足だ", "direction": "4321", "choices": ["満足", "まあ満足", "やや不満足", "不満足"], "avg": 3.0583, "sd": 0.81}, {"no": 60, "category": "1.ストレッサー（仕事の負担）", "scale": "06.   情緒的負担", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の上で、気持ちや感情がかき乱されることがある", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6486, "sd": 0.82}, {"no": 61, "category": "1.ストレッサー（仕事の負担）", "scale": "06.   情緒的負担", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "感情面で負担になる仕事だ", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6486, "sd": 0.82}, {"no": 62, "category": "1.ストレッサー（仕事の負担）", "scale": "06.   情緒的負担", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "感情的に巻き込まれやすい仕事だ", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6486, "sd": 0.82}, {"no": 63, "category": "1.ストレッサー（仕事の負担）", "scale": "07.   役割葛藤", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "自分が正しいと思うのとは違ったやり方で仕事をしなければならない-", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7829, "sd": 0.77}, {"no": 64, "category": "1.ストレッサー（仕事の負担）", "scale": "07.   役割葛藤", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "複数の人からお互いに矛盾したことを要求される", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7829, "sd": 0.77}, {"no": 65, "category": "1.ストレッサー（仕事の負担）", "scale": "07.   役割葛藤", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "十分な人やモノがないまま仕事を割り当てられる", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7829, "sd": 0.77}, {"no": 66, "category": "2-1.作業リソース（仕事の資源）", "scale": "13.  役割明確さ", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の職務や責任が何であるか分かっている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.1593, "sd": 0.59}, {"no": 67, "category": "2-1.作業リソース（仕事の資源）", "scale": "13.  役割明確さ", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "自分にどれくらい権限があるのかはっきりしている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.1593, "sd": 0.59}, {"no": 68, "category": "2-1.作業リソース（仕事の資源）", "scale": "13.  役割明確さ", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事で何をするべきかについて説明されている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.1593, "sd": 0.59}, {"no": 69, "category": "2-1.作業リソース（仕事の資源）", "scale": "14.  成長の機会", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事で新しいことを学ぶ機会がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1807, "sd": 0.77}, {"no": 70, "category": "2-1.作業リソース（仕事の資源）", "scale": "14.  成長の機会", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事で自分の長所をのばす機会がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.2644, "sd": 0.78}, {"no": 71, "category": "2-1.作業リソース（仕事の資源）", "scale": "14.  成長の機会", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "職場では、自分の技能を十分に高めることができる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4628, "sd": 0.75}, {"no": 72, "category": "2-1.作業リソース（仕事の資源）", "scale": "15.  新奇性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "これまでしたことのない種類の仕事をすることが多い", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7754, "sd": 0.8}, {"no": 73, "category": "2-1.作業リソース（仕事の資源）", "scale": "15.  新奇性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "毎回、新しい技術や知識を必要とする仕事である", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7754, "sd": 0.8}, {"no": 74, "category": "2-1.作業リソース（仕事の資源）", "scale": "15.  新奇性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の上で、以前に経験したことのないことに出会う", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7754, "sd": 0.8}, {"no": 75, "category": "2-1.作業リソース（仕事の資源）", "scale": "16.  予測可能性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "いつごろ、自分の仕事量が増えるか分かっている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4646, "sd": 0.73}, {"no": 76, "category": "2-1.作業リソース（仕事の資源）", "scale": "16.  予測可能性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "いつごろ、自分の仕事が一段落するか見通しがついている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4646, "sd": 0.73}, {"no": 77, "category": "2-1.作業リソース（仕事の資源）", "scale": "16.  予測可能性", "section": "Ｅ．あなたのお仕事について、もう少し詳しくうかがいます。最もあてはまるものに○をつけてください。", "question": "いつごろ、仕事上でトラブルが生じるか予想できる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4646, "sd": 0.73}, {"no": 78, "category": "2-2.部署リソース（仕事の資源）", "scale": "20.  経済・地位報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事に見合う給料やボーナスをもらっている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4072, "sd": 0.79}, {"no": 79, "category": "2-2.部署リソース（仕事の資源）", "scale": "20.  経済・地位報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の能力や経験に見合った地位・職務に就いている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4072, "sd": 0.79}, {"no": 80, "category": "2-2.部署リソース（仕事の資源）", "scale": "21.  尊重報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私は上司からふさわしい評価を受けている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7234, "sd": 0.67}, {"no": 81, "category": "2-2.部署リソース（仕事の資源）", "scale": "21.  尊重報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "同僚から、自分の仕事上のふさわしい扱いを受けている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7234, "sd": 0.67}, {"no": 82, "category": "2-2.部署リソース（仕事の資源）", "scale": "22.  安定報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "昇進の見込みは少ない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4628, "sd": 0.75}, {"no": 83, "category": "2-2.部署リソース（仕事の資源）", "scale": "22.  安定報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職を失う恐れがある", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4628, "sd": 0.75}, {"no": 84, "category": "2-2.部署リソース（仕事の資源）", "scale": "22.  安定報酬", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場で好ましくない変化を経験している。もしくは今後そういう状況が起こりうる", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4628, "sd": 0.75}, {"no": 85, "category": "2-2.部署リソース（仕事の資源）", "scale": "23.  上司のリーダーシップ", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の出来ばえについて、上司からフィードバックをもらっている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1807, "sd": 0.77}, {"no": 86, "category": "2-2.部署リソース（仕事の資源）", "scale": "23.  上司のリーダーシップ", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は、部下が能力をのばす機会を持てるように、取り計らってくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6751, "sd": 0.81}, {"no": 87, "category": "2-2.部署リソース（仕事の資源）", "scale": "23.  上司のリーダーシップ", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は、私が自分で問題解決できるように励ましてくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": null, "sd": null}, {"no": 88, "category": "2-2.部署リソース（仕事の資源）", "scale": "24.  上司の公正な態度", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は独りよがりなものの見方をしないようにすることができる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": null, "sd": null}, {"no": 89, "category": "2-2.部署リソース（仕事の資源）", "scale": "24.  上司の公正な態度", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は親切心と思いやりをもって接してくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7425, "sd": 0.69}, {"no": 90, "category": "2-2.部署リソース（仕事の資源）", "scale": "24.  上司の公正な態度", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "上司は誠実な態度で対応してくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5489, "sd": 0.8}, {"no": 91, "category": "2-2.部署リソース（仕事の資源）", "scale": "25.  ほめてもらえる職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事をきちんとすれば、ほめてもらえる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4239, "sd": 0.82}, {"no": 92, "category": "2-2.部署リソース（仕事の資源）", "scale": "25.  ほめてもらえる職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "努力して仕事をすれば、ほめてもらえる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4239, "sd": 0.82}, {"no": 93, "category": "2-2.部署リソース（仕事の資源）", "scale": "25.  ほめてもらえる職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "あたりまえのことでも、できたらほめてもらえる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4239, "sd": 0.82}, {"no": 94, "category": "2-2.部署リソース（仕事の資源）", "scale": "26.  失敗を認める職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "ピンチをチャンスに変えられる職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 95, "category": "2-2.部署リソース（仕事の資源）", "scale": "26.  失敗を認める職場", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "失敗しても挽回(ばんかい)するチャンスがある職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.2644, "sd": 0.78}, {"no": 96, "category": "2-2.部署リソース（仕事の資源）", "scale": "27.  グループの有能感", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分のグループは仕事の遂行能力がとても高いという自信がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4934, "sd": 0.74}, {"no": 97, "category": "2-2.部署リソース（仕事の資源）", "scale": "27.  グループの有能感", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分のグループは不測の事態をうまく処理できるという自信がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 98, "category": "2-2.部署リソース（仕事の資源）", "scale": "27.  グループの有能感", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分のグループは全体的に見て、課題の解決能力が高い", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.2696, "sd": 0.73}, {"no": 99, "category": "2-3.会社リソース（仕事の資源）", "scale": "28.  経営層との信頼関係", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "経営層は従業員の仕事ぶりを信頼している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5284, "sd": 0.71}, {"no": 100, "category": "2-3.会社リソース（仕事の資源）", "scale": "28.  経営層との信頼関係", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "経営層からの情報は信頼できる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5284, "sd": 0.71}, {"no": 101, "category": "2-3.会社リソース（仕事の資源）", "scale": "28.  経営層との信頼関係", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "経営層は従業員からの提案を真剣に取り扱ってくれる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5284, "sd": 0.71}, {"no": 102, "category": "2-3.会社リソース（仕事の資源）", "scale": "29.  変化への対応", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場や仕事でどんな変化があるか、上司にたずねる機会がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1904, "sd": 0.74}, {"no": 103, "category": "2-3.会社リソース（仕事の資源）", "scale": "29.  変化への対応", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場や仕事で変化があるときには、従業員の意見が聞かれている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.476, "sd": 0.72}, {"no": 104, "category": "2-3.会社リソース（仕事の資源）", "scale": "29.  変化への対応", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場や仕事の変化がある場合、事前に説明がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.476, "sd": 0.72}, {"no": 105, "category": "2-3.会社リソース（仕事の資源）", "scale": "30.  手続きの公正性※", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "意思決定によって影響を受ける全ての関係者が、意思決定に参加している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1463, "sd": 0.77}, {"no": 106, "category": "2-3.会社リソース（仕事の資源）", "scale": "30.  手続きの公正性※", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "意思決定は一貫している(全ての従業員に対し規則が同様に適用される)", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1463, "sd": 0.77}, {"no": 107, "category": "2-3.会社リソース（仕事の資源）", "scale": "30.  手続きの公正性※", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "意思決定が行われる前に、影響を受ける人たちの考えが聞かれている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1807, "sd": 0.77}, {"no": 108, "category": "2-3.会社リソース（仕事の資源）", "scale": "31.  個人の尊重", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "一人ひとりの長所や得意分野を考えて仕事が与えられている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1189, "sd": 0.72}, {"no": 109, "category": "2-3.会社リソース（仕事の資源）", "scale": "31.  個人の尊重", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "一人ひとりの価値観を大事にしてくれる職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1189, "sd": 0.72}, {"no": 110, "category": "2-3.会社リソース（仕事の資源）", "scale": "31.  個人の尊重", "section": "Ｆ．あなたの働いている職場についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分に合った仕事や職場を社内で見つける機会がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.2696, "sd": 0.73}, {"no": 111, "category": "2-3.会社リソース（仕事の資源）", "scale": "32.  公正な人事評価", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "人事評価の結果について十分な説明がなされている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 112, "category": "2-3.会社リソース（仕事の資源）", "scale": "32.  公正な人事評価", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事の方針と役割について納得できるような説明がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 113, "category": "2-3.会社リソース（仕事の資源）", "scale": "32.  公正な人事評価", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "人事評価の基準が明確にされている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6751, "sd": 0.81}, {"no": 114, "category": "2-3.会社リソース（仕事の資源）", "scale": "33. 多様な労働者への対応", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "女性、高齢者あるいは障がい者が働きやすい職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.8822, "sd": 0.66}, {"no": 115, "category": "2-3.会社リソース（仕事の資源）", "scale": "33. 多様な労働者への対応", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "若い人が働きやすい職場だ", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1189, "sd": 0.72}, {"no": 116, "category": "2-3.会社リソース（仕事の資源）", "scale": "33. 多様な労働者への対応", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場では、（正規、非正規、アルバイトなど）いろいろな立場の人が職場の一員として尊重されている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.1463, "sd": 0.77}, {"no": 117, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "意欲を引き出したり、キャリアに役立つ教育が行われている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.476, "sd": 0.72}, {"no": 118, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "若いうちから将来の進路を考えて人事管理が行われている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4934, "sd": 0.74}, {"no": 119, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "グループや個人ごとに、教育・訓練の目標が明確にされている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.4934, "sd": 0.74}, {"no": 120, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の職場では、誰でも必要なときに必要な教育・訓練が受けられる-", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5489, "sd": 0.8}, {"no": 121, "category": "2-3.会社リソース（仕事の資源）", "scale": "34. キャリア形成", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の職場では、従業員を育てることが大切だと考えられている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5489, "sd": 0.8}, {"no": 122, "category": "1.ストレッサー（仕事の負担）", "scale": "08.   ワーク・セルフ・バランス（ネガティブ）", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事のことを考えているため自分の生活を充実させられない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7765, "sd": 0.86}, {"no": 123, "category": "1.ストレッサー（仕事の負担）", "scale": "08.   ワーク・セルフ・バランス（ネガティブ）", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事のスケジュールのために自分の生活を充実させられない", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7765, "sd": 0.86}, {"no": 124, "category": "2-3.会社リソース（仕事の資源）", "scale": "35.  ワーク・セルフ・バランス（ポジティブ）", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事で学んだことを活かして自分の生活を充実させている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.0986, "sd": 0.78}, {"no": 125, "category": "2-3.会社リソース（仕事の資源）", "scale": "35.  ワーク・セルフ・バランス（ポジティブ）", "section": "Ｇ．あなたの働いている会社や組織についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事でエネルギーをもらうことで、自分の生活がさらに充実している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.0986, "sd": 0.78}, {"no": 126, "category": "3-3.その他（アウトカム）", "scale": "44.  職場のハラスメント", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場で自分がいじめにあっている (セクハラ、パワハラを含む)", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.576, "sd": 0.67}, {"no": 127, "category": "3-3.その他（アウトカム）", "scale": "44.  職場のハラスメント", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "職場でいじめにあっている人がいる (セクハラ、パワハラを含む)", "direction": "1234", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 3.576, "sd": 0.67}, {"no": 128, "category": "3-3.その他（アウトカム）", "scale": "45.  職場の一体感（ソーシャル・キャピタル）", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私たちの職場では、ともに働こうという姿勢がある", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7425, "sd": 0.69}, {"no": 129, "category": "3-3.その他（アウトカム）", "scale": "45.  職場の一体感（ソーシャル・キャピタル）", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私たちの職場では、お互いに理解し認め合っている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7425, "sd": 0.69}, {"no": 130, "category": "3-3.その他（アウトカム）", "scale": "45.  職場の一体感（ソーシャル・キャピタル）", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "私たちの職場では、仕事に関連した情報の共有ができている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.7425, "sd": 0.69}, {"no": 131, "category": "3-3.その他（アウトカム）", "scale": "46.  ワーク・エンゲイジメント", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事をしていると、活力がみなぎるように感じる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.516, "sd": 0.77}, {"no": 132, "category": "3-3.その他（アウトカム）", "scale": "46.  ワーク・エンゲイジメント", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分の仕事に誇りを感じる", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.516, "sd": 0.77}, {"no": 133, "category": "3-3.その他（アウトカム）", "scale": "47.  職務の遂行", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "今月の自分の仕事の出来は、他の人にくらべて良かったと思う", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.9779, "sd": 0.57}, {"no": 134, "category": "3-3.その他（アウトカム）", "scale": "47.  職務の遂行", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "指示された仕事をきちんとやりとげている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.9779, "sd": 0.57}, {"no": 135, "category": "3-3.その他（アウトカム）", "scale": "47.  職務の遂行", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "自分に期待されている仕事は十分にこなしている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.9779, "sd": 0.57}, {"no": 136, "category": "3-3.その他（アウトカム）", "scale": "48.  創造性の発揮", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事でいろいろ工夫したり、アイデアを出している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 137, "category": "3-3.その他（アウトカム）", "scale": "48.  創造性の発揮", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事上の問題に対して新しい解決策を考えている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 138, "category": "3-3.その他（アウトカム）", "scale": "48.  創造性の発揮", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事について新しいやり方を提案している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.6712, "sd": 0.72}, {"no": 139, "category": "3-3.その他（アウトカム）", "scale": "49.  積極的な学習", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "仕事で自分を上手に高めることができている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5457, "sd": 0.72}, {"no": 140, "category": "3-3.その他（アウトカム）", "scale": "49.  積極的な学習", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "新しい事をマスターすることで刺激を受けている", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5457, "sd": 0.72}, {"no": 141, "category": "3-3.その他（アウトカム）", "scale": "49.  積極的な学習", "section": "Ｈ．あなたのお仕事の状況や成果についてうかがいます。最もあてはまるものに○をつけてください。", "question": "新しいことを経験して成長している", "direction": "4321", "choices": ["そうだ", "まあそうだ", "ややちがう", "ちがう"], "avg": 2.5457, "sd": 0.72}];
 </script>
 </body>
 </html>
