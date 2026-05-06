@@ -221,7 +221,7 @@ async function setTestData(targetRawScore) {
     var rawScore = targetRawScore === 'random'
       ? Math.floor(Math.random() * 4) + 1
       : targetRawScore;
-    answers[q.q141] = q.direction === '4321'
+    answers[q.no] = q.direction === '4321'
       ? 5 - rawScore
       : rawScore;
   }
@@ -295,10 +295,10 @@ function renderQuestionPage(page) {
     html += '</div>';
     html += '<div class="choices">';
     for (var j = 0; j < q.choices.length; j++) {
-      var score = getScore(q, j);
-      var sel = answers[q.no] === score;
+      var choiceNo = j + 1;  // 生の選択肢番号（1〜4）
+      var sel = answers[q.no] === choiceNo;
       html += '<button class="choice-btn' + (sel ? ' selected' : '') + '"'
-            + ' data-no="' + q.no + '" data-score="' + score + '" data-idx="' + j + '">'
+            + ' data-no="' + q.no + '" data-score="' + choiceNo + '" data-idx="' + j + '">'
             + q.choices[j] + '</button>';
     }
     html += '</div></div>';
