@@ -213,15 +213,17 @@ function clearProgress() {
 }
 
 // ─── テストモード（全141問一括セット）────────────────
-function setTestData(score) {
-  for (var i = 0; i < QUESTIONS.length; i++) {
-    var q = QUESTIONS[i];
-    var s = score === 'random' ? Math.floor(Math.random() * 4) + 1 : score;
-    answers[q.no] = s;
-    // choiceIndexes: score から choices の index を逆引き
-    for (var j = 0; j < q.choices.length; j++) {
-      if (getScore(q, j) === s) { choiceIndexes[q.no] = j; break; }
-    }
+async function setTestData(targetRawScore) {
+  var m = await loadMaster();
+  answers = {};
+  for (var i = 0; i < m.questions.length; i++) {
+    var q = m.questions[i];
+    var rawScore = targetRawScore === 'random'
+      ? Math.floor(Math.random() * 4) + 1
+      : targetRawScore;
+    answers[q.q141] = q.direction === '4321'
+      ? 5 - rawScore
+      : rawScore;
   }
   saveProgress();
   renderCurrentPage();
