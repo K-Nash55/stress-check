@@ -221,7 +221,7 @@ async function setTestData(targetRawScore) {
     var rawScore = targetRawScore === 'random'
       ? Math.floor(Math.random() * 4) + 1
       : targetRawScore;
-    answers[q.no] = q.direction === '4321'
+    answers[q.q141] = q.direction === '4321'
       ? 5 - rawScore
       : rawScore;
   }
