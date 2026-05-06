@@ -401,16 +401,15 @@ async function buildResult() {
   var deviations = calcAllDeviations(scaleResults, master.scales);
   var level = getStressLevel(deviations);
 
-  var employeeId = sessionStorage.getItem('employee_id');
-  var companyId = sessionStorage.getItem('company_id');
-  if (employeeId && companyId) {
-    await supabase.from('survey_responses').insert({
-      employee_id: employeeId,
-      company_id: companyId,
-      answers: answers,
-      stress_level: level
-    });
-  }
+  var sessionId = sessionStorage.getItem('session_id') || crypto.randomUUID();
+  sessionStorage.setItem('session_id', sessionId);
+
+  await supabase.from('survey_responses').insert({
+    session_id:  sessionId,
+    company_id:  sessionStorage.getItem('company_id') || null,
+    answers:     answers,
+    stress_level: level
+  });
 
   sessionStorage.setItem('stressResult', JSON.stringify({
     level: level,
