@@ -223,6 +223,7 @@ async function setTestData(targetRawScore) {
   }
   saveProgress();
   renderCurrentPage();
+  updateNextBtn();
   var opts = document.getElementById('float-options');
   if (opts) opts.classList.add('hidden');
 }
