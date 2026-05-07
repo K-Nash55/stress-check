@@ -291,8 +291,8 @@ async function buildHeader(m, src) {
   var companyName = '個人受検';
 
   if (m.company_id) {
-    var cr = await supabase.from('companies').select('name').eq('id', m.company_id).single();
-    if (cr.data && cr.data.name) companyName = cr.data.name;
+    var cr = await supabase.from('companies').select('name').eq('id', m.company_id).limit(1);
+    if (cr.data && cr.data.length > 0 && cr.data[0].name) companyName = cr.data[0].name;
   }
 
   function item(label, value) {
