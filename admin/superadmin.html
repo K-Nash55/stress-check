@@ -60,6 +60,12 @@ td.dev-red    { color: #e74c3c; font-weight: bold; }
 .code-table tr.current td { background: #fde8e8; font-weight: bold; }
 
 .rule-text { background: #f8f9fa; border-radius: 6px; padding: 12px 16px; font-size: 12px; line-height: 2; color: #444; white-space: pre-line; margin-bottom: 12px; }
+
+/* ── 受検データヘッダー ── */
+#survey-header { display: flex; gap: 32px; flex-wrap: wrap; font-size: 13px; }
+#survey-header .hdr-item { display: flex; flex-direction: column; gap: 3px; }
+#survey-header .hdr-label { font-size: 11px; color: #999; }
+#survey-header .hdr-value { font-weight: bold; color: #222; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase-client.js"></script>
@@ -78,6 +84,11 @@ td.dev-red    { color: #e74c3c; font-weight: bold; }
     <button class="test-btn pos4" onclick="runTest(4)">全ポジ (4)</button>
     <button class="test-btn rand" onclick="runTest('random')">ランダム</button>
   </div>
+</div>
+
+<!-- 受検データヘッダーカード -->
+<div class="section">
+  <div id="survey-header"></div>
 </div>
 
 <!-- ブロック① 全141問回答一覧 -->
@@ -108,6 +119,8 @@ td.dev-red    { color: #e74c3c; font-weight: bold; }
 // ─── 状態 ───────────────────────────────────
 var master = null;
 var answers = {};
+var meta = {};
+var dataSource = '';
 
 // ─── テストデータ生成 ─────────────────────────
 async function runTest(targetRawScore) {
@@ -125,6 +138,9 @@ async function runTest(targetRawScore) {
         : targetRawScore;
     }
   });
+  meta = {};
+  dataSource = 'テストデータ';
+  await buildHeader(meta, dataSource);
   buildAll();
 }
 
@@ -266,6 +282,28 @@ function buildAll() {
   buildBlock4(deviations, level);
 }
 
+// ─── 受検データヘッダー ──────────────────────
+async function buildHeader(m, src) {
+  var createdAt = m.created_at ? new Date(m.created_at).toLocaleString('ja-JP') : '-';
+  var sessionId = m.session_id ? m.session_id.slice(0, 8) : '-';
+  var companyName = '個人受検';
+
+  if (m.company_id) {
+    var cr = await supabase.from('companies').select('name').eq('id', m.company_id).single();
+    if (cr.data && cr.data.name) companyName = cr.data.name;
+  }
+
+  function item(label, value) {
+    return '<div class="hdr-item"><span class="hdr-label">' + label + '</span><span class="hdr-value">' + value + '</span></div>';
+  }
+
+  document.getElementById('survey-header').innerHTML =
+    item('受検日時', createdAt) +
+    item('セッションID', sessionId) +
+    item('会社名', companyName) +
+    item('データソース', src);
+}
+
 // ─── 初期化 ─────────────────────────────────
 async function init() {
   master = await loadMaster();
@@ -274,6 +312,13 @@ async function init() {
   if (stored) {
     var data = JSON.parse(stored);
     answers = data.answers;
+    dataSource = 'セッション';
+    meta = {};
+    if (data.session_id) {
+      var sr = await supabase.from('survey_responses').select('*').eq('session_id', data.session_id).single();
+      if (sr.data) meta = sr.data;
+    }
+    await buildHeader(meta, dataSource);
     buildAll();
     return;
   }
@@ -286,6 +331,9 @@ async function init() {
 
   if (result.data && result.data.length > 0) {
     answers = result.data[0].answers;
+    meta = result.data[0];
+    dataSource = 'DB';
+    await buildHeader(meta, dataSource);
     buildAll();
     return;
   }
@@ -293,6 +341,9 @@ async function init() {
   master.questions.forEach(function(q) {
     answers[q.q141] = 4;
   });
+  meta = {};
+  dataSource = 'テストデータ';
+  await buildHeader(meta, dataSource);
   buildAll();
 }
 
