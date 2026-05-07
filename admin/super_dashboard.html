@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スーパーダッシュボード</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: 'Segoe UI', 'Noto Sans JP', sans-serif; font-size: 13px; background: #f0f2f5; color: #222; }
+
+/* ── ヘッダー ── */
+.header { background: #1a1a2e; color: #fff; padding: 14px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+.badge { background: #e74c3c; color: #fff; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 4px; letter-spacing: 1px; }
+.header h1 { margin: 0; font-size: 18px; flex: 1; }
+.nav-btn { background: #2980b9; color: #fff; border: none; padding: 6px 14px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; }
+.nav-btn:hover { background: #2471a3; }
+
+/* ── セクション ── */
+.section { background: #fff; border-radius: 8px; margin: 16px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+
+/* ── フィルタ ── */
+.filter-area { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.filter-area label { font-size: 12px; color: #555; }
+.filter-area select,
+.filter-area input[type="date"] { border: 1px solid #ddd; border-radius: 4px; padding: 5px 8px; font-size: 12px; background: #fff; }
+.filter-btn { background: #1a1a2e; color: #fff; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+.filter-btn:hover { background: #2c3e50; }
+.reset-btn { background: #95a5a6; color: #fff; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+.reset-btn:hover { background: #7f8c8d; }
+.filter-sep { color: #aaa; }
+
+/* ── テーブル共通 ── */
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { background: #1a1a2e; color: #fff; padding: 6px 8px; text-align: left; font-weight: normal; white-space: nowrap; position: sticky; top: 52px; }
+td { padding: 5px 8px; border-bottom: 1px solid #eee; vertical-align: top; text-align: left; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #f8f9fa; }
+
+/* ── ストレス判定 ── */
+.level-high { color: #e74c3c; font-weight: bold; }
+.level-mid  { color: #e67e22; font-weight: bold; }
+.level-low  { color: #27ae60; font-weight: bold; }
+
+/* ── 詳細ボタン ── */
+.detail-btn { background: #1a1a2e; color: #fff; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+.detail-btn:hover { background: #2c3e50; }
+
+/* ── ページネーション ── */
+.pagination { display: flex; align-items: center; gap: 16px; padding: 16px 0 4px; font-size: 13px; }
+.pagination button { background: #1a1a2e; color: #fff; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; }
+.pagination button:disabled { background: #ccc; cursor: not-allowed; }
+.pagination span { color: #555; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-client.js"></script>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<div class="header">
+  <span class="badge">SUPER ADMIN</span>
+  <h1>スーパーダッシュボード</h1>
+  <button class="nav-btn" onclick="window.location.href='superadmin.html'">スーパーアドミン →</button>
+</div>
+
+<!-- フィルタ -->
+<div class="section">
+  <div class="filter-area">
+    <label>会社名:
+      <select id="filterCompany">
+        <option value="">すべて</option>
+      </select>
+    </label>
+    <label>受検日:
+      <input type="date" id="filterDateFrom">
+    </label>
+    <span class="filter-sep">〜</span>
+    <input type="date" id="filterDateTo">
+    <button class="filter-btn" onclick="applyFilter()">検索</button>
+    <button class="reset-btn" onclick="resetFilter()">リセット</button>
+  </div>
+</div>
+
+<!-- 一覧テーブル -->
+<div class="section">
+  <div id="tableArea"></div>
+</div>
+
+<script>
+// ─── 状態 ───────────────────────────────────
+var allData = [];
+var filteredData = [];
+var companies = [];
+var currentPage = 1;
+var PAGE_SIZE = 50;
+
+// ─── 会社名解決 ──────────────────────────────
+function getCompanyName(company_id) {
+  if (!company_id) return '個人受検';
+  var c = companies.find(function(c) { return c.id === company_id; });
+  return c ? c.name : '不明';
+}
+
+// ─── 会社名プルダウン生成 ─────────────────────
+function buildCompanyFilter() {
+  var sel = document.getElementById('filterCompany');
+  companies.forEach(function(c) {
+    var opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  });
+}
+
+// ─── フィルタ処理 ────────────────────────────
+function applyFilter() {
+  var companyId = document.getElementById('filterCompany').value;
+  var dateFrom = document.getElementById('filterDateFrom').value;
+  var dateTo = document.getElementById('filterDateTo').value;
+
+  filteredData = allData.filter(function(row) {
+    if (companyId && row.company_id !== companyId) return false;
+    if (dateFrom && row.created_at < dateFrom) return false;
+    if (dateTo && row.created_at > dateTo + 'T23:59:59') return false;
+    return true;
+  });
+  currentPage = 1;
+  renderTable();
+}
+
+function resetFilter() {
+  document.getElementById('filterCompany').value = '';
+  document.getElementById('filterDateFrom').value = '';
+  document.getElementById('filterDateTo').value = '';
+  filteredData = allData;
+  currentPage = 1;
+  renderTable();
+}
+
+// ─── テーブル描画 ────────────────────────────
+function renderTable() {
+  var start = (currentPage - 1) * PAGE_SIZE;
+  var end = start + PAGE_SIZE;
+  var pageData = filteredData.slice(start, end);
+  var totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
+
+  var html = '<table><thead><tr>'
+    + '<th>受検日時</th><th>セッションID</th><th>会社名</th>'
+    + '<th>ストレス判定</th><th>詳細</th>'
+    + '</tr></thead><tbody>';
+
+  if (pageData.length === 0) {
+    html += '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:24px">データがありません</td></tr>';
+  } else {
+    pageData.forEach(function(row) {
+      var dt = new Date(row.created_at).toLocaleString('ja-JP');
+      var sid = row.session_id ? row.session_id.slice(0, 8) : '-';
+      var company = getCompanyName(row.company_id);
+      var level = row.stress_level || '-';
+      var levelClass = level === 'high' ? 'level-high' : level === 'mid' ? 'level-mid' : 'level-low';
+
+      html += '<tr>'
+        + '<td>' + dt + '</td>'
+        + '<td>' + sid + '</td>'
+        + '<td>' + company + '</td>'
+        + '<td class="' + levelClass + '">' + level + '</td>'
+        + '<td><button onclick="openDetail(\'' + row.session_id + '\')" class="detail-btn">詳細</button></td>'
+        + '</tr>';
+    });
+  }
+
+  html += '</tbody></table>';
+
+  html += '<div class="pagination">'
+    + '<button onclick="prevPage()" ' + (currentPage <= 1 ? 'disabled' : '') + '>← 前へ</button>'
+    + '<span>' + currentPage + ' / ' + totalPages + 'ページ（計' + filteredData.length + '件）</span>'
+    + '<button onclick="nextPage()" ' + (currentPage >= totalPages ? 'disabled' : '') + '>次へ →</button>'
+    + '</div>';
+
+  document.getElementById('tableArea').innerHTML = html;
+}
+
+// ─── 詳細ボタン ──────────────────────────────
+async function openDetail(sessionId) {
+  var result = await supabase
+    .from('survey_responses')
+    .select('*')
+    .eq('session_id', sessionId)
+    .single();
+
+  if (result.data) {
+    sessionStorage.setItem('stressResult', JSON.stringify({
+      level: result.data.stress_level,
+      answers: result.data.answers,
+      session_id: result.data.session_id,
+      deviations: null
+    }));
+    window.location.href = 'superadmin.html';
+  }
+}
+
+// ─── ページネーション ────────────────────────
+function prevPage() {
+  if (currentPage > 1) { currentPage--; renderTable(); }
+}
+function nextPage() {
+  var totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
+  if (currentPage < totalPages) { currentPage++; renderTable(); }
+}
+
+// ─── 初期化 ─────────────────────────────────
+async function init() {
+  var cr = await supabase.from('companies').select('id, name').order('name');
+  companies = cr.data || [];
+  buildCompanyFilter();
+
+  var sr = await supabase
+    .from('survey_responses')
+    .select('id, session_id, company_id, stress_level, created_at')
+    .order('created_at', { ascending: false });
+  allData = sr.data || [];
+  filteredData = allData;
+
+  renderTable();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
