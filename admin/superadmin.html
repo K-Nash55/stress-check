@@ -314,10 +314,10 @@ async function init() {
   var dashSessionId = sessionStorage.getItem('superadmin_session_id');
   if (dashSessionId) {
     sessionStorage.removeItem('superadmin_session_id');
-    var dr = await supabase.from('survey_responses').select('*').eq('session_id', dashSessionId).single();
-    if (dr.data) {
-      answers = dr.data.answers;
-      meta = dr.data;
+    var dr = await supabase.from('survey_responses').select('*').eq('session_id', dashSessionId).limit(1);
+    if (dr.data && dr.data.length > 0) {
+      answers = dr.data[0].answers;
+      meta = dr.data[0];
       dataSource = 'DB';
       await buildHeader(meta, dataSource);
       buildAll();
@@ -333,8 +333,8 @@ async function init() {
     dataSource = 'セッション';
     meta = {};
     if (data.session_id) {
-      var sr = await supabase.from('survey_responses').select('*').eq('session_id', data.session_id).single();
-      if (sr.data) meta = sr.data;
+      var sr = await supabase.from('survey_responses').select('*').eq('session_id', data.session_id).limit(1);
+      if (sr.data && sr.data.length > 0) meta = sr.data[0];
     }
     await buildHeader(meta, dataSource);
     buildAll();
