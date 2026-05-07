@@ -310,6 +310,22 @@ async function buildHeader(m, src) {
 async function init() {
   master = await loadMaster();
 
+  // 1. ダッシュボードからの遷移: session_idでDBから取得
+  var dashSessionId = sessionStorage.getItem('superadmin_session_id');
+  if (dashSessionId) {
+    sessionStorage.removeItem('superadmin_session_id');
+    var dr = await supabase.from('survey_responses').select('*').eq('session_id', dashSessionId).single();
+    if (dr.data) {
+      answers = dr.data.answers;
+      meta = dr.data;
+      dataSource = 'DB';
+      await buildHeader(meta, dataSource);
+      buildAll();
+      return;
+    }
+  }
+
+  // 2. stressResult がある場合
   var stored = sessionStorage.getItem('stressResult');
   if (stored) {
     var data = JSON.parse(stored);
@@ -325,6 +341,7 @@ async function init() {
     return;
   }
 
+  // 3. DBから最新1件
   var result = await supabase
     .from('survey_responses')
     .select('*')
@@ -340,6 +357,7 @@ async function init() {
     return;
   }
 
+  // 4. テストデータ
   master.questions.forEach(function(q) {
     answers[q.q141] = 4;
   });

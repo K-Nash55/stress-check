@@ -189,12 +189,8 @@ async function openDetail(sessionId) {
     .single();
 
   if (result.data) {
-    sessionStorage.setItem('stressResult', JSON.stringify({
-      level: result.data.stress_level,
-      answers: result.data.answers,
-      session_id: result.data.session_id,
-      deviations: null
-    }));
+    sessionStorage.setItem('superadmin_session_id', sessionId);
+    sessionStorage.removeItem('stressResult');
     window.location.href = 'superadmin.html';
   }
 }
