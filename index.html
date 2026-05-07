@@ -128,8 +128,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
         質問や採点方法は厚生労働省が発表している調査票・全国平均データセットに基づき、実施規定・実施マニュアルに準拠しています。<br>
         結果の管理・面接指導の実施は、各事業者の責任において行われます。
       </div>
-      <button class="btn-start" id="btnStart">調査をはじめる →</button>
-      <button class="btn-test-start" id="btnTestStart">🧪 テストモードで開始</button>
+      <button class="btn-start" id="btnStart">回答をはじめる →</button>
     </div>
   </div>
 </div>
@@ -456,7 +455,6 @@ async function onSubmit() {
 
 // ─── イベント登録 ──────────────────────────────────
 document.getElementById('btnStart').onclick        = startSurvey;
-document.getElementById('btnTestStart').onclick    = startTestMode;
 document.getElementById('btnNext').onclick         = onNext;
 document.getElementById('btnPrev').onclick         = onPrev;
 document.getElementById('btnConfirmBack').onclick  = function(){ goToPage(8); };
