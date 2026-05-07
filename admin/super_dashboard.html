@@ -186,9 +186,9 @@ async function openDetail(sessionId) {
     .from('survey_responses')
     .select('*')
     .eq('session_id', sessionId)
-    .single();
+    .limit(1);
 
-  if (result.data) {
+  if (result.data && result.data.length > 0) {
     sessionStorage.setItem('superadmin_session_id', sessionId);
     sessionStorage.removeItem('stressResult');
     window.location.href = 'superadmin.html';
