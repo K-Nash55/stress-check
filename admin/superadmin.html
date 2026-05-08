@@ -118,6 +118,19 @@ td.dev-red    { color: #e74c3c; font-weight: bold; }
 </div>
 
 <script>
+// ─── 日時フォーマット ────────────────────────
+function formatDate(dateStr) {
+  if (!dateStr) return '-';
+  var d = new Date(dateStr);
+  var yyyy = d.getFullYear();
+  var mm = String(d.getMonth() + 1).padStart(2, '0');
+  var dd = String(d.getDate()).padStart(2, '0');
+  var hh = String(d.getHours()).padStart(2, '0');
+  var mi = String(d.getMinutes()).padStart(2, '0');
+  var ss = String(d.getSeconds()).padStart(2, '0');
+  return yyyy + '/' + mm + '/' + dd + ' ' + hh + ':' + mi + ':' + ss;
+}
+
 // ─── 状態 ───────────────────────────────────
 var master = null;
 var answers = {};
@@ -286,7 +299,7 @@ function buildAll() {
 
 // ─── 受検データヘッダー ──────────────────────
 async function buildHeader(m, src) {
-  var createdAt = m.created_at ? new Date(m.created_at).toLocaleString('ja-JP') : '-';
+  var createdAt = formatDate(m.created_at);
   var sessionId = m.session_id ? m.session_id.slice(0, 8) : '-';
   var companyName = '個人受検';
 
