@@ -116,6 +116,10 @@ function getCompanyName(company_id) {
 // ─── 会社名プルダウン生成 ─────────────────────
 function buildCompanyFilter() {
   var sel = document.getElementById('filterCompany');
+  var indOpt = document.createElement('option');
+  indOpt.value = '__individual__';
+  indOpt.textContent = '個人受検';
+  sel.appendChild(indOpt);
   companies.forEach(function(c) {
     var opt = document.createElement('option');
     opt.value = c.id;
@@ -131,7 +135,11 @@ function applyFilter() {
   var dateTo = document.getElementById('filterDateTo').value;
 
   filteredData = allData.filter(function(row) {
-    if (companyId && row.company_id !== companyId) return false;
+    if (companyId === '__individual__') {
+      if (row.company_id !== null) return false;
+    } else if (companyId) {
+      if (row.company_id !== companyId) return false;
+    }
     if (dateFrom) {
       var fromUTC = new Date(dateFrom + 'T00:00:00+09:00').toISOString();
       if (row.created_at < fromUTC) return false;
