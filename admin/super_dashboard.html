@@ -87,6 +87,18 @@ tr:hover td { background: #f8f9fa; }
 </div>
 
 <script>
+// ─── 日時フォーマット ────────────────────────
+function formatDate(dateStr) {
+  var d = new Date(dateStr);
+  var yyyy = d.getFullYear();
+  var mm = String(d.getMonth() + 1).padStart(2, '0');
+  var dd = String(d.getDate()).padStart(2, '0');
+  var hh = String(d.getHours()).padStart(2, '0');
+  var mi = String(d.getMinutes()).padStart(2, '0');
+  var ss = String(d.getSeconds()).padStart(2, '0');
+  return yyyy + '/' + mm + '/' + dd + ' ' + hh + ':' + mi + ':' + ss;
+}
+
 // ─── 状態 ───────────────────────────────────
 var allData = [];
 var filteredData = [];
@@ -153,7 +165,7 @@ function renderTable() {
     html += '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:24px">データがありません</td></tr>';
   } else {
     pageData.forEach(function(row) {
-      var dt = new Date(row.created_at).toLocaleString('ja-JP');
+      var dt = formatDate(row.created_at);
       var sid = row.session_id ? row.session_id.slice(0, 8) : '-';
       var company = getCompanyName(row.company_id);
       var level = row.stress_level || '-';
