@@ -132,8 +132,14 @@ function applyFilter() {
 
   filteredData = allData.filter(function(row) {
     if (companyId && row.company_id !== companyId) return false;
-    if (dateFrom && row.created_at < dateFrom) return false;
-    if (dateTo && row.created_at > dateTo + 'T23:59:59') return false;
+    if (dateFrom) {
+      var fromUTC = new Date(dateFrom + 'T00:00:00+09:00').toISOString();
+      if (row.created_at < fromUTC) return false;
+    }
+    if (dateTo) {
+      var toUTC = new Date(dateTo + 'T23:59:59+09:00').toISOString();
+      if (row.created_at > toUTC) return false;
+    }
     return true;
   });
   currentPage = 1;
