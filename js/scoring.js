@@ -27,7 +27,7 @@ async function loadMaster() {
   if (_masterCache) return _masterCache;
   var results = await Promise.all([
     supabase.from('questions_master').select('*').order('q141', { ascending: true }),
-    supabase.from('scales_master').select('*')
+    supabase.from('scales_master').select('*').order('scale_no', { ascending: true })
   ]);
   var qRes = results[0];
   var sRes = results[1];
