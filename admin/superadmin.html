@@ -45,6 +45,16 @@ td.dev-blue   { color: #2980b9; font-weight: bold; }
 td.dev-yellow { color: #e67e22; font-weight: bold; }
 td.dev-red    { color: #e74c3c; font-weight: bold; }
 
+/* ブロック② 解説セル */
+td.desc-cell {
+  max-width: 300px;
+  word-break: break-all;
+  white-space: normal;
+  font-size: 11px;
+  color: #555;
+  line-height: 1.5;
+}
+
 /* ブロック④ 判定ボックス */
 .result-block { padding: 4px 0; line-height: 2; }
 .result-block .row { display: flex; gap: 12px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; }
@@ -191,23 +201,51 @@ function buildBlock1(answers, questions) {
 
 // ─── ブロック② ──────────────────────────────
 function buildBlock2(scaleResults, deviations) {
+  var scaleQMap = {};
+  master.questions.forEach(function(q) {
+    var name = cleanScaleName(q.scale_name);
+    if (!scaleQMap[name]) scaleQMap[name] = [];
+    scaleQMap[name].push('Q' + q.q141);
+  });
+
   var html = '<table>'
     + '<thead><tr>'
-    + '<th>スケール</th><th>素点平均</th>'
-    + '<th>全国平均</th><th>SD</th><th>偏差値</th>'
+    + '<th>No</th>'
+    + '<th>スケール名</th>'
+    + '<th>解説</th>'
+    + '<th>Q番号</th>'
+    + '<th>素点合計</th>'
+    + '<th>素点平均</th>'
+    + '<th>全国平均</th>'
+    + '<th>SD</th>'
+    + '<th>偏差値</th>'
     + '</tr></thead><tbody>';
 
   master.scales.forEach(function(s) {
     var name = cleanScaleName(s.scale_name);
     var d = deviations[name];
-    if (!d) return;
-    var cls = 'dev-' + getDevColor(d.dev);
+    var sr = scaleResults[name];
+
+    var rawScores = sr ? sr.rawScores : [];
+    var total = rawScores.reduce(function(sum, v) { return sum + v; }, 0);
+    var avg = d ? d.avg.toFixed(2) : '-';
+    var dev = d ? d.dev.toFixed(1) : '-';
+    var qNums = (scaleQMap[name] || []).join(', ');
+    var desc = s.description || '-';
+
+    var devColor = d ? getDevColor(d.dev) : 'blue';
+    var colorClass = 'dev-' + devColor;
+
     html += '<tr>'
+      + '<td class="num">' + (s.scale_no || '') + '</td>'
       + '<td>' + name + '</td>'
-      + '<td class="num">' + (d.avg ? d.avg.toFixed(2) : '-') + '</td>'
+      + '<td class="desc-cell">' + desc + '</td>'
+      + '<td style="font-size:11px;color:#777">' + qNums + '</td>'
+      + '<td class="num">' + total + '</td>'
+      + '<td class="num">' + avg + '</td>'
       + '<td class="num">' + (s.scale_avg ? s.scale_avg.toFixed(2) : '-') + '</td>'
       + '<td class="num">' + (s.scale_sd ? s.scale_sd.toFixed(2) : '-') + '</td>'
-      + '<td class="num ' + cls + '">' + d.dev.toFixed(1) + '</td>'
+      + '<td class="num ' + colorClass + '">' + dev + '</td>'
       + '</tr>';
   });
 
