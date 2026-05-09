@@ -163,7 +163,7 @@ async function runTest(targetRawScore) {
 function buildBlock1(answers, questions) {
   var html = '<table>'
     + '<thead><tr>'
-    + '<th>No</th><th>カテゴリ</th><th>スケール</th>'
+    + '<th>No</th><th>大カテゴリ</th><th>中カテゴリ</th><th>スケール</th>'
     + '<th>質問文</th><th>回答</th><th>direction</th><th>素点</th>'
     + '</tr></thead><tbody>';
 
@@ -176,6 +176,7 @@ function buildBlock1(answers, questions) {
     html += '<tr>'
       + '<td class="num">' + q.q141 + '</td>'
       + '<td>' + (q.category || '') + '</td>'
+      + '<td>' + (q.mid_category || '') + '</td>'
       + '<td>' + cleanScaleName(q.scale_name) + '</td>'
       + '<td style="max-width:360px">' + (q.question || '') + '</td>'
       + '<td>' + choiceLabel + ' (' + choiceIndex + ')</td>'
