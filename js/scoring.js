@@ -27,13 +27,16 @@ async function loadMaster() {
   if (_masterCache) return _masterCache;
   var results = await Promise.all([
     supabase.from('questions_master').select('*').order('q141', { ascending: true }),
-    supabase.from('scales_master').select('*').order('scale_no', { ascending: true })
+    supabase.from('scales_master').select('*').order('scale_no', { ascending: true }),
+    supabase.from('stress_judgment_rules').select('*').order('priority', { ascending: true })
   ]);
   var qRes = results[0];
   var sRes = results[1];
+  var jRes = results[2];
   if (qRes.error) throw new Error('questions_master取得失敗: ' + qRes.error.message);
   if (sRes.error) throw new Error('scales_master取得失敗: ' + sRes.error.message);
-  _masterCache = { questions: qRes.data, scales: sRes.data };
+  if (jRes.error) throw new Error('stress_judgment_rules取得失敗: ' + jRes.error.message);
+  _masterCache = { questions: qRes.data, scales: sRes.data, judgmentRules: jRes.data };
   return _masterCache;
 }
 
@@ -150,66 +153,102 @@ function calcAllDeviations(scaleResults, scales) {
 // ─────────────────────────────────────────
 
 /**
- * 高ストレス判定を行う
- * 偏差値は全て「高い＝良い状態」で統一
- * @param {Object} deviations calcAllDeviations()の返り値
- * @returns {string} 'high' | 'mid' | 'low'
+ * 領域A・B・Cの合計点数を計算する（PDFの方法1）
+ * @param {Object} answers   { 問番号: 選択肢番号(1〜4), ... }
+ * @param {Array}  questions loadMaster()で取得したquestions配列
+ * @returns {Object} { A: number, B: number, C: number }
  */
-function getStressLevel(deviations) {
-  // ストレス反応6スケール（高い=症状少ない=良い）
-  var reactionItems = ['活気', 'イライラ感', '疲労感', '不安感', '抑うつ感', '身体愁訴'];
-  var reactionSum = 0, reactionCount = 0;
-  for (var i = 0; i < reactionItems.length; i++) {
-    if (deviations[reactionItems[i]]) {
-      reactionSum += deviations[reactionItems[i]].dev;
-      reactionCount++;
+function calcDomainScores(answers, questions) {
+  // 逆転対象のq141番号（PDFより：領域Aの1〜7,11〜13,15と領域Bの活気1〜3）
+  var reverseQ141 = [1, 2, 3, 4, 5, 6, 7, 11, 12, 13, 15, 20, 21, 22];
+
+  var scores = { A: 0, B: 0, C: 0 };
+
+  for (var i = 0; i < questions.length; i++) {
+    var q = questions[i];
+    if (!q.stress_domain) continue;
+
+    var qNo = q.q141;
+    var choice = answers[qNo] !== undefined ? answers[qNo] : answers[String(qNo)];
+    if (choice == null) continue;
+
+    var needsReverse = reverseQ141.indexOf(qNo) !== -1;
+    var score = needsReverse ? 5 - choice : choice;
+
+    scores[q.stress_domain] += score;
+  }
+
+  return scores;
+}
+
+/**
+ * 高ストレス判定を行う（stress_judgment_rulesを参照）
+ * @param {Object} answers       { 問番号: 選択肢番号(1〜4), ... }
+ * @param {Array}  questions     loadMaster()で取得したquestions配列
+ * @param {Array}  judgmentRules loadMaster()で取得したstress_judgment_rules配列
+ * @returns {Object} {
+ *   code: 'H1'〜'N3',
+ *   label: '早急改善型'等,
+ *   isHighStress: true/false,
+ *   domainB: number,
+ *   domainAC: number,
+ *   advice: string,
+ *   color: string,
+ *   stress_reaction: string,
+ *   environment: string
+ * }
+ */
+function getStressLevel(answers, questions, judgmentRules) {
+  var domain = calcDomainScores(answers, questions);
+  var domainAC = domain.A + domain.C;
+
+  // priorityの順番にルールを照合
+  for (var i = 0; i < judgmentRules.length; i++) {
+    var rule = judgmentRules[i];
+
+    // 最後のルール（N3）は常に該当
+    if (i === judgmentRules.length - 1) {
+      return {
+        code: rule.code,
+        label: rule.label,
+        isHighStress: rule.is_high_stress,
+        domainB: domain.B,
+        domainAC: domainAC,
+        advice: rule.advice,
+        color: rule.color,
+        stress_reaction: rule.stress_reaction,
+        environment: rule.environment
+      };
+    }
+
+    if (domain.B >= rule.domain_b_min && domain.B <= rule.domain_b_max &&
+        domainAC >= rule.domain_ac_min && domainAC <= rule.domain_ac_max) {
+      return {
+        code: rule.code,
+        label: rule.label,
+        isHighStress: rule.is_high_stress,
+        domainB: domain.B,
+        domainAC: domainAC,
+        advice: rule.advice,
+        color: rule.color,
+        stress_reaction: rule.stress_reaction,
+        environment: rule.environment
+      };
     }
   }
-  var reaction_avg = reactionCount > 0 ? reactionSum / reactionCount : 50;
 
-  // ストレッサー8スケール（高い=低負担=良い）
-  var stressorItems = [
-    '仕事の量的負担', '仕事の質的負担', '身体的負担度',
-    '職場での対人関係', '職場環境', '情緒的負担',
-    '役割葛藤', 'ワーク・セルフ・バランス（ネガティブ）'
-  ];
-  var stressorSum = 0, stressorCount = 0;
-  for (var j = 0; j < stressorItems.length; j++) {
-    if (deviations[stressorItems[j]]) {
-      stressorSum += deviations[stressorItems[j]].dev;
-      stressorCount++;
-    }
-  }
-  var stressor_avg = stressorCount > 0 ? stressorSum / stressorCount : 50;
-
-  // リソース系スケール（高い=資源豊富=良い）
-  var resourceItems = [
-    '仕事のコントロール', '技能の活用度', '仕事の適性', '仕事の意義',
-    '役割明確さ', '成長の機会', '新奇性', '予測可能性',
-    'ワーク・セルフ・バランス（ポジティブ）',
-    '上司からのサポート', '同僚からのサポート',
-    '経済・地位報酬', '尊重報酬', '安定報酬',
-    '上司のリーダーシップ', '上司の公正な態度',
-    'ほめてもらえる職場', '失敗を認める職場', 'グループの有能感',
-    '家族・友人からのサポート',
-    '経営層との信頼関係', '変化への対応', '手続きの公正性', '個人の尊重',
-    '公正な人事評価', '多様な労働者への対応', 'キャリア形成'
-  ];
-  var resourceSum = 0, resourceCount = 0;
-  for (var k = 0; k < resourceItems.length; k++) {
-    if (deviations[resourceItems[k]]) {
-      resourceSum += deviations[resourceItems[k]].dev;
-      resourceCount++;
-    }
-  }
-  var resource_avg = resourceCount > 0 ? resourceSum / resourceCount : 50;
-
-  // 判定（高い=良い方向で統一）
-  if (reaction_avg <= 40)                              return 'high';
-  if (reaction_avg <= 45 && stressor_avg >= 55)        return 'high';
-  if (reaction_avg <= 45 && resource_avg <= 45)        return 'high';
-  if (reaction_avg <= 50 || stressor_avg >= 55)        return 'mid';
-  return 'low';
+  // フォールバック（通常はN3で捕捉される）
+  return {
+    code: 'N3',
+    label: 'ポジティブ型',
+    isHighStress: false,
+    domainB: domain.B,
+    domainAC: domainAC,
+    advice: '',
+    color: 'green',
+    stress_reaction: '適切なストレス',
+    environment: '標準環境'
+  };
 }
 
 // ─────────────────────────────────────────

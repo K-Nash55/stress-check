@@ -403,7 +403,8 @@ async function buildResult() {
   var master = await loadMaster();
   var scaleResults = calcScaleResults(answers, master.questions);
   var deviations = calcAllDeviations(scaleResults, master.scales);
-  var level = getStressLevel(deviations);
+  var stressResult = getStressLevel(answers, master.questions, master.judgmentRules);
+  var level = stressResult.isHighStress ? 'high' : 'low';
 
   var sessionId = sessionStorage.getItem('session_id') || crypto.randomUUID();
   sessionStorage.setItem('session_id', sessionId);

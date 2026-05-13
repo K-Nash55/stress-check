@@ -330,7 +330,8 @@ function buildBlock4(deviations, level) {
 function buildAll() {
   var scaleResults = calcScaleResults(answers, master.questions);
   var deviations   = calcAllDeviations(scaleResults, master.scales);
-  var level        = getStressLevel(deviations);
+  var stressResult = getStressLevel(answers, master.questions, master.judgmentRules);
+  var level        = stressResult.isHighStress ? 'high' : 'low';
 
   buildBlock1(answers, master.questions);
   buildBlock2(scaleResults, deviations);
