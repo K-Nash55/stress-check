@@ -77,6 +77,14 @@ td.desc-cell {
 #survey-header .hdr-item { display: flex; flex-direction: column; gap: 3px; }
 #survey-header .hdr-label { font-size: 11px; color: #999; }
 #survey-header .hdr-value { font-weight: bold; color: #222; }
+
+/* ── ブロック③④ 追加スタイル ── */
+tr.domain-row td { background: #ecf0f1; font-weight: 500; line-height: 1.7; white-space: pre-line; }
+tr.scale-row td  { background: #f8f9fa; font-size: 11px; color: #888; }
+.blue { color: #185FA5; font-weight: 500; font-family: monospace; text-align: center; }
+.score-cards { display: flex; gap: 12px; margin-bottom: 16px; }
+.score-card { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 10px 16px; flex: 1; }
+tr.matched td { background: #E6F1FB; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase-client.js"></script>
@@ -256,74 +264,152 @@ function buildBlock2(scaleResults, deviations) {
 }
 
 // ─── ブロック③ ──────────────────────────────
-function buildBlock3(deviations, level) {
-  var groups = [
-    {
-      label: 'ストレス反応',
-      items: ['活気', 'イライラ感', '疲労感', '不安感', '抑うつ感', '身体愁訴']
-    },
-    {
-      label: 'ストレッサー',
-      items: [
-        '仕事の量的負担', '仕事の質的負担', '身体的負担度',
-        '職場での対人関係', '職場環境', '情緒的負担',
-        '役割葛藤', 'ワーク・セルフ・バランス（ネガティブ）'
-      ]
-    },
-    {
-      label: 'リソース',
-      items: null
-    }
-  ];
+function buildBlock3(answers, questions, stressResult) {
+  var reverseQ141 = [1, 2, 3, 4, 5, 6, 7, 11, 12, 13, 15, 20, 21, 22];
+  var domainScores = calcDomainScores(answers, questions);
 
-  var usedItems = groups[0].items.concat(groups[1].items);
-  groups[2].items = Object.keys(deviations).filter(function(k) {
-    return usedItems.indexOf(k) === -1;
-  }).sort();
+  var domainMeta = {
+    'B': {
+      desc: '領域B — ストレス反応\n29〜116\n77以上　高ストレス\n63〜76　やや高ストレス\n62以下　適切なストレス',
+      total: domainScores.B
+    },
+    'A': {
+      desc: '領域A — ストレッサー\n17〜68\n参考標準値\n50以上　「リスク環境」水準\n49以下　「標準環境」水準',
+      total: domainScores.A
+    },
+    'C': {
+      desc: '領域C — サポート\n9〜36\n参考標準値\n26以上　「リスク環境」水準\n25以下　「標準環境」水準',
+      total: domainScores.C
+    }
+  };
+
+  var domainQs = questions.filter(function(q) {
+    return q.stress_domain === 'A' || q.stress_domain === 'B' || q.stress_domain === 'C';
+  });
 
   var html = '<table>'
     + '<thead><tr>'
-    + '<th>グループ</th><th>スケール</th>'
-    + '<th>素点平均</th><th>偏差値</th>'
+    + '<th>大カテゴリ</th><th>中カテゴリ</th><th>No</th><th>Q57</th>'
+    + '<th>質問文</th><th>回答</th><th>方向</th><th>素点</th>'
+    + '<th>逆転後素点</th><th>スケール合計／領域合計</th>'
     + '</tr></thead><tbody>';
 
-  groups.forEach(function(g) {
-    var sum = 0, count = 0;
-    html += '<tr class="area-hd"><td colspan="4">' + g.label + '</td></tr>';
-    g.items.forEach(function(name) {
-      var d = deviations[name];
-      if (!d) return;
-      var cls = 'dev-' + getDevColor(d.dev);
-      html += '<tr>'
-        + '<td></td>'
-        + '<td>' + name + '</td>'
-        + '<td class="num">' + d.avg.toFixed(2) + '</td>'
-        + '<td class="num ' + cls + '">' + d.dev.toFixed(1) + '</td>'
-        + '</tr>';
-      sum += d.dev;
-      count++;
+  ['B', 'A', 'C'].forEach(function(domain) {
+    var meta = domainMeta[domain];
+    html += '<tr class="domain-row"><td colspan="9">' + meta.desc + '</td>'
+      + '<td class="blue">' + meta.total + '</td></tr>';
+
+    var dqs = domainQs.filter(function(q) { return q.stress_domain === domain; });
+
+    var scaleOrder = [];
+    var scaleMap = {};
+    dqs.forEach(function(q) {
+      var sName = cleanScaleName(q.scale_name);
+      if (!scaleMap[sName]) { scaleMap[sName] = []; scaleOrder.push(sName); }
+      scaleMap[sName].push(q);
     });
-    if (count > 0) {
-      html += '<tr class="total-row">'
-        + '<td colspan="2">平均偏差値</td>'
-        + '<td></td>'
-        + '<td class="num">' + (sum / count).toFixed(1) + '</td>'
-        + '</tr>';
-    }
+
+    scaleOrder.forEach(function(sName) {
+      var qs = scaleMap[sName];
+      var hasReverse = qs.some(function(q) { return reverseQ141.indexOf(q.q141) !== -1; });
+
+      var scaleTotal = 0;
+      qs.forEach(function(q) {
+        var choice = answers[q.q141] !== undefined ? answers[q.q141] : answers[String(q.q141)];
+        if (choice != null) {
+          scaleTotal += reverseQ141.indexOf(q.q141) !== -1 ? 5 - choice : choice;
+        }
+      });
+
+      var scaleLabel = hasReverse ? sName + '　逆転対象スケール' : sName;
+      html += '<tr class="scale-row"><td colspan="9">' + scaleLabel + '</td>'
+        + '<td class="blue">' + scaleTotal + '</td></tr>';
+
+      qs.forEach(function(q) {
+        var qNo = q.q141;
+        var choice = answers[qNo] !== undefined ? answers[qNo] : answers[String(qNo)];
+        var rawScore = choice != null ? choice : '-';
+        var needsReverse = reverseQ141.indexOf(qNo) !== -1;
+        var reversedScore = choice != null ? (needsReverse ? 5 - choice : choice) : '-';
+        var dirLabel = q.direction === '1234' ? 'まま' : '逆転';
+        var choices = q.choices ? q.choices.split(' ') : [];
+        var choiceLabel = choice != null ? (choices[choice - 1] || choice) + ' (' + choice + ')' : '-';
+
+        html += '<tr class="q-row">'
+          + '<td>' + (q.category || '') + '</td>'
+          + '<td>' + (q.mid_category || '') + '</td>'
+          + '<td class="num">' + qNo + '</td>'
+          + '<td class="num">' + (q.q57 != null ? q.q57 : '-') + '</td>'
+          + '<td style="max-width:360px">' + (q.question || '') + '</td>'
+          + '<td>' + choiceLabel + '</td>'
+          + '<td>' + dirLabel + '</td>'
+          + '<td class="num">' + rawScore + '</td>'
+          + '<td class="blue">' + reversedScore + '</td>'
+          + '<td></td>'
+          + '</tr>';
+      });
+    });
   });
+
+  var acTotal = domainScores.A + domainScores.C;
+  html += '<tr class="domain-row">'
+    + '<td colspan="9">領域A+C 合計\n26〜104\n76以上　「リスク環境」\n75以下　「標準環境」</td>'
+    + '<td class="blue">' + acTotal + '</td></tr>';
 
   html += '</tbody></table>';
   document.getElementById('block3').innerHTML = html;
 }
 
 // ─── ブロック④ ──────────────────────────────
-function buildBlock4(deviations, level) {
-  var labels = { high: '高ストレス', mid: 'やや高いストレス', low: '通常' };
-  document.getElementById('block4').innerHTML =
-    '<div class="result-block">'
-    + '<div class="row"><span class="lbl">判定</span>'
-    + '<span class="val ' + level + '">' + (labels[level] || level) + '</span></div>'
+function buildBlock4(stressResult, judgmentRules) {
+  var domainScores = calcDomainScores(answers, master.questions);
+
+  function formatRange(minVal, maxVal) {
+    if (maxVal >= 999) return minVal + '以上';
+    if (minVal <= 1)   return maxVal + '以下';
+    return minVal + '〜' + maxVal;
+  }
+
+  var html = '<div class="score-cards">'
+    + '<div class="score-card">'
+    + '<div style="font-size:11px;color:#888;margin-bottom:4px">領域B（ストレス反応）</div>'
+    + '<div style="font-size:28px;font-weight:bold;color:#185FA5">'
+    + stressResult.domainB + '<span style="font-size:14px">点</span></div>'
+    + '</div>'
+    + '<div class="score-card">'
+    + '<div style="font-size:11px;color:#888;margin-bottom:4px">領域A+C（環境）</div>'
+    + '<div style="font-size:28px;font-weight:bold;color:#185FA5">'
+    + stressResult.domainAC + '<span style="font-size:14px">点</span></div>'
+    + '<div style="font-size:11px;color:#888;margin-top:4px">'
+    + '領域A ストレッサー ' + domainScores.A + '点　／　領域C サポート ' + domainScores.C + '点'
+    + '</div>'
+    + '</div>'
     + '</div>';
+
+  html += '<table>'
+    + '<thead><tr>'
+    + '<th>タイプ</th><th>B</th><th>AC</th><th>結果</th>'
+    + '<th>ストレス反応</th><th>環境</th><th>名称</th><th>アドバイス</th><th>該当</th>'
+    + '</tr></thead><tbody>';
+
+  judgmentRules.forEach(function(rule) {
+    var isMatched = rule.code === stressResult.code;
+    var rowClass = isMatched ? ' class="matched"' : '';
+    html += '<tr' + rowClass + '>'
+      + '<td>' + (rule.code || '') + '</td>'
+      + '<td>' + formatRange(rule.domain_b_min, rule.domain_b_max) + '</td>'
+      + '<td>' + formatRange(rule.domain_ac_min, rule.domain_ac_max) + '</td>'
+      + '<td>' + (rule.is_high_stress ? '高ストレス' : '適応状態') + '</td>'
+      + '<td>' + (rule.stress_reaction || '') + '</td>'
+      + '<td>' + (rule.environment || '') + '</td>'
+      + '<td>' + (rule.label || '') + '</td>'
+      + '<td style="max-width:300px">' + (rule.advice || '') + '</td>'
+      + '<td style="text-align:center">' + (isMatched ? '○' : '') + '</td>'
+      + '</tr>';
+  });
+
+  html += '</tbody></table>';
+  document.getElementById('block4').innerHTML = html;
 }
 
 // ─── メイン ─────────────────────────────────
@@ -331,12 +417,11 @@ function buildAll() {
   var scaleResults = calcScaleResults(answers, master.questions);
   var deviations   = calcAllDeviations(scaleResults, master.scales);
   var stressResult = getStressLevel(answers, master.questions, master.judgmentRules);
-  var level        = stressResult.isHighStress ? 'high' : 'low';
 
   buildBlock1(answers, master.questions);
   buildBlock2(scaleResults, deviations);
-  buildBlock3(deviations, level);
-  buildBlock4(deviations, level);
+  buildBlock3(answers, master.questions, stressResult);
+  buildBlock4(stressResult, master.judgmentRules);
 }
 
 // ─── 受検データヘッダー ──────────────────────
