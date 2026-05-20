@@ -328,7 +328,7 @@ function buildBlock3(answers, questions, stressResult) {
       qs.forEach(function(q) {
         var qNo = q.q141;
         var choice = answers[qNo] !== undefined ? answers[qNo] : answers[String(qNo)];
-        var rawScore = choice != null ? choice : '-';
+        var rawScore = choice != null ? (q.direction === '4321' ? 5 - choice : choice) : '-';
         var needsReverse = reverseQ141.indexOf(qNo) !== -1;
         var reversedScore = choice != null ? (needsReverse ? 5 - choice : choice) : '-';
         var dirLabel = q.direction === '1234' ? 'まま' : '逆転';
