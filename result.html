@@ -278,7 +278,8 @@ body {
   /* ── main ── */
   try {
     const stressResult = JSON.parse(sessionStorage.getItem('stressResult') || '{}');
-    const answers      = JSON.parse(sessionStorage.getItem('answers')      || '{}');
+    const answers      = stressResult.answers    || {};
+    const deviations   = stressResult.deviations || {};
 
     if (!Object.keys(stressResult).length) {
       root.innerHTML = `
@@ -289,9 +290,7 @@ body {
       return;
     }
 
-    const master       = await loadMaster();
-    const scaleResults = calcScaleResults(answers, master.questions);
-    const deviations   = calcAllDeviations(scaleResults, master.scales);
+    const master = await loadMaster();
 
     /* スケールメタ情報インデックス */
     const scalesMeta = {};
