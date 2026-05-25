@@ -409,17 +409,20 @@ async function buildResult() {
   var sessionId = sessionStorage.getItem('session_id') || crypto.randomUUID();
   sessionStorage.setItem('session_id', sessionId);
 
-  await supabase.from('survey_responses').insert({
+  var iRes = await supabase.from('survey_responses').insert({
     session_id:  sessionId,
     company_id:  sessionStorage.getItem('company_id') || null,
     answers:     answers,
     stress_level: level
-  });
+  }).select('session_id, created_at').single();
+  if (iRes.error) console.error('保存エラー:', iRes.error);
 
   sessionStorage.setItem('stressResult', JSON.stringify({
-    level: level,
-    answers: answers,
-    deviations: deviations
+    level:      level,
+    answers:    answers,
+    deviations: deviations,
+    session_id:  iRes.data ? iRes.data.session_id : sessionId,
+    created_at:  iRes.data ? iRes.data.created_at : null
   }));
 
   window.location.href = 'result.html';
