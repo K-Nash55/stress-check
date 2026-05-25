@@ -418,11 +418,16 @@ async function buildResult() {
   if (iRes.error) console.error('保存エラー:', iRes.error);
 
   sessionStorage.setItem('stressResult', JSON.stringify({
-    level:      level,
-    answers:    answers,
-    deviations: deviations,
-    session_id:  iRes.data ? iRes.data.session_id : sessionId,
-    created_at:  iRes.data ? iRes.data.created_at : null
+    level:           level,
+    answers:         answers,
+    deviations:      deviations,
+    session_id:      iRes.data ? iRes.data.session_id : sessionId,
+    created_at:      iRes.data ? iRes.data.created_at : null,
+    label:           stressResult.label,
+    isHighStress:    stressResult.isHighStress,
+    stress_reaction: stressResult.stress_reaction,
+    environment:     stressResult.environment,
+    advice:          stressResult.advice
   }));
 
   window.location.href = 'result.html';
