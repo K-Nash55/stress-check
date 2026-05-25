@@ -364,13 +364,16 @@ body {
     });
 
     /* ── 描画 ── */
-    const isHigh   = !!stressResult.isHighStress;
+    const isHigh   = stressResult.level === 'high';
     const jBg      = isHigh ? '#FCEBEB' : '#E1F5EE';
     const jBorder  = isHigh ? '#F09595' : '#5DCAA5';
     const jBadgeBg = isHigh ? '#E24B4A' : '#5DCAA5';
+    const jTextCol = isHigh ? '#A32D2D' : '#0F6E56';
     const jBadge   = isHigh ? '高ストレス' : '適応状態';
     const jLabel   = stressResult.label  || jBadge;
     const jAdvice  = stressResult.advice || '';
+    const jReaction   = stressResult.stress_reaction || '';
+    const jEnv        = stressResult.environment     || '';
 
     let html = `<div class="wrap">`;
 
@@ -379,6 +382,20 @@ body {
       <div class="judgment-card" style="background:${jBg};border-color:${jBorder}">
         <div class="judgment-badge" style="background:${jBadgeBg}">${jBadge}</div>
         <div class="judgment-label">${esc(jLabel)}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0">
+          <div style="background:#fff8;border-radius:8px;padding:10px 14px">
+            <div style="font-size:0.72rem;color:${jTextCol};font-weight:700;margin-bottom:4px">ストレス反応</div>
+            <div style="font-size:0.9rem;font-weight:600">${esc(jReaction)}</div>
+          </div>
+          <div style="background:#fff8;border-radius:8px;padding:10px 14px">
+            <div style="font-size:0.72rem;color:${jTextCol};font-weight:700;margin-bottom:4px">職場環境（ストレッサー＋リソース）</div>
+            <div style="font-size:0.9rem;font-weight:600">${esc(jEnv)}</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:${jBg};border:1px solid ${jBorder};border-radius:8px;padding:10px 16px;margin-bottom:14px">
+          <span style="font-size:0.8rem;color:${jTextCol};font-weight:700">総合判定</span>
+          <span style="font-size:0.9rem;font-weight:700;color:${jTextCol}">${isHigh ? '高ストレス' : '適応状態'}</span>
+        </div>
         ${jAdvice ? `<div class="judgment-advice">${esc(jAdvice)}</div>` : ''}
       </div>`;
 
