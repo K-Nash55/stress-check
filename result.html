@@ -428,6 +428,22 @@ body {
         </div>`;
     }
 
+    /* フッター：受検日・セッションID */
+    const _footerParts = [];
+    if (stressResult.created_at) {
+      const _date = new Date(stressResult.created_at).toLocaleDateString('ja-JP', {
+        timeZone: 'Asia/Tokyo',
+        year: 'numeric', month: '2-digit', day: '2-digit'
+      }).replace(/\//g, '/');
+      _footerParts.push(`受検日：${esc(_date)}`);
+    }
+    if (stressResult.session_id) {
+      _footerParts.push(`セッションID：${esc(stressResult.session_id)}`);
+    }
+    if (_footerParts.length) {
+      html += `<div style="font-size:0.75rem;color:#bbb;text-align:center;padding:16px 0 8px">${_footerParts.join('<br>')}</div>`;
+    }
+
     html += `</div>`;
     root.innerHTML = html;
 
