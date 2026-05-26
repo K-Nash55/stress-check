@@ -379,15 +379,15 @@ body {
 
     /* 第1層：判定カード */
     html += `
-      <div class="judgment-card" style="background:${jBg};border-color:${jBorder}">
+      <div class="judgment-card" style="background:#fff;border-color:${jBorder}">
         <div class="judgment-badge" style="background:${jBadgeBg}">${jBadge}</div>
         <div class="judgment-label">${esc(jLabel)}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0">
-          <div style="background:#fff8;border-radius:8px;padding:10px 14px">
+          <div style="background:#f5f5f3;border-radius:8px;padding:10px 14px">
             <div style="font-size:0.72rem;color:${jTextCol};font-weight:700;margin-bottom:4px">ストレス反応</div>
             <div style="font-size:0.9rem;font-weight:600">${esc(jReaction)}</div>
           </div>
-          <div style="background:#fff8;border-radius:8px;padding:10px 14px">
+          <div style="background:#f5f5f3;border-radius:8px;padding:10px 14px">
             <div style="font-size:0.72rem;color:${jTextCol};font-weight:700;margin-bottom:4px">職場環境（ストレッサー＋リソース）</div>
             <div style="font-size:0.9rem;font-weight:600">${esc(jEnv)}</div>
           </div>
