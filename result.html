@@ -354,7 +354,7 @@ body {
       return v !== undefined ? v : answers[String(q)];
     };
     const symptoms = Object.entries(COMPLAINTS)
-      .filter(function (e) { return getAns(Number(e[0])) == 1; })
+      .filter(function (e) { return getAns(Number(e[0])) == 4; })
       .map(function (e) { return e[1]; });
 
     /* ハラスメントチェック（Q126・Q127 の生番号が 1 または 2） */
