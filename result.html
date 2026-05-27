@@ -201,7 +201,22 @@ body {
 @media print {
   body { background: #fff; }
   .cat-section { break-inside: avoid; }
+  .judgment-card { break-inside: avoid; }
+  .alert-card { break-inside: avoid; }
   @page { margin: 14mm; }
+
+  /* バーの背景・塗りを印刷時も表示 */
+  .bar-track,
+  .bar-fill {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 全ての背景色・ボーダーカラーを印刷時も表示 */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }
 
 /* ── Mobile ── */
