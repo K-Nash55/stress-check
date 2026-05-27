@@ -281,8 +281,8 @@ body {
     return `
       <div class="cat-section">
         <div class="cat-header" style="border-left-color:${accentColor};background:${accentColor}18">
-          <div class="cat-title" style="color:${accentColor}ee">${title}</div>
-          <div class="cat-desc" style="color:${accentColor}dd">${desc}</div>
+          <div class="cat-title" style="color:${accentColor};filter:brightness(0.6)">${title}</div>
+          <div class="cat-desc" style="color:${accentColor};filter:brightness(0.7);font-size:.82rem">${desc}</div>
         </div>
         <div class="cat-body">
           ${scales.map(renderBar).join('')}
