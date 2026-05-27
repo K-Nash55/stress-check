@@ -280,9 +280,9 @@ body {
     if (!scales.length) return '';
     return `
       <div class="cat-section">
-        <div class="cat-header" style="border-left-color:${accentColor}">
-          <div class="cat-title">${title}</div>
-          <div class="cat-desc">${desc}</div>
+        <div class="cat-header" style="border-left-color:${accentColor};background:${accentColor}18">
+          <div class="cat-title" style="color:${accentColor}">${title}</div>
+          <div class="cat-desc" style="color:${accentColor}cc">${desc}</div>
         </div>
         <div class="cat-body">
           ${scales.map(renderBar).join('')}
