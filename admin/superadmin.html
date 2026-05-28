@@ -429,7 +429,7 @@ function buildAll() {
 // ─── 受検データヘッダー ──────────────────────
 async function buildHeader(m, src) {
   var createdAt = formatDate(m.created_at);
-  var sessionId = m.session_id ? m.session_id.slice(0, 8) : '-';
+  var sessionId = m.session_id ? m.session_id : '-';
   var companyName = '個人受検';
 
   if (m.company_id) {
@@ -441,11 +441,16 @@ async function buildHeader(m, src) {
     return '<div class="hdr-item"><span class="hdr-label">' + label + '</span><span class="hdr-value">' + value + '</span></div>';
   }
 
+  var resultBtn = m.session_id
+    ? '<a href="../result.html?session=' + m.session_id + '" target="_blank" class="nav-btn" style="align-self:center">結果画面を開く →</a>'
+    : '';
+
   document.getElementById('survey-header').innerHTML =
     item('受検日時', createdAt) +
     item('セッションID', sessionId) +
     item('会社名', companyName) +
-    item('データソース', src);
+    item('データソース', src) +
+    resultBtn;
 }
 
 // ─── 初期化 ─────────────────────────────────
