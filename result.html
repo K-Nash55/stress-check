@@ -320,7 +320,7 @@ body {
     for (const k in deviations) {
       const d    = deviations[k];
       const meta = scalesMeta[k] || {};
-      const displayDev = 100 - d.dev;
+      const displayDev = d.displayDev;
       allScales.push({
         name:       k,
         dev:        d.dev,

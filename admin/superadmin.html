@@ -229,6 +229,7 @@ function buildBlock2(scaleResults, deviations) {
     + '<th>全国平均</th>'
     + '<th>SD</th>'
     + '<th>偏差値</th>'
+    + '<th>表示用偏差値</th>'
     + '</tr></thead><tbody>';
 
   master.scales.forEach(function(s) {
@@ -256,6 +257,7 @@ function buildBlock2(scaleResults, deviations) {
       + '<td class="num">' + (s.scale_avg ? s.scale_avg.toFixed(2) : '-') + '</td>'
       + '<td class="num">' + (s.scale_sd ? s.scale_sd.toFixed(2) : '-') + '</td>'
       + '<td class="num ' + colorClass + '">' + dev + '</td>'
+      + '<td class="num">' + (d ? d.displayDev.toFixed(1) : '-') + '</td>'
       + '</tr>';
   });
 
