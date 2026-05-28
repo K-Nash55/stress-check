@@ -292,20 +292,67 @@ body {
 
   /* ── main ── */
   try {
-    const stressResult = JSON.parse(sessionStorage.getItem('stressResult') || '{}');
-    const answers      = stressResult.answers    || {};
-    const deviations   = stressResult.deviations || {};
+    const master = await loadMaster();
 
-    if (!Object.keys(stressResult).length) {
-      root.innerHTML = `
-        <div class="state-msg">
-          結果データが見つかりません。<br>
-          <a class="state-link" href="index.html">← チェックを受ける</a>
-        </div>`;
-      return;
+    /* URLパラメータにsessionがあればDBから取得して採点 */
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionParam = urlParams.get('session');
+
+    let stressResult = {};
+
+    if (sessionParam) {
+      /* ── トークンURL方式 ── */
+      const dbRes = await supabase
+        .from('survey_responses')
+        .select('*')
+        .eq('session_id', sessionParam)
+        .limit(1);
+
+      if (!dbRes.data || dbRes.data.length === 0) {
+        root.innerHTML = `
+          <div class="state-msg">
+            結果が見つかりません。URLを確認してください。<br>
+            <a class="state-link" href="index.html">← チェックを受ける</a>
+          </div>`;
+        return;
+      }
+
+      const row = dbRes.data[0];
+      const answers = row.answers || {};
+
+      /* scoring.jsで採点 */
+      const scaleResults = calcScaleResults(answers, master.questions);
+      const deviations   = calcAllDeviations(scaleResults, master.scales);
+      const judgment     = getStressLevel(answers, master.questions, master.judgmentRules);
+
+      stressResult = {
+        level:           judgment.isHighStress ? 'high' : 'low',
+        label:           judgment.label,
+        answers:         answers,
+        deviations:      deviations,
+        advice:          judgment.advice,
+        stress_reaction: judgment.stress_reaction,
+        environment:     judgment.environment,
+        session_id:      row.session_id,
+        created_at:      row.created_at
+      };
+
+    } else {
+      /* ── sessionStorage方式（従来通り） ── */
+      stressResult = JSON.parse(sessionStorage.getItem('stressResult') || '{}');
+
+      if (!Object.keys(stressResult).length) {
+        root.innerHTML = `
+          <div class="state-msg">
+            結果データが見つかりません。<br>
+            <a class="state-link" href="index.html">← チェックを受ける</a>
+          </div>`;
+        return;
+      }
     }
 
-    const master = await loadMaster();
+    const answers    = stressResult.answers    || {};
+    const deviations = stressResult.deviations || {};
 
     /* スケールメタ情報インデックス */
     const scalesMeta = {};
