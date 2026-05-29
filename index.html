@@ -55,6 +55,11 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .notice-box{background:var(--warm);border-left:3px solid var(--border);border-radius:6px;padding:12px 16px;margin-bottom:28px;font-size:.8rem;color:var(--ink2);line-height:1.9}
 .btn-start{display:block;width:100%;padding:16px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;letter-spacing:.08em;transition:all .2s}
 .btn-start:hover{background:#1b5e3f;transform:translateY(-1px)}
+.start-badge-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.start-badge{background:#EEEDFE;border-radius:10px;padding:12px 14px}
+.start-badge-main{font-size:1.2rem;font-weight:500;color:#534AB7;margin-bottom:2px}
+.start-badge-sub{font-size:11px;color:#534AB7}
+.notice-box-sm{font-size:11px;color:#888;line-height:1.8;margin-top:14px;text-align:center}
 
 /* ── P2〜P9 回答画面 ── */
 .q-wrap{max-width:740px;margin:36px auto;padding:0 20px 100px}
@@ -110,8 +115,21 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 <div id="scStart" class="screen active">
   <div class="start-wrap">
     <div class="start-card">
+      <div style="font-size:11px;font-weight:500;color:#7F77DD;letter-spacing:0.1em;margin-bottom:8px">STRESS CHECK FREE</div>
       <h1 class="start-title">ストレスチェック<br>フリー</h1>
       <p class="start-time">所要時間：約15分</p>
+
+      <div class="start-badge-row">
+        <div class="start-badge">
+          <div class="start-badge-main">無料</div>
+          <div class="start-badge-sub">登録不要</div>
+        </div>
+        <div class="start-badge">
+          <div class="start-badge-main">匿名</div>
+          <div class="start-badge-sub">氏名不要</div>
+        </div>
+      </div>
+
       <div class="privacy-box">
         <strong>🔒 プライバシーについて</strong>
         <ul>
@@ -121,12 +139,12 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
           <li>集団分析の結果は会社が閲覧できますが、10名未満の場合は非表示です</li>
         </ul>
       </div>
-      <div class="notice-box">
-        本ツールはストレスチェック実施を支援するWebサービスです。<br>
-        質問や採点方法は厚生労働省が発表している調査票・全国平均データセットに基づき、実施規定・実施マニュアルに準拠しています。<br>
-        結果の管理・面接指導の実施は、各事業者の責任において行われます。
-      </div>
+
       <button class="btn-start" id="btnStart">回答をはじめる →</button>
+
+      <p class="notice-box-sm">
+        本ツールはストレスチェック実施を支援するWebサービスです。質問や採点方法は厚生労働省が発表している調査票・全国平均データセットに基づき、実施規定・実施マニュアルに準拠しています。結果の管理・面接指導の実施は、各事業者の責任において行われます。
+      </p>
     </div>
   </div>
 </div>
