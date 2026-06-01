@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ストレスチェック フリー（簡易版・57問）</title>
+<script>
+(function() {
+  var hash = window.location.hash;
+  if (hash && hash.indexOf('type=recovery') !== -1) {
+    window.location.replace('/admin/reset-password' + hash);
+  }
+})();
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;600&display=swap');
+:root{
+  --ink:#1a1a2e;--ink2:#4a4a6a;--paper:#faf9f6;--warm:#f3f0e8;
+  --green:#2d6a4f;--green2:#52b788;--green3:#d8f3dc;
+  --warn:#c77c3e;--warn2:#fff3e0;--red:#b5373a;
+  --border:#d6d0c4;--sh:rgba(26,26,46,0.08)
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;line-height:1.7}
+
+/* ── ヘッダー ── */
+.hd{background:var(--ink);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.hd-logo{font-family:'Shippori Mincho',serif;font-size:1.2rem;font-weight:600;flex:1}
+.hd-logo span{color:var(--green2)}
+.hd-page{color:rgba(255,255,255,.7);font-size:.82rem;white-space:nowrap}
+/* フローティングテストメニュー */
+#float-menu{position:fixed;bottom:80px;left:24px;z-index:40;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+#float-btn{background:#1a1a2e;color:#fff;border:none;padding:10px 16px;border-radius:24px;cursor:pointer;font-size:13px;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+#float-options{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+#float-options.hidden{display:none}
+.float-opt{border:none;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.2);white-space:nowrap}
+.float-opt.neg1{background:#e74c3c;color:#fff}
+.float-opt.neg2{background:#e67e22;color:#fff}
+.float-opt.pos3{background:#2980b9;color:#fff}
+.float-opt.pos4{background:#27ae60;color:#fff}
+.float-opt.rand{background:#8e44ad;color:#fff}
+
+/* ── 画面切り替え ── */
+.screen{display:none}.screen.active{display:block}
+
+/* ── P1 スタート画面 ── */
+.start-wrap{max-width:680px;margin:60px auto;padding:0 20px}
+.start-card{background:#fff;border-radius:14px;padding:48px;box-shadow:0 4px 24px var(--sh);border:1px solid var(--border)}
+.start-title{font-family:'Shippori Mincho',serif;font-size:1.9rem;line-height:1.4;margin-bottom:8px}
+.start-time{font-size:.82rem;color:var(--ink2);margin-bottom:28px}
+.privacy-box{background:#f0f7f4;border:1px solid #52b788;border-radius:10px;padding:16px 20px;margin-bottom:16px;font-size:.84rem;line-height:1.9;color:var(--ink)}
+.privacy-box strong{display:block;margin-bottom:6px;font-size:.9rem}
+.privacy-box ul{list-style:none;padding:0}
+.privacy-box ul li::before{content:"✓ ";color:var(--green);font-weight:700}
+.notice-box{background:var(--warm);border-left:3px solid var(--border);border-radius:6px;padding:12px 16px;margin-bottom:28px;font-size:.8rem;color:var(--ink2);line-height:1.9}
+.btn-start{display:block;width:100%;padding:16px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;letter-spacing:.08em;transition:all .2s}
+.btn-start:hover{background:#1b5e3f;transform:translateY(-1px)}
+.start-badge-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.start-badge{background:#EEEDFE;border-radius:10px;padding:12px 14px}
+.start-badge-main{font-size:1.2rem;font-weight:500;color:#534AB7;margin-bottom:2px}
+.start-badge-sub{font-size:11px;color:#534AB7}
+.notice-box-sm{font-size:11px;color:#888;line-height:1.8;margin-top:14px;text-align:center}
+
+/* ── P2〜P4 回答画面 ── */
+.q-wrap{max-width:740px;margin:36px auto;padding:0 20px 100px}
+.sec-hd{padding:12px 18px;background:var(--ink);color:#fff;border-radius:10px;margin-bottom:18px;font-size:.8rem;font-weight:500;letter-spacing:.05em}
+.sec-inst{font-size:.86rem;color:var(--ink2);background:var(--warm);padding:12px 18px;border-radius:8px;margin-bottom:18px;border-left:3px solid var(--border);line-height:1.8}
+.q-card{background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:10px;border:2px solid var(--border);transition:border-color .2s}
+.q-card.answered{border-color:var(--green3);background:#fafffe}
+.q-row{display:flex;align-items:flex-start;gap:14px}
+.q-num{font-size:.7rem;color:#fff;background:var(--ink2);padding:2px 8px;border-radius:10px;font-weight:700;flex-shrink:0;margin-top:3px;min-width:36px;text-align:center}
+.q-card.answered .q-num{background:var(--green)}
+.q-text{font-size:.9rem;line-height:1.7;flex:1}
+.choices{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.choice-btn{flex:1;min-width:72px;padding:9px 6px;border:2px solid var(--border);border-radius:8px;background:var(--warm);font-size:.78rem;font-family:'Noto Sans JP',sans-serif;color:var(--ink2);cursor:pointer;transition:all .15s;text-align:center;line-height:1.3}
+.choice-btn:hover{border-color:var(--green2);color:var(--green);background:var(--green3)}
+.choice-btn.selected{border-color:var(--green);background:var(--green);color:#fff;font-weight:700}
+
+/* ── ナビバー ── */
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:12px 20px;display:flex;gap:10px;justify-content:center;align-items:center;box-shadow:0 -4px 16px var(--sh);z-index:50}
+.warn-msg{color:var(--red);font-size:.78rem;text-align:center;padding:4px;display:none;flex:1}
+.btn-nav{padding:11px 28px;border-radius:8px;border:2px solid var(--border);background:#fff;font-family:'Noto Sans JP',sans-serif;font-size:.86rem;font-weight:700;cursor:pointer;transition:all .2s;color:var(--ink)}
+.btn-nav:hover{background:var(--warm)}
+.btn-nav.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-nav.primary:hover{background:#1b5e3f}
+.btn-nav:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── 確認画面 ── */
+.confirm-wrap{max-width:560px;margin:80px auto;padding:0 20px}
+.confirm-card{background:#fff;border-radius:14px;padding:48px;text-align:center;box-shadow:0 4px 24px var(--sh);border:1px solid var(--border)}
+.confirm-icon{font-size:3rem;margin-bottom:16px}
+.confirm-title{font-family:'Shippori Mincho',serif;font-size:1.4rem;margin-bottom:10px}
+.confirm-desc{font-size:.88rem;color:var(--ink2);margin-bottom:32px;line-height:1.9}
+.confirm-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-confirm{padding:13px 28px;border-radius:8px;border:2px solid var(--border);background:#fff;font-family:'Noto Sans JP',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;color:var(--ink)}
+.btn-confirm:hover{background:var(--warm)}
+.btn-confirm.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-confirm.primary:hover{background:#1b5e3f}
+.btn-confirm:disabled{opacity:.5;cursor:not-allowed}
+.submit-msg{margin-top:16px;font-size:.82rem;color:var(--ink2)}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/scoring.js"></script>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header class="hd">
+  <div class="hd-logo">ストレスチェック <span>フリー</span></div>
+  <div class="hd-page" id="hdPage"></div>
+</header>
+
+<!-- P1: スタート画面 -->
+<div id="scStart" class="screen active">
+  <div class="start-wrap">
+    <div class="start-card">
+      <div style="font-size:11px;font-weight:500;color:#7F77DD;letter-spacing:0.1em;margin-bottom:8px">STRESS CHECK FREE</div>
+      <h1 class="start-title">ストレスチェック<br>フリー</h1>
+      <p class="start-time">所要時間：約5分　57問の簡易版</p>
+
+      <div class="start-badge-row">
+        <div class="start-badge">
+          <div class="start-badge-main">無料</div>
+          <div class="start-badge-sub">登録不要</div>
+        </div>
+        <div class="start-badge">
+          <div class="start-badge-main">匿名</div>
+          <div class="start-badge-sub">氏名不要</div>
+        </div>
+      </div>
+
+      <div class="privacy-box">
+        <strong>🔒 プライバシーについて</strong>
+        <ul>
+          <li>結果はあなただけに通知されます</li>
+          <li>会社が個人の結果を閲覧することはできません</li>
+          <li>氏名の入力はなく、特定できません</li>
+          <li>集団分析の結果は会社が閲覧できますが、10名未満の場合は非表示です</li>
+        </ul>
+      </div>
+
+      <button class="btn-start" id="btnStart">回答をはじめる →</button>
+
+      <p class="notice-box-sm">
+        本ツールはストレスチェック実施を支援するWebサービスです。質問や採点方法は厚生労働省が発表している調査票・全国平均データセットに基づき、実施規定・実施マニュアルに準拠しています。結果の管理・面接指導の実施は、各事業者の責任において行われます。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- P2〜P4: 回答画面 -->
+<div id="scQuestions" class="screen">
+  <div class="q-wrap" id="qContainer"></div>
+  <div class="nav-bar">
+    <div style="flex:1;text-align:center">
+      <div class="warn-msg" id="warnMsg">未回答の質問があります。すべて回答してから次へ進んでください。</div>
+    </div>
+    <button class="btn-nav" id="btnPrev">← 前へ</button>
+    <button class="btn-nav primary" id="btnNext" disabled>次へ →</button>
+  </div>
+</div>
+
+<!-- 確認画面 -->
+<div id="scConfirm" class="screen">
+  <div class="confirm-wrap">
+    <div class="confirm-card">
+      <div class="confirm-icon">✅</div>
+      <h2 class="confirm-title">57問すべて回答しました</h2>
+      <p class="confirm-desc">送信して結果を確認しますか？<br>送信後は回答を変更できません。</p>
+      <div class="confirm-btns">
+        <button class="btn-confirm" id="btnBack">← 戻る</button>
+        <button class="btn-confirm primary" id="btnConfirm">結果を見る →</button>
+      </div>
+      <p class="submit-msg" id="submitMsg"></p>
+    </div>
+  </div>
+</div>
+
+<!-- フローティングテストメニュー -->
+<div id="float-menu">
+  <div id="float-options" class="hidden">
+    <button onclick="runTest(1)" class="float-opt neg1">全ネガ (1)</button>
+    <button onclick="runTest(2)" class="float-opt neg2">ややネガ (2)</button>
+    <button onclick="runTest(3)" class="float-opt pos3">ややポジ (3)</button>
+    <button onclick="runTest(4)" class="float-opt pos4">全ポジ (4)</button>
+    <button onclick="runTest('random')" class="float-opt rand">ランダム</button>
+  </div>
+  <button id="float-btn" onclick="toggleFloatMenu()">🔧 テスト</button>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── セクション定義 ──
+  var SECTIONS = [
+    { page: 1, label: 'あなたの仕事について',         instruction: '最もあてはまるものに○をつけてください。', q57Min: 1,  q57Max: 17 },
+    { page: 2, label: '最近1ヶ月の状態について',       instruction: '最もあてはまるものに○をつけてください。', q57Min: 18, q57Max: 46 },
+    { page: 3, label: '周りの人について・満足度',      instruction: '最もあてはまるものに○をつけてください。', q57Min: 47, q57Max: 57 }
+  ];
+
+  var answers = {};
+  var allQuestions = [];   // Supabaseから取得した57問
+  var currentPage = 1;
+  var TOTAL_PAGES = 3;
+
+  // ── 初期化 ──
+  async function init() {
+    loadProgress();
+
+    // Supabaseから57問取得
+    var res = await supabase
+      .from('questions_master')
+      .select('*')
+      .not('q57', 'is', null)
+      .order('q57', { ascending: true });
+
+    if (res.error) {
+      alert('問題の読み込みに失敗しました: ' + res.error.message);
+      return;
+    }
+    allQuestions = res.data;
+
+    showScreen('scStart');
+
+    document.getElementById('btnStart').addEventListener('click', function () {
+      currentPage = 1;
+      goToPage(1);
+    });
+    document.getElementById('btnPrev').addEventListener('click', onPrev);
+    document.getElementById('btnNext').addEventListener('click', onNext);
+    document.getElementById('btnConfirm').addEventListener('click', buildResult);
+    document.getElementById('btnBack').addEventListener('click', function () {
+      currentPage = TOTAL_PAGES;
+      goToPage(TOTAL_PAGES);
+    });
+
+    updateHeader();
+  }
+
+  // ── 画面切り替え ──
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function (s) { s.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+  }
+
+  // ── ヘッダー更新 ──
+  function updateHeader() {
+    var el = document.getElementById('hdPage');
+    if (el) el.textContent = currentPage <= TOTAL_PAGES ? currentPage + ' / ' + TOTAL_PAGES : '';
+  }
+
+  // ── ページ内の問題を取得 ──
+  function getQuestionsForPage(page) {
+    var sec = SECTIONS[page - 1];
+    return allQuestions.filter(function (q) {
+      return q.q57 >= sec.q57Min && q.q57 <= sec.q57Max;
+    });
+  }
+
+  // ── ページ完了チェック ──
+  function checkPageComplete(page) {
+    var qs = getQuestionsForPage(page);
+    return qs.every(function (q) { return answers[q.q141] != null; });
+  }
+
+  // ── 問題ページ描画 ──
+  function renderQuestionPage(page) {
+    var sec = SECTIONS[page - 1];
+    var qs  = getQuestionsForPage(page);
+    var container = document.getElementById('qContainer');
+
+    var html = '<div class="sec-hd">セクション ' + page + '　' + sec.label + '</div>';
+    html += '<div class="sec-inst">' + sec.instruction + '</div>';
+
+    qs.forEach(function (q) {
+      var choices = q.choices ? q.choices.split(' ') : [];
+      var answered = answers[q.q141] != null;
+      html += '<div class="q-card' + (answered ? ' answered' : '') + '" data-qno="' + q.q141 + '">';
+      html += '<div class="q-row">';
+      html += '<span class="q-num">Q' + q.q57 + '</span>';
+      html += '<span class="q-text">' + q.question + '</span>';
+      html += '</div><div class="choices">';
+      choices.forEach(function (label, idx) {
+        var score = idx + 1;
+        var selected = answers[q.q141] === score ? ' selected' : '';
+        html += '<button class="choice-btn' + selected + '" data-no="' + q.q141 + '" data-score="' + score + '">' + label + '</button>';
+      });
+      html += '</div></div>';
+    });
+
+    container.innerHTML = html;
+
+    // 選択イベント
+    container.querySelectorAll('.choice-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var no    = parseInt(this.getAttribute('data-no'));
+        var score = parseInt(this.getAttribute('data-score'));
+        answers[no] = score;
+        saveProgress();
+
+        var card = document.querySelector('.q-card[data-qno="' + no + '"]');
+        if (card) {
+          card.classList.add('answered');
+          card.querySelectorAll('.choice-btn').forEach(function (b) { b.classList.remove('selected'); });
+          this.classList.add('selected');
+        }
+
+        document.getElementById('btnNext').disabled = !checkPageComplete(currentPage);
+        document.getElementById('warnMsg').style.display = 'none';
+      }.bind(btn));
+    });
+
+    document.getElementById('btnNext').disabled = !checkPageComplete(page);
+    document.getElementById('warnMsg').style.display = 'none';
+    updateHeader();
+  }
+
+  // ── ページ遷移 ──
+  function goToPage(page) {
+    currentPage = page;
+    showScreen('scQuestions');
+    renderQuestionPage(page);
+    window.scrollTo(0, 0);
+  }
+
+  // ── 次へ ──
+  function onNext() {
+    if (!checkPageComplete(currentPage)) {
+      var qs = getQuestionsForPage(currentPage);
+      var firstUnanswered = qs.find(function (q) { return answers[q.q141] == null; });
+      if (firstUnanswered) {
+        var card = document.querySelector('.q-card[data-qno="' + firstUnanswered.q141 + '"]');
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      document.getElementById('warnMsg').style.display = 'block';
+      return;
+    }
+    if (currentPage < TOTAL_PAGES) {
+      goToPage(currentPage + 1);
+    } else {
+      showScreen('scConfirm');
+      updateHeader();
+      window.scrollTo(0, 0);
+    }
+  }
+
+  // ── 前へ ──
+  function onPrev() {
+    if (currentPage > 1) {
+      goToPage(currentPage - 1);
+    } else {
+      showScreen('scStart');
+      updateHeader();
+    }
+  }
+
+  // ── 進捗保存・復元 ──
+  function saveProgress() {
+    localStorage.setItem('sc57_answers', JSON.stringify(answers));
+    localStorage.setItem('sc57_page', currentPage);
+  }
+
+  function loadProgress() {
+    var saved = localStorage.getItem('sc57_answers');
+    var savedPage = localStorage.getItem('sc57_page');
+    if (saved) answers = JSON.parse(saved);
+    if (savedPage) currentPage = parseInt(savedPage);
+  }
+
+  // ── 採点・保存・リダイレクト ──
+  async function buildResult() {
+    var btn = document.getElementById('btnConfirm');
+    btn.disabled = true;
+    btn.textContent = '送信中...';
+
+    try {
+      var master = await loadMaster();
+      var scaleResults = calcScaleResults(answers, master.questions);
+      var deviations   = calcAllDeviations(scaleResults, master.scales);
+      var judgment     = getStressLevel(answers, master.questions, master.judgmentRules);
+
+      // Supabaseに保存
+      var saveRes = await supabase.from('survey_responses').insert({
+        answers:      answers,
+        stress_level: judgment.isHighStress ? 'high' : 'low',
+        version:      '57'
+      }).select('session_id, created_at').single();
+
+      if (saveRes.error) throw saveRes.error;
+
+      // sessionStorageに格納
+      var stressResult = {
+        level:           judgment.isHighStress ? 'high' : 'low',
+        label:           judgment.label,
+        answers:         answers,
+        deviations:      deviations,
+        advice:          judgment.advice,
+        stress_reaction: judgment.stress_reaction,
+        environment:     judgment.environment,
+        session_id:      saveRes.data.session_id,
+        created_at:      saveRes.data.created_at,
+        version:         '57'
+      };
+
+      sessionStorage.setItem('stressResult', JSON.stringify(stressResult));
+
+      // LocalStorageをクリア
+      localStorage.removeItem('sc57_answers');
+      localStorage.removeItem('sc57_page');
+
+      window.location.href = 'result.html';
+
+    } catch (err) {
+      console.error(err);
+      btn.disabled = false;
+      btn.textContent = '結果を見る →';
+      alert('送信に失敗しました。もう一度お試しください。');
+    }
+  }
+
+  // ── テストデータ ──
+  async function runTest(targetRawScore) {
+    if (allQuestions.length === 0) {
+      alert('問題がまだ読み込まれていません');
+      return;
+    }
+    answers = {};
+    allQuestions.forEach(function (q) {
+      if (targetRawScore === 'random') {
+        answers[q.q141] = Math.floor(Math.random() * 4) + 1;
+      } else {
+        answers[q.q141] = q.direction === '4321' ? 5 - targetRawScore : targetRawScore;
+      }
+    });
+    saveProgress();
+    goToPage(currentPage);
+    var opts = document.getElementById('float-options');
+    if (opts) opts.classList.add('hidden');
+  }
+
+  function toggleFloatMenu() {
+    var opts = document.getElementById('float-options');
+    opts.classList.toggle('hidden');
+  }
+
+  // ── グローバル公開（ボタンから呼ぶため） ──
+  window.runTest = runTest;
+  window.toggleFloatMenu = toggleFloatMenu;
+
+  document.addEventListener('DOMContentLoaded', init);
+}());
+</script>
+</body>
+</html>
