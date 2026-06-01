@@ -272,9 +272,13 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
     var container = document.getElementById('qContainer');
 
     var html = '<div class="sec-hd">セクション ' + page + '　' + sec.label + '</div>';
-    html += '<div class="sec-inst">' + sec.instruction + '</div>';
 
+    var lastSection = null;
     qs.forEach(function (q) {
+      if (q.section && q.section !== lastSection) {
+        html += '<div class="sec-inst">' + q.section + '</div>';
+        lastSection = q.section;
+      }
       var choices = q.choices ? q.choices.split(' ') : [];
       var answered = answers[q.q141] != null;
       html += '<div class="q-card' + (answered ? ' answered' : '') + '" data-qno="' + q.q141 + '">';

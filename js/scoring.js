@@ -143,6 +143,7 @@ function calcAllDeviations(scaleResults, scales) {
     var dev = sm
       ? calcDeviation(sr.avg, sm.scale_avg, sm.scale_sd)
       : calcDeviation(sr.avg, null, null);
+    if (sr.rawScores.length === 0) continue;
     result[k] = Object.assign({}, sr, {
       dev: dev,
       displayDev: Math.round((100 - dev) * 10) / 10
