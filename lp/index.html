@@ -5,997 +5,496 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>無料ストレスチェック | ストレスチェックフリー - 職場のストレスを5分で診断</title>
   <meta name="description" content="厚生労働省の調査票をもとにした無料・匿名・登録不要のストレスチェック。職場のストレスを5分で診断し、全国平均と比較できます。小規模事業所・個人にも対応。" />
-  <style>
-    :root {
-      --primary: #378ADD;
-      --primary-dark: #2B72B7;
-      --primary-soft: #EEF6FF;
-      --primary-soft-2: #F7FBFF;
-      --mint: #EAF8F3;
-      --mint-border: #B9E0D2;
-      --lavender: #F4F1FF;
-      --surface: #FFFFFF;
-      --surface-soft: #F8FAFC;
-      --text: #1E293B;
-      --text-soft: #526277;
-      --text-faint: #77859A;
-      --border: #DDE6F0;
-      --shadow: 0 16px 40px rgba(29, 78, 137, 0.08);
-      --shadow-soft: 0 8px 24px rgba(29, 78, 137, 0.06);
-      --radius-xl: 28px;
-      --radius-lg: 20px;
-      --radius-md: 16px;
-      --radius-sm: 12px;
-      --max: 1180px;
-      --section-pad: clamp(72px, 9vw, 112px);
-      --warning: #D89C3E;
-      --success: #4AA172;
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(55, 138, 221, 0.10), transparent 28%),
-        linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 22%, #FFFFFF 100%);
-      line-height: 1.75;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-
-    img { max-width: 100%; display: block; }
-    a { color: inherit; text-decoration: none; }
-    button { font: inherit; }
-
-    .container {
-      width: min(var(--max), calc(100% - 32px));
-      margin: 0 auto;
-    }
-
-    .section {
-      padding: var(--section-pad) 0;
-      position: relative;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--primary-dark);
-      background: var(--primary-soft);
-      padding: 8px 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(55, 138, 221, 0.12);
-    }
-
-    .section-title {
-      margin: 16px 0 12px;
-      font-size: clamp(1.85rem, 3.2vw, 2.8rem);
-      line-height: 1.25;
-      letter-spacing: -0.02em;
-    }
-
-    .section-intro {
-      margin: 0;
-      color: var(--text-soft);
-      font-size: 1rem;
-    }
-
-    .hero {
-      padding: 28px 0 56px;
-    }
-
-    .hero-shell {
-      padding: 28px 0 0;
-    }
-
-    .hero-grid {
-      display: grid;
-      gap: 40px;
-      align-items: center;
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--text);
-      margin-bottom: 18px;
-      font-size: 1.05rem;
-    }
-
-    .brand-mark {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, var(--primary), #79B6F1);
-      box-shadow: 0 10px 24px rgba(55, 138, 221, 0.22);
-      display: grid;
-      place-items: center;
-      color: white;
-      font-weight: 900;
-    }
-
-    .hero-copy h1 {
-      margin: 0;
-      font-size: clamp(2.4rem, 5.4vw, 4.4rem);
-      line-height: 1.12;
-      letter-spacing: -0.04em;
-    }
-
-    .hero-sub {
-      font-size: clamp(1.05rem, 2vw, 1.28rem);
-      color: var(--text-soft);
-      margin: 18px 0 12px;
-    }
-
-    .hero-empathy {
-      margin: 0 0 16px;
-      color: var(--text-soft);
-      background: rgba(255,255,255,0.84);
-      border: 1px solid rgba(55, 138, 221, 0.1);
-      border-radius: 18px;
-      padding: 14px 16px;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .hero-authority {
-      margin: 0 0 24px;
-      color: var(--text-faint);
-      font-size: 0.96rem;
-    }
-
-    .badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 18px 0 26px;
-    }
-
-    .badge {
-      background: white;
-      color: var(--primary-dark);
-      border: 1px solid rgba(55, 138, 221, 0.14);
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-weight: 700;
-      font-size: 0.92rem;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .cta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      align-items: center;
-      margin-top: 10px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      min-height: 56px;
-      padding: 0 24px;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      font-weight: 800;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      box-shadow: 0 18px 32px rgba(55, 138, 221, 0.24);
-    }
-
-    .btn-secondary {
-      background: white;
-      color: var(--primary-dark);
-      border: 1px solid rgba(55, 138, 221, 0.16);
-      box-shadow: var(--shadow-soft);
-    }
-
-    .helper-text {
-      margin: 12px 0 0;
-      color: var(--text-faint);
-      font-size: 0.95rem;
-    }
-
-    .hero-card {
-      position: relative;
-      isolation: isolate;
-    }
-
-    .glow {
-      position: absolute;
-      inset: auto auto 2% -6%;
-      width: 230px;
-      height: 230px;
-      background: radial-gradient(circle, rgba(55, 138, 221, 0.18), transparent 65%);
-      filter: blur(12px);
-      z-index: -1;
-    }
-
-    .device {
-      width: min(100%, 420px);
-      margin: 0 auto;
-      background: linear-gradient(180deg, #FFFFFF 0%, #F9FCFF 100%);
-      border: 1px solid rgba(55, 138, 221, 0.14);
-      border-radius: 34px;
-      box-shadow: 0 28px 60px rgba(31, 70, 116, 0.14);
-      padding: 18px;
-    }
-
-    .device-top {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 14px;
-    }
-
-    .notch {
-      width: 108px;
-      height: 18px;
-      border-radius: 999px;
-      background: #10263D;
-      opacity: 0.08;
-    }
-
-    .screen {
-      border-radius: 26px;
-      background: white;
-      padding: 14px;
-      border: 1px solid rgba(55, 138, 221, 0.08);
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 800;
-      background: #D8F2E6;
-      color: #3C8D6A;
-      border: 1px solid #BFE2D0;
-    }
-
-    .preview-title {
-      margin: 12px 0 10px;
-      font-size: 1.3rem;
-      font-weight: 900;
-      letter-spacing: -0.03em;
-    }
-
-    .preview-grid {
-      display: grid;
-      gap: 10px;
-      grid-template-columns: 1fr 1fr;
-      margin-bottom: 12px;
-    }
-
-    .preview-box {
-      background: #F4F7F8;
-      border-radius: 14px;
-      padding: 12px;
-      border: 1px solid #EEF2F5;
-    }
-
-    .preview-box strong {
-      display: block;
-      color: #4A7E69;
-      font-size: 0.78rem;
-      margin-bottom: 4px;
-    }
-
-    .preview-box span {
-      display: block;
-      font-size: 0.98rem;
-      font-weight: 900;
-      line-height: 1.4;
-    }
-
-    .summary-box {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      background: var(--mint);
-      border: 1px solid var(--mint-border);
-      color: #427D66;
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-weight: 800;
-      margin-bottom: 14px;
-    }
-
-    .section-chip {
-      background: var(--lavender);
-      color: #5260A7;
-      font-weight: 800;
-      padding: 12px 14px;
-      border-radius: 14px 14px 0 0;
-      font-size: 0.96rem;
-      margin-top: 8px;
-    }
-
-    .graph-panel {
-      border: 1px solid #ECEFF4;
-      border-top: none;
-      border-radius: 0 0 18px 18px;
-      overflow: hidden;
-      background: #FFFFFF;
-    }
-
-    .meter-row {
-      padding: 16px 0;
-      border-top: 1px solid #EEF2F7;
-    }
-
-    .meter-row:first-child { border-top: none; }
-
-    .meter-row h4 {
-      margin: 0 0 4px;
-      font-size: 0.95rem;
-      line-height: 1.4;
-    }
-
-    .meter-row p {
-      margin: 0 0 10px;
-      color: var(--text-faint);
-      font-size: 0.78rem;
-      line-height: 1.6;
-    }
-
-    .meter-meta {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.72rem;
-      color: #95A2B4;
-      margin-bottom: 6px;
-    }
-
-    .meter {
-      position: relative;
-      height: 10px;
-      border-radius: 999px;
-      background: #EDF1F6;
-      overflow: hidden;
-    }
-
-    .meter::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: -2px;
-      bottom: -2px;
-      width: 2px;
-      background: rgba(90, 110, 140, 0.18);
-    }
-
-    .meter-fill {
-      height: 100%;
-      border-radius: inherit;
-    }
-
-    .meter-fill.warning { width: 54%; background: var(--warning); }
-    .meter-fill.warning-2 { width: 54%; background: var(--warning); }
-    .meter-fill.good { width: 48%; background: var(--success); }
-
-    .meter-score {
-      text-align: right;
-      margin-top: 6px;
-      font-weight: 800;
-      font-size: 0.82rem;
-      color: var(--text-soft);
-    }
-
-    .surface-block {
-      background: rgba(255,255,255,0.92);
-      border: 1px solid rgba(55, 138, 221, 0.10);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow);
-    }
-
-    .feature-wrap,
-    .benefit-wrap,
-    .qa-wrap,
-    .recommend-wrap,
-    .cta-wrap {
-      padding: clamp(28px, 4vw, 42px);
-    }
-
-    .feature-grid,
-    .benefit-grid,
-    .qa-grid,
-    .recommend-grid {
-      display: grid;
-      gap: 18px;
-      margin-top: 28px;
-    }
-
-    .feature-card,
-    .benefit-card,
-    .qa-card,
-    .recommend-card {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 22px;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .feature-card {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .feature-card::before {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 5px;
-      background: linear-gradient(90deg, var(--primary), #7FBFF8);
-    }
-
-    .feature-icon,
-    .benefit-icon,
-    .qa-icon,
-    .recommend-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 16px;
-      display: inline-grid;
-      place-items: center;
-      color: var(--primary-dark);
-      background: var(--primary-soft);
-      margin-bottom: 16px;
-      font-size: 1.25rem;
-      font-weight: 900;
-    }
-
-    .feature-card h3,
-    .benefit-card h3,
-    .qa-card h3,
-    .recommend-card h3 {
-      margin: 0 0 8px;
-      font-size: 1.16rem;
-      line-height: 1.45;
-      letter-spacing: -0.02em;
-    }
-
-    .feature-card p,
-    .benefit-card p,
-    .qa-card p,
-    .recommend-card p {
-      margin: 0;
-      color: var(--text-soft);
-      font-size: 0.98rem;
-      line-height: 1.8;
-    }
-
-    .feature-mini-preview {
-      margin-top: 16px;
-      padding: 14px;
-      background: linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%);
-      border-radius: 18px;
-      border: 1px solid #E5EEF8;
-    }
-
-    .mini-bars {
-      display: grid;
-      gap: 10px;
-    }
-
-    .mini-bar-line {
-      display: grid;
-      grid-template-columns: 68px 1fr 38px;
-      gap: 10px;
-      align-items: center;
-      font-size: 0.72rem;
-      color: var(--text-faint);
-    }
-
-    .mini-track {
-      height: 8px;
-      background: #EDF1F6;
-      border-radius: 999px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .mini-track::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: -2px;
-      bottom: -2px;
-      width: 2px;
-      background: rgba(90,110,140,0.16);
-    }
-
-    .mini-fill { height: 100%; border-radius: inherit; }
-    .mini-fill.a { width: 54%; background: var(--warning); }
-    .mini-fill.b { width: 48%; background: var(--success); }
-    .mini-fill.c { width: 46%; background: var(--success); }
-
-    .benefit-card {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-    }
-
-    .benefit-card .benefit-icon {
-      width: 46px;
-      height: 46px;
-      min-width: 46px;
-      border-radius: 14px;
-      margin-bottom: 0;
-    }
-
-    .benefit-card h3 { margin-bottom: 6px; }
-
-    .qa-card {
-      background: linear-gradient(180deg, #FFFFFF 0%, #FBFDFF 100%);
-    }
-
-    .qa-card p strong {
-      color: var(--text);
-    }
-
-    .recommend-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: grid;
-      gap: 14px;
-    }
-
-    .recommend-list li {
-      position: relative;
-      padding-left: 34px;
-      color: var(--text-soft);
-      font-size: 1rem;
-    }
-
-    .recommend-list li::before {
-      content: "✓";
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 24px;
-      height: 24px;
-      border-radius: 999px;
-      background: var(--mint);
-      color: #3C8D6A;
-      display: grid;
-      place-items: center;
-      font-weight: 900;
-      font-size: 0.9rem;
-      border: 1px solid var(--mint-border);
-    }
-
-    .cta-box {
-      text-align: center;
-      background: linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%);
-      border: 1px solid rgba(55, 138, 221, 0.12);
-      border-radius: calc(var(--radius-xl) + 4px);
-      padding: clamp(34px, 5vw, 54px);
-      box-shadow: var(--shadow);
-    }
-
-    .cta-box h2 {
-      margin: 0 0 12px;
-      font-size: clamp(1.9rem, 3.4vw, 2.8rem);
-      line-height: 1.25;
-      letter-spacing: -0.03em;
-    }
-
-    .cta-box p {
-      margin: 0 auto 24px;
-      color: var(--text-soft);
-      max-width: 700px;
-    }
-
-    .note-strip {
-      margin-top: 16px;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-      color: var(--text-faint);
-      font-size: 0.92rem;
-    }
-
-    .site-footer {
-      padding: 24px 0 42px;
-      color: var(--text-faint);
-      font-size: 0.92rem;
-      text-align: center;
-    }
-
-    .divider-space {
-      height: 16px;
-    }
-
-    .sticky-cta {
-      position: sticky;
-      bottom: 0;
-      z-index: 30;
-      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
-      background: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.95) 30%, rgba(255,255,255,1) 100%);
-      backdrop-filter: blur(6px);
-      display: none;
-    }
-
-    .sticky-cta .btn {
-      width: 100%;
-    }
-
-    @media (min-width: 860px) {
-      .hero { padding: 36px 0 74px; }
-      .hero-grid {
-        grid-template-columns: minmax(0, 1.05fr) minmax(360px, 430px);
-        gap: 48px;
-      }
-      .feature-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-      .benefit-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .qa-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .recommend-grid {
-        grid-template-columns: 1.05fr 0.95fr;
-        align-items: center;
-      }
-      .recommend-visual {
-        padding-left: 18px;
-      }
-    }
-
-    @media (max-width: 859px) {
-      .sticky-cta { display: block; }
-      .hero-copy h1 { max-width: 12ch; }
-      .section { padding: 72px 0; }
-      .benefit-card { padding: 20px; }
-    }
-
-    @media (max-width: 560px) {
-      .container {
-        width: min(var(--max), calc(100% - 24px));
-      }
-      .hero { padding-top: 18px; }
-      .hero-copy h1 {
-        font-size: 2.2rem;
-      }
-      .btn {
-        width: 100%;
-      }
-      .preview-grid {
-        grid-template-columns: 1fr;
-      }
-      .feature-wrap,
-      .benefit-wrap,
-      .qa-wrap,
-      .recommend-wrap,
-      .cta-wrap {
-        padding: 22px;
-      }
-      .feature-card,
-      .benefit-card,
-      .qa-card,
-      .recommend-card {
-        padding: 20px;
-      }
-      .hero-empathy {
-        font-size: 0.95rem;
-      }
-      .note-strip {
-        align-items: flex-start;
-        text-align: left;
-      }
-    }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css?v=20260602" />
 </head>
 <body>
-  <header class="hero">
-    <div class="container hero-shell">
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <div class="brand">
-            <div class="brand-mark">S</div>
-            <span>ストレスチェックフリー</span>
-          </div>
 
-          <span class="eyebrow">無料・匿名・登録不要・約5分</span>
-          <h1>働きやすさを、<br>感覚だけで終わらせない。</h1>
-          <p class="hero-sub">仕事のストレスを数字で見える化して、これからを考える判断材料に。</p>
-          <p class="hero-empathy">なんとなくモヤモヤしている。でもそれが普通なのか、わからないまま過ごしていませんか。</p>
-          <p class="hero-authority">厚生労働省の調査票をもとに、あなたのストレス状態を全国平均と比較します。</p>
+  <!-- ========== HEADER ========== -->
+  <header class="site-header" id="top">
+    <div class="header-inner container">
+      <a href="#top" class="logo">
+        <span class="logo-s">STRESS</span><span class="logo-c"> CHECK</span><span class="logo-f"> FREE</span>
+      </a>
+      <nav class="header-nav" aria-label="メインナビ">
+        <a href="#concerns">不安を解消</a>
+        <a href="#benefits">わかること</a>
+        <a href="#recommend">こんな人に</a>
+        <a href="#how">使い方</a>
+      </nav>
+      <a href="https://stress-check-gamma.vercel.app/index57.html" target="_blank" rel="noopener" class="btn btn-primary btn-header">
+        無料で診断する
+      </a>
+    </div>
+  </header>
 
-          <div class="badges" aria-label="サービスの特徴">
-            <span class="badge">無料</span>
-            <span class="badge">匿名</span>
-            <span class="badge">登録不要</span>
-            <span class="badge">約5分</span>
-          </div>
+  <!-- ========== HERO ========== -->
+  <section class="hero" aria-labelledby="hero-heading">
 
-          <div class="cta-row">
-            <a class="btn btn-primary" href="/index57.html">さっそく試してみる →</a>
-            <a class="btn btn-secondary" href="#features">特徴を見る</a>
+    <!-- 背景ブロブ -->
+    <div class="hero-blob hero-blob-1" aria-hidden="true"></div>
+    <div class="hero-blob hero-blob-2" aria-hidden="true"></div>
+    <div class="hero-blob hero-blob-3" aria-hidden="true"></div>
+
+    <!-- フローティング絵文字デコ -->
+    <span class="hero-deco hero-deco-1" aria-hidden="true">💡</span>
+    <span class="hero-deco hero-deco-2" aria-hidden="true">📊</span>
+    <span class="hero-deco hero-deco-3" aria-hidden="true">🌿</span>
+    <span class="hero-deco hero-deco-4" aria-hidden="true">✨</span>
+    <span class="hero-deco hero-deco-5" aria-hidden="true">🔍</span>
+
+    <div class="container hero-grid">
+      <!-- LEFT: コピー -->
+      <div class="hero-content">
+        <p class="hero-eyebrow">🏢 厚生労働省の調査票を使用</p>
+        <h1 id="hero-heading" class="hero-title">
+          その疲れ、<br />
+          <span class="em-coral">自分のせい</span><br />
+          じゃないかも。
+        </h1>
+        <p class="hero-sub">
+          <strong class="hero-sub-catch">なんとなく、で終わらせない。</strong><br />
+          職場のストレス要因を5分で見える化して、全国平均と比較。今の自分の状態を客観的に確認できます。
+        </p>
+        <div class="hero-badges">
+          <span class="badge badge-blue"><i class="fa-solid fa-lock"></i> 完全匿名</span>
+          <span class="badge badge-green"><i class="fa-solid fa-circle-check"></i> 登録不要</span>
+          <span class="badge badge-coral"><i class="fa-solid fa-bolt"></i> 5分で完了</span>
+          <span class="badge badge-teal"><i class="fa-solid fa-yen-sign"></i> 完全無料</span>
+        </div>
+        <a href="https://stress-check-gamma.vercel.app/index57.html" target="_blank" rel="noopener" class="btn btn-primary btn-hero">
+          今すぐ無料で診断する <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <p class="hero-note">費用 0円・個人情報の入力なし・会社に知られない</p>
+      </div>
+
+      <!-- RIGHT: スコアカード -->
+      <div class="hero-visual" aria-hidden="true">
+        <div class="score-card">
+          <div class="score-card-ribbon">診断結果サンプル</div>
+          <div class="score-card-label">📋 あなたのストレス度（全国平均比較）</div>
+          <div class="score-bar-group">
+            <div class="score-bar-item">
+              <span>😰 仕事量</span>
+              <div class="bar-track"><div class="bar-fill" data-width="72" style="--bar-color:#FF6B6B;"></div></div>
+              <span class="bar-val">72</span>
+            </div>
+            <div class="score-bar-item">
+              <span>😤 人間関係</span>
+              <div class="bar-track"><div class="bar-fill" data-width="58" style="--bar-color:#F59E0B;"></div></div>
+              <span class="bar-val">58</span>
+            </div>
+            <div class="score-bar-item">
+              <span>📈 成長機会</span>
+              <div class="bar-track"><div class="bar-fill" data-width="43" style="--bar-color:#0ABFBC;"></div></div>
+              <span class="bar-val">43</span>
+            </div>
+            <div class="score-bar-item">
+              <span>🏢 職場環境</span>
+              <div class="bar-track"><div class="bar-fill" data-width="35" style="--bar-color:#4AA172;"></div></div>
+              <span class="bar-val">35</span>
+            </div>
           </div>
-          <p class="helper-text">無料・匿名・登録不要。まずは今の状態を知るところから。</p>
+          <div class="score-card-footer">
+            <i class="fa-solid fa-triangle-exclamation"></i> 仕事量・人間関係が全国平均より高め
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CONCERNS ========== -->
+  <section class="concerns" id="concerns" aria-labelledby="concerns-heading">
+    <div class="concerns-deco" aria-hidden="true">FAQ</div>
+    <div class="container">
+      <p class="section-eyebrow eyebrow-coral">🙋 よくある不安</p>
+      <h2 id="concerns-heading" class="section-title">疲れには、<span style="color:var(--coral)">必ず理由がある。</span><br /><span class="section-title-sub">受ける前の心配、全部解決します。</span></h2>
+      <div class="concerns-grid">
+
+        <article class="concern-card">
+          <span class="concern-emoji">😱</span>
+          <span class="concern-q">WORRY 01</span>
+          <h3>結果が怖い…</h3>
+          <div class="concern-arrow-row">
+            <div class="concern-arrow-line"></div>
+            <span class="concern-icon-arrow">➡️</span>
+          </div>
+          <p class="concern-answer">
+            怖くないです。<strong>気づきがあるだけです。</strong><br />
+            知らずに消耗し続けるより、今知るほうがずっと楽になれます。むしろスッキリします。
+          </p>
+        </article>
+
+        <article class="concern-card">
+          <span class="concern-emoji">🏢</span>
+          <span class="concern-q">WORRY 02</span>
+          <h3>会社に知られる？</h3>
+          <div class="concern-arrow-row">
+            <div class="concern-arrow-line"></div>
+            <span class="concern-icon-arrow">➡️</span>
+          </div>
+          <p class="concern-answer">
+            <strong>完全匿名。</strong>会社には一切見えません。<br />
+            個人情報・氏名の入力も一切不要。あなただけの結果です。
+          </p>
+        </article>
+
+        <article class="concern-card">
+          <span class="concern-emoji">😩</span>
+          <span class="concern-q">WORRY 03</span>
+          <h3>面倒くさそう…</h3>
+          <div class="concern-arrow-row">
+            <div class="concern-arrow-line"></div>
+            <span class="concern-icon-arrow">➡️</span>
+          </div>
+          <p class="concern-answer">
+            <strong>5分で終わります。</strong>登録も不要。<br />
+            スマホでも快適に回答できます。通勤中でもサクッと完了。
+          </p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== BENEFITS ========== -->
+  <section class="benefits" id="benefits" aria-labelledby="benefits-heading">
+    <div class="benefits-bg-text" aria-hidden="true">CHECK</div>
+    <div class="container">
+      <p class="section-eyebrow eyebrow-blue">🔬 受診結果でわかること</p>
+      <h2 id="benefits-heading" class="section-title">感覚は正しい。<br />でも<span style="color:var(--blue)">数字はもっと正直だ。</span></h2>
+
+      <div class="benefits-grid">
+
+        <article class="benefit-card benefit-card--highlight">
+          <div class="benefit-num">01</div>
+          <div class="benefit-icon-wrap">📊</div>
+          <h3>自分は普通？それとも要注意？</h3>
+          <p>全国平均と比較できるので、今の自分の状態を<strong>客観的に確認</strong>できます。「もしかして自分だけ？」という不安を数字で解消。</p>
+        </article>
+
+        <article class="benefit-card">
+          <div class="benefit-num">02</div>
+          <div class="benefit-icon-wrap">🧭</div>
+          <h3>職場が自分に合っているか</h3>
+          <p>自分の適性を発揮できているか、成長できる環境かどうか。<strong>転職・異動の判断材料</strong>になります。</p>
+        </article>
+
+        <article class="benefit-card">
+          <div class="benefit-num">03</div>
+          <div class="benefit-icon-wrap">🔍</div>
+          <h3>仕事のどこが負担になっているか</h3>
+          <p>量なのか、難易度なのか、人間関係なのか。<strong>「なんとなくつらい」の原因</strong>に見当がつきます。</p>
+        </article>
+
+        <article class="benefit-card">
+          <div class="benefit-num">04</div>
+          <div class="benefit-icon-wrap">💓</div>
+          <h3>心と体のサインを見逃していないか</h3>
+          <p>疲れ・不安・イライラがどこに出やすいか。<strong>自分のストレスのパターン</strong>が見えてきます。</p>
+        </article>
+
+        <article class="benefit-card benefit-card--wide benefit-card--chart">
+          <div class="benefit-num">05</div>
+          <div class="benefit-card-inner">
+            <div class="benefit-card-text">
+              <div class="benefit-icon-wrap">📋</div>
+              <h3>課題が一目でわかる、ソート機能つき</h3>
+              <p>改善が必要な項目ほど上に表示されるので、<strong>優先順位がすぐわかる。</strong>何から手をつければいいか迷わない。改善にも転職の判断にも使えます。</p>
+              <div class="benefit-sort-explain">
+                <div class="sort-explain-row">
+                  <span class="sort-tag sort-tag--high">🔴 不足している</span>
+                  <span class="sort-arrow">→ 上に表示</span>
+                </div>
+                <div class="sort-explain-row">
+                  <span class="sort-tag sort-tag--mid">🟡 やや不足</span>
+                  <span class="sort-arrow">→ 中間</span>
+                </div>
+                <div class="sort-explain-row">
+                  <span class="sort-tag sort-tag--low">🟢 充実している</span>
+                  <span class="sort-arrow">→ 下に表示</span>
+                </div>
+              </div>
+              <p class="chart-caption">※ リソース＝職場環境の強さ。高いほど不足しているサイン。</p>
+            </div>
+
+            <!-- リソース棒グラフイラスト -->
+            <div class="benefit-chart-wrap" aria-hidden="true">
+              <div class="chart-header">
+                <span class="chart-title-label">🌱 リソース診断サンプル</span>
+                <span class="chart-avg-note">縦線 = 全国平均（50）</span>
+              </div>
+              <div class="chart-bars">
+
+                <div class="chart-row">
+                  <div class="chart-label">
+                    <span class="chart-rank rank-high">1位</span>
+                    <span class="chart-item-name">仕事の適性</span>
+                  </div>
+                  <div class="chart-track-wrap">
+                    <div class="chart-track">
+                      <div class="chart-avg-line"></div>
+                      <div class="chart-bar chart-bar--danger" data-w="74.0" style="width:0%">
+                        <span class="chart-score">74.0</span>
+                      </div>
+                    </div>
+                    <span class="chart-status chart-status--danger">不足</span>
+                  </div>
+                </div>
+
+                <div class="chart-row">
+                  <div class="chart-label">
+                    <span class="chart-rank rank-high">2位</span>
+                    <span class="chart-item-name">家族・友人</span>
+                  </div>
+                  <div class="chart-track-wrap">
+                    <div class="chart-track">
+                      <div class="chart-avg-line"></div>
+                      <div class="chart-bar chart-bar--danger" data-w="64.4" style="width:0%">
+                        <span class="chart-score">64.4</span>
+                      </div>
+                    </div>
+                    <span class="chart-status chart-status--danger">不足</span>
+                  </div>
+                </div>
+
+                <div class="chart-row">
+                  <div class="chart-label">
+                    <span class="chart-rank rank-high">3位</span>
+                    <span class="chart-item-name">同僚のサポート</span>
+                  </div>
+                  <div class="chart-track-wrap">
+                    <div class="chart-track">
+                      <div class="chart-avg-line"></div>
+                      <div class="chart-bar chart-bar--warning" data-w="59.7" style="width:0%">
+                        <span class="chart-score">59.7</span>
+                      </div>
+                    </div>
+                    <span class="chart-status chart-status--warning">やや不足</span>
+                  </div>
+                </div>
+
+                <div class="chart-row">
+                  <div class="chart-label">
+                    <span class="chart-rank rank-mid">4位</span>
+                    <span class="chart-item-name">上司のサポート</span>
+                  </div>
+                  <div class="chart-track-wrap">
+                    <div class="chart-track">
+                      <div class="chart-avg-line"></div>
+                      <div class="chart-bar chart-bar--warning" data-w="50.5" style="width:0%">
+                        <span class="chart-score">50.5</span>
+                      </div>
+                    </div>
+                    <span class="chart-status chart-status--warning">やや不足</span>
+                  </div>
+                </div>
+
+                <div class="chart-row">
+                  <div class="chart-label">
+                    <span class="chart-rank rank-low">5位</span>
+                    <span class="chart-item-name">仕事のコントロール</span>
+                  </div>
+                  <div class="chart-track-wrap">
+                    <div class="chart-track">
+                      <div class="chart-avg-line"></div>
+                      <div class="chart-bar chart-bar--good" data-w="39.2" style="width:0%">
+                        <span class="chart-score">39.2</span>
+                      </div>
+                    </div>
+                    <span class="chart-status chart-status--good">充実</span>
+                  </div>
+                </div>
+
+                <div class="chart-row">
+                  <div class="chart-label">
+                    <span class="chart-rank rank-low">6位</span>
+                    <span class="chart-item-name">仕事の意義</span>
+                  </div>
+                  <div class="chart-track-wrap">
+                    <div class="chart-track">
+                      <div class="chart-avg-line"></div>
+                      <div class="chart-bar chart-bar--good" data-w="36.4" style="width:0%">
+                        <span class="chart-score">36.4</span>
+                      </div>
+                    </div>
+                    <span class="chart-status chart-status--good">充実</span>
+                  </div>
+                </div>
+
+              </div>
+              <div class="chart-footer">
+                ← 充実している&nbsp;&nbsp;&nbsp;全国平均(50)&nbsp;&nbsp;&nbsp;不足している →
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== RECOMMEND ========== -->
+  <section class="recommend" id="recommend" aria-labelledby="recommend-heading">
+    <div class="recommend-deco-circle recommend-deco-circle-1" aria-hidden="true"></div>
+    <div class="recommend-deco-circle recommend-deco-circle-2" aria-hidden="true"></div>
+    <div class="container">
+      <p class="section-eyebrow eyebrow-purple">👋 こんな人におすすめ</p>
+      <h2 id="recommend-heading" class="section-title">あなたも<span style="color:var(--purple)">当てはまる</span>かも？</h2>
+
+      <div class="recommend-inner">
+        <!-- チェックリスト -->
+        <div>
+          <ul class="recommend-list">
+            <li><span class="li-icon">🏢</span> 今の職場が自分に合っているか確かめたい</li>
+            <li><span class="li-icon">🔄</span> 転職・異動の判断材料がほしい</li>
+            <li><span class="li-icon">😔</span> なんとなく毎日しんどいが原因がわからない</li>
+            <li><span class="li-icon">😤</span> 仕事量や人間関係でストレスを感じている</li>
+            <li><span class="li-icon">📈</span> 自分の状態を数値で客観的に把握したい</li>
+            <li><span class="li-icon">🔒</span> 会社に知られずにストレスチェックをしたい</li>
+          </ul>
+          <a href="https://stress-check-gamma.vercel.app/index57.html" target="_blank" rel="noopener" class="btn btn-primary btn-recommend">
+            無料で診断してみる <i class="fa-solid fa-arrow-right"></i>
+          </a>
         </div>
 
-        <div class="hero-card" aria-hidden="true">
-          <div class="glow"></div>
-          <div class="device">
-            <div class="device-top"><div class="notch"></div></div>
-            <div class="screen">
-              <span class="pill">適応状態</span>
-              <div class="preview-title">ポジティブ型</div>
-
-              <div class="preview-grid">
-                <div class="preview-box">
-                  <strong>ストレス反応</strong>
-                  <span>適切なストレス状態</span>
+        <!-- ビジュアルカード：ユーザーイメージ -->
+        <div>
+          <div class="recommend-visual-card">
+            <div class="recommend-visual-title">
+              <span>💬</span> こんな方が使っています
+            </div>
+            <div class="mini-profile">
+              <div class="mini-profile-item">
+                <div class="mini-profile-avatar">👩‍💼</div>
+                <div class="mini-profile-info">
+                  <div class="mini-profile-name">Aさん・28歳・営業職</div>
+                  <div class="mini-profile-desc">「毎日しんどいけど自分だけ？と思っていた」</div>
                 </div>
-                <div class="preview-box">
-                  <strong>職場環境（ストレッサー＋リソース）</strong>
-                  <span>標準環境</span>
-                </div>
+                <span class="mini-profile-tag tag-coral">転職検討中</span>
               </div>
-
-              <div class="summary-box">
-                <span>総合判定</span>
-                <span>適応状態</span>
+              <div class="mini-profile-item">
+                <div class="mini-profile-avatar">👨‍💻</div>
+                <div class="mini-profile-info">
+                  <div class="mini-profile-name">Bさん・34歳・エンジニア</div>
+                  <div class="mini-profile-desc">「業務量の多さが数値で確認できた」</div>
+                </div>
+                <span class="mini-profile-tag tag-blue">現職継続中</span>
               </div>
-
-              <div class="section-chip">ストレス反応</div>
-              <div class="graph-panel">
-                <div class="meter-row">
-                  <h4>抑うつ感</h4>
-                  <p>憂うつ感、おっくうさ、集中力の低下など、気分と気力の低下に関する症状</p>
-                  <div class="meter-meta"><span>← 良好</span><span>50</span><span>要注意 →</span></div>
-                  <div class="meter"><div class="meter-fill warning"></div></div>
-                  <div class="meter-score">54.1</div>
+              <div class="mini-profile-item">
+                <div class="mini-profile-avatar">👩‍🏫</div>
+                <div class="mini-profile-info">
+                  <div class="mini-profile-name">Cさん・41歳・管理職</div>
+                  <div class="mini-profile-desc">「部下のケアに役立てたい」</div>
                 </div>
-                <div class="meter-row">
-                  <h4>身体愁訴</h4>
-                  <p>身体的な不調の自覚症状の程度を示します。精神的ストレス反応が持続した後に現れやすいことが示されています。</p>
-                  <div class="meter-meta"><span>← 良好</span><span>50</span><span>要注意 →</span></div>
-                  <div class="meter"><div class="meter-fill warning-2"></div></div>
-                  <div class="meter-score">54.1</div>
-                </div>
-                <div class="meter-row">
-                  <h4>不安感</h4>
-                  <p>気がはりつめている、不安、落ち着かないなどの不安に関する症状</p>
-                  <div class="meter-meta"><span>← 良好</span><span>50</span><span>要注意 →</span></div>
-                  <div class="meter"><div class="meter-fill good"></div></div>
-                  <div class="meter-score">48.3</div>
-                </div>
-                <div class="meter-row">
-                  <h4>疲労感</h4>
-                  <p>疲れ、へとへと、だるさなどの疲労に関連した症状</p>
-                  <div class="meter-meta"><span>← 良好</span><span>50</span><span>要注意 →</span></div>
-                  <div class="meter"><div class="meter-fill good"></div></div>
-                  <div class="meter-score">46.6</div>
-                </div>
+                <span class="mini-profile-tag tag-green">チーム改善</span>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </header>
+  </section>
 
-  <main>
-    <section id="features" class="section">
-      <div class="container">
-        <div class="surface-block feature-wrap">
-          <span class="eyebrow">3つの特徴</span>
-          <h2 class="section-title">気軽に始められて、<br>ちゃんと役に立つ。</h2>
-          <p class="section-intro">不安を煽るためではなく、今の状態を整理して、これからを考えるためのチェックです。</p>
-
-          <div class="feature-grid">
-            <article class="feature-card">
-              <div class="feature-icon">01</div>
-              <h3>無料・匿名・5分</h3>
-              <p>登録不要。氏名の入力もなく、思い立ったときにすぐ受けられます。</p>
-              <div class="feature-mini-preview">
-                <div class="badges" style="margin:0; gap:8px;">
-                  <span class="badge" style="padding:8px 12px; font-size:0.82rem;">無料</span>
-                  <span class="badge" style="padding:8px 12px; font-size:0.82rem;">匿名</span>
-                  <span class="badge" style="padding:8px 12px; font-size:0.82rem;">登録不要</span>
-                  <span class="badge" style="padding:8px 12px; font-size:0.82rem;">約5分</span>
-                </div>
-              </div>
-            </article>
-
-            <article class="feature-card">
-              <div class="feature-icon">02</div>
-              <h3>全国平均と比較</h3>
-              <p>厚生労働省のデータをもとに、自分の状態を感覚ではなく数字で確認できます。</p>
-              <div class="feature-mini-preview">
-                <div class="mini-bars">
-                  <div class="mini-bar-line"><span>あなた</span><div class="mini-track"><div class="mini-fill a"></div></div><strong>54.1</strong></div>
-                  <div class="mini-bar-line"><span>全国平均</span><div class="mini-track"><div class="mini-fill b" style="width:50%;"></div></div><strong>50.0</strong></div>
-                </div>
-              </div>
-            </article>
-
-            <article class="feature-card">
-              <div class="feature-icon">03</div>
-              <h3>課題が一目でわかる</h3>
-              <p>ストレスが高い項目から表示されるので、何が負担になっているか整理しやすくなります。</p>
-              <div class="feature-mini-preview">
-                <div class="mini-bars">
-                  <div class="mini-bar-line"><span>抑うつ感</span><div class="mini-track"><div class="mini-fill a"></div></div><strong>54.1</strong></div>
-                  <div class="mini-bar-line"><span>身体愁訴</span><div class="mini-track"><div class="mini-fill a"></div></div><strong>54.1</strong></div>
-                  <div class="mini-bar-line"><span>不安感</span><div class="mini-track"><div class="mini-fill c"></div></div><strong>48.3</strong></div>
-                </div>
-              </div>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <div class="surface-block benefit-wrap">
-          <span class="eyebrow">受けてみると</span>
-          <h2 class="section-title">受けてみると、<br>こんなことが見えてきます</h2>
-          <p class="section-intro">すぐに何かを変えなくても大丈夫です。まず知るだけで、見え方が変わります。</p>
-
-          <div class="benefit-grid">
-            <article class="benefit-card">
-              <div class="benefit-icon">🔍</div>
-              <div>
-                <h3>今の自分を客観的に見つめられる</h3>
-                <p>なんとなくのモヤモヤを、数字で整理できます。</p>
-              </div>
-            </article>
-            <article class="benefit-card">
-              <div class="benefit-icon">📋</div>
-              <div>
-                <h3>何が負担になっているかわかる</h3>
-                <p>仕事量なのか、人間関係なのか、サポート不足なのか。原因の見当がつきます。</p>
-              </div>
-            </article>
-            <article class="benefit-card">
-              <div class="benefit-icon">📊</div>
-              <div>
-                <h3>全国平均と比べて自分の位置がわかる</h3>
-                <p>「これって普通？」という疑問に、データで答えが出ます。</p>
-              </div>
-            </article>
-            <article class="benefit-card">
-              <div class="benefit-icon">🌱</div>
-              <div>
-                <h3>働き方を整えるヒントになる</h3>
-                <p>いきなり大きく変えなくても、どこを見直すとよいか考えやすくなります。</p>
-              </div>
-            </article>
-            <article class="benefit-card">
-              <div class="benefit-icon">🧭</div>
-              <div>
-                <h3>これからの判断材料になる</h3>
-                <p>今の環境で工夫するか、相談するか。次の一歩を選びやすくなります。</p>
-              </div>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <div class="surface-block qa-wrap">
-          <span class="eyebrow">ブレーキ解除</span>
-          <h2 class="section-title">こんな不安、ありませんか？</h2>
-          <p class="section-intro">受ける前の迷いも、できるだけ小さく。まずは安心して確認できることを大切にしています。</p>
-
-          <div class="qa-grid">
-            <article class="qa-card">
-              <div class="qa-icon">Q</div>
-              <h3>結果が怖い</h3>
-              <p>大丈夫です。まずは今の状態を数字で整理するだけです。</p>
-            </article>
-            <article class="qa-card">
-              <div class="qa-icon">Q</div>
-              <h3>会社に知られる</h3>
-              <p>完全匿名。会社に個人の結果が見えることはありません。</p>
-            </article>
-            <article class="qa-card">
-              <div class="qa-icon">Q</div>
-              <h3>面倒くさそう</h3>
-              <p>約5分で完了。登録不要ですぐ始められます。</p>
-            </article>
-            <article class="qa-card">
-              <div class="qa-icon">Q</div>
-              <h3>今は特に困っていない</h3>
-              <p>それでも使えます。今の状態を知っておくことが、いざというときの判断材料になります。</p>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <div class="surface-block recommend-wrap">
-          <div class="recommend-grid">
-            <div>
-              <span class="eyebrow">こんな方におすすめ</span>
-              <h2 class="section-title">こんな方におすすめです</h2>
-              <ul class="recommend-list">
-                <li>今の働き方を一度客観的に見てみたい</li>
-                <li>なんとなく感じるモヤモヤを整理したい</li>
-                <li>自分の状態を感覚ではなく数字で知りたい</li>
-                <li>もっと働きやすくなるヒントがほしい</li>
-                <li>これからの働き方を落ち着いて考えたい</li>
-              </ul>
-            </div>
-
-            <div class="recommend-visual">
-              <article class="recommend-card">
-                <div class="recommend-icon">✓</div>
-                <h3>今を責めるためではなく、これからを整えるためのチェックです。</h3>
-                <p>気になる不調を探すためだけではなく、自分の働き方や職場との相性を、もう少し丁寧に見てみる。そんな前向きな使い方に向いています。</p>
-              </article>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="cta" class="section">
-      <div class="container">
-        <div class="cta-box">
-          <h2>まずは、今の状態を知るところから。</h2>
-          <p>無料・匿名・登録不要。約5分でチェックできます。</p>
-          <a class="btn btn-primary" href="/index57.html">無料で試してみる →</a>
-          <div class="note-strip">
-            <span>厚生労働省の調査票をもとに作成</span>
-            <span>・</span>
-            <span>全国平均と比較</span>
-            <span>・</span>
-            <span>個人結果は本人のみ確認</span>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
+  <!-- ========== HOW IT WORKS ========== -->
+  <section class="how" id="how" aria-labelledby="how-heading">
     <div class="container">
+      <p class="section-eyebrow eyebrow-teal">🚀 使い方</p>
+      <h2 id="how-heading" class="section-title">たった<span style="color:var(--teal)">3ステップ</span>で完了</h2>
+      <ol class="steps-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <span class="step-emoji">👆</span>
+            <h3>リンクを開く</h3>
+            <p>登録・ログイン不要。ボタンをタップするだけで即スタート。スマホでもPCでも動きます。</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <span class="step-emoji">✏️</span>
+            <h3>質問に答える（約5分）</h3>
+            <p>厚生労働省の標準調査票に基づいた質問に答えるだけ。難しい専門知識は不要です。</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <span class="step-emoji">📊</span>
+            <h3>結果を確認・活用する</h3>
+            <p>ストレス項目別スコアを表示。全国平均との比較・高ストレス順ソートで課題が一目でわかります。</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ========== STATS ========== -->
+  <section class="stats" aria-label="数字で見るサービス">
+    <div class="container stats-grid">
+      <div class="stat-item">
+        <span class="stat-emoji">⚡</span>
+        <span class="stat-num" data-target="5">0</span><span class="stat-unit">分</span>
+        <p>で診断完了</p>
+      </div>
+      <div class="stat-item">
+        <span class="stat-emoji">🎁</span>
+        <span class="stat-num" data-target="0">0</span><span class="stat-unit">円</span>
+        <p>完全無料</p>
+      </div>
+      <div class="stat-item">
+        <span class="stat-emoji">🔒</span>
+        <span class="stat-num" data-target="100">0</span><span class="stat-unit">%</span>
+        <p>匿名・個人情報不要</p>
+      </div>
+      <div class="stat-item">
+        <span class="stat-emoji">📋</span>
+        <span class="stat-num" data-target="57">0</span><span class="stat-unit">項目</span>
+        <p>厚生労働省の標準調査票</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FINAL CTA ========== -->
+  <section class="final-cta" aria-labelledby="cta-heading">
+    <span class="cta-deco cta-deco-1" aria-hidden="true">💪</span>
+    <span class="cta-deco cta-deco-2" aria-hidden="true">🌟</span>
+    <span class="cta-deco cta-deco-3" aria-hidden="true">📊</span>
+    <span class="cta-deco cta-deco-4" aria-hidden="true">✨</span>
+    <div class="container">
+      <div class="cta-badge-row">
+        <span class="cta-badge cta-badge-1"><i class="fa-solid fa-lock"></i> 完全匿名</span>
+        <span class="cta-badge cta-badge-2"><i class="fa-solid fa-circle-check"></i> 登録不要</span>
+        <span class="cta-badge cta-badge-3"><i class="fa-solid fa-clock"></i> 5分で完了</span>
+      </div>
+      <h2 id="cta-heading" class="cta-title">
+        働きやすさも、<br /><em>感覚だけで終わらせない。</em>
+      </h2>
+      <p class="cta-sub">
+        まず、自分の職場を採点してみよう。<br />無料・匿名・5分。後悔するより、気づく勇気を。
+      </p>
+      <a href="https://stress-check-gamma.vercel.app/index57.html" target="_blank" rel="noopener" class="btn btn-cta">
+        <i class="fa-solid fa-clipboard-check"></i> 今すぐ無料でストレスチェックする
+      </a>
+      <p class="cta-note">費用・登録・個人情報の入力は一切不要です</p>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="footer-logo">
+        <span class="logo-s">STRESS</span><span class="logo-c"> CHECK</span><span class="logo-f"> FREE</span>
+      </p>
+      <p class="footer-desc">厚生労働省の標準調査票をもとにした、無料・匿名のストレスセルフチェックサービスです。</p>
       <p class="footer-operator">運営：株式会社Find HR｜<a href="mailto:info@findrework.com" style="color:inherit;">info@findrework.com</a></p>
       <p class="footer-copy">&copy; 2026 Stress Check Free. All rights reserved.</p>
     </div>
   </footer>
 
-  <div class="sticky-cta">
-    <a class="btn btn-primary" href="/index57.html">無料・匿名でチェックする →</a>
-  </div>
-
+  <script src="js/main.js?v=20260602"></script>
 </body>
 </html>
