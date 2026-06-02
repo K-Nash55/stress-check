@@ -21,7 +21,7 @@
   --border:#d6d0c4;--sh:rgba(26,26,46,0.08)
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;line-height:1.7}
+body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 10% 0%,rgba(55,138,221,0.10),transparent 38%),linear-gradient(180deg,#F0F7FF 0%,#F8FBFF 18%,#FFFFFF 60%);color:var(--ink);min-height:100vh;line-height:1.7}
 
 /* ── ヘッダー ── */
 .hd{background:var(--ink);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)}
@@ -48,17 +48,20 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .start-card{background:#fff;border-radius:14px;padding:48px;box-shadow:0 4px 24px var(--sh);border:1px solid var(--border)}
 .start-title{font-family:'Shippori Mincho',serif;font-size:1.9rem;line-height:1.4;margin-bottom:8px}
 .start-time{font-size:.82rem;color:var(--ink2);margin-bottom:28px}
-.privacy-box{background:#f0f7f4;border:1px solid #52b788;border-radius:10px;padding:16px 20px;margin-bottom:16px;font-size:.84rem;line-height:1.9;color:var(--ink)}
+.privacy-box{background:#FFFFFF;border:1.5px solid #DDE6F0;border-radius:18px;box-shadow:0 8px 24px rgba(29,78,137,0.07);padding:16px 20px;margin-bottom:16px;font-size:.84rem;line-height:1.9;color:var(--ink)}
 .privacy-box strong{display:block;margin-bottom:6px;font-size:.9rem}
 .privacy-box ul{list-style:none;padding:0}
 .privacy-box ul li::before{content:"✓ ";color:var(--green);font-weight:700}
-.notice-box{background:var(--warm);border-left:3px solid var(--border);border-radius:6px;padding:12px 16px;margin-bottom:28px;font-size:.8rem;color:var(--ink2);line-height:1.9}
-.btn-start{display:block;width:100%;padding:16px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;letter-spacing:.08em;transition:all .2s}
-.btn-start:hover{background:#1b5e3f;transform:translateY(-1px)}
-.start-badge-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
-.start-badge{background:#EEEDFE;border-radius:10px;padding:12px 14px}
-.start-badge-main{font-size:1.2rem;font-weight:500;color:#534AB7;margin-bottom:2px}
-.start-badge-sub{font-size:11px;color:#534AB7}
+.notice-box{background:#FFFFFF;border:1.5px solid #DDE6F0;border-radius:18px;box-shadow:0 8px 24px rgba(29,78,137,0.07);padding:12px 16px;margin-bottom:28px;font-size:.8rem;color:var(--ink2);line-height:1.9}
+.btn-start{display:block;width:100%;padding:16px 32px;background:linear-gradient(135deg,#378ADD,#2B72B7);color:#fff;border:none;border-radius:999px;font-size:1.05rem;font-weight:800;font-family:'Noto Sans JP',sans-serif;cursor:pointer;box-shadow:0 8px 24px rgba(55,138,221,0.28);transition:transform 0.18s ease,box-shadow 0.18s ease}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(55,138,221,0.36)}
+.start-badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.start-badge{border-radius:999px;padding:8px 16px;font-weight:700;font-size:0.9rem;display:inline-flex;align-items:center;gap:6px}
+.badge-free{background:#EEF6FF;color:#2B72B7;border:1px solid rgba(55,138,221,0.3)}
+.badge-anon{background:#EAF8F3;color:#4AA172;border:1px solid rgba(74,161,114,0.3)}
+.badge-noreg{background:#FFF0F0;color:#C0392B;border:1px solid rgba(255,107,107,0.3)}
+.brand-logo{font-size:1.4rem;letter-spacing:-0.02em;margin-bottom:20px}
+.cta-copy{text-align:center;color:#526277;font-size:0.95rem;font-weight:600;margin:0 0 12px}
 .notice-box-sm{font-size:11px;color:#888;line-height:1.8;margin-top:14px;text-align:center}
 
 /* ── P2〜P4 回答画面 ── */
@@ -115,19 +118,17 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 <div id="scStart" class="screen active">
   <div class="start-wrap">
     <div class="start-card">
-      <div style="font-size:11px;font-weight:500;color:#7F77DD;letter-spacing:0.1em;margin-bottom:8px">STRESS CHECK FREE</div>
-      <h1 class="start-title">ストレスチェック<br>フリー</h1>
+      <div class="brand-logo">
+        <span style="color:#FF6B6B;font-family:'Inter',sans-serif;font-weight:900;">STRESS</span>
+        <span style="color:#1E293B;font-family:'Inter',sans-serif;font-weight:900;"> CHECK </span>
+        <span style="color:#0ABFBC;font-family:'Inter',sans-serif;font-weight:900;">FREE</span>
+      </div>
       <p class="start-time">所要時間：約5分　57問の簡易版</p>
 
       <div class="start-badge-row">
-        <div class="start-badge">
-          <div class="start-badge-main">無料</div>
-          <div class="start-badge-sub">登録不要</div>
-        </div>
-        <div class="start-badge">
-          <div class="start-badge-main">匿名</div>
-          <div class="start-badge-sub">氏名不要</div>
-        </div>
+        <span class="start-badge badge-free">無料</span>
+        <span class="start-badge badge-anon">匿名</span>
+        <span class="start-badge badge-noreg">登録不要</span>
       </div>
 
       <div class="privacy-box">
@@ -140,6 +141,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
         </ul>
       </div>
 
+      <p class="cta-copy">まず、自分の職場を採点してみよう。</p>
       <button class="btn-start" id="btnStart">回答をはじめる →</button>
 
       <p class="notice-box-sm">
