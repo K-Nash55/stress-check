@@ -1129,6 +1129,14 @@ em  { font-style: normal; }
   background: #1E293B;
   padding: 48px 0;
   text-align: center;
+  color: #CBD5E1;
+}
+.site-footer a {
+  color: #94A3B8;
+  text-decoration: underline;
+}
+.site-footer a:hover {
+  color: #FFFFFF;
 }
 .footer-inner { position: relative; }
 .footer-logo {
@@ -1138,11 +1146,14 @@ em  { font-style: normal; }
   letter-spacing: 0.08em;
   margin-bottom: 8px;
 }
-.footer-logo .logo-s { color: var(--coral); }
-.footer-logo .logo-c { color: rgba(255,255,255,0.85); }
-.footer-logo .logo-f { color: var(--teal); }
-.footer-desc { font-size: 0.83rem; color: rgba(255,255,255,0.45); max-width: 440px; margin: 0 auto 12px; line-height: 1.7; }
-.footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.25); }
+.footer-logo .logo-s { color: var(--coral); opacity: 0.9; }
+.footer-logo .logo-c { color: rgba(255,255,255,0.85); opacity: 0.9; }
+.footer-logo .logo-f { color: var(--teal); opacity: 0.9; }
+.footer-desc,
+.footer-operator,
+.footer-legal,
+.footer-copy { font-size: 0.82rem; color: #94A3B8; line-height: 1.8; max-width: 440px; margin: 0 auto 6px; }
+.footer-desc { margin-bottom: 12px; }
 
 /* =========================================
    REVEAL ANIMATION
