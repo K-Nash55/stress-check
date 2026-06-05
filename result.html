@@ -224,6 +224,13 @@ body {
   .scale-row { flex-direction: column; gap: 6px; }
   .scale-left { flex: unset; width: 100%; padding-right: 0; }
 }
+.save-hint {
+  text-align: center;
+  font-size: 0.82rem;
+  color: #888;
+  margin-top: 8px;
+  padding: 0 16px;
+}
 </style>
 </head>
 <body>
@@ -532,6 +539,8 @@ body {
     if (_footerParts.length) {
       html += `<div style="font-size:0.75rem;color:#bbb;text-align:center;padding:16px 0 8px">${_footerParts.join('<br>')}</div>`;
     }
+
+    html += `<p class="save-hint">📎 このページのURLをメールやLINEで自分に送っておくと、いつでも結果を見返すことができます。</p>`;
 
     html += `</div>`;
     root.innerHTML = html;
