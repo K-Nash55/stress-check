@@ -1208,3 +1208,10 @@ em  { font-style: normal; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .section-title { margin-bottom: 28px; }
 }
+
+.profile-disclaimer {
+  font-size: 0.75rem;
+  color: #94A3B8;
+  text-align: center;
+  margin-top: 8px;
+}
