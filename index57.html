@@ -388,11 +388,15 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
       var judgment     = getStressLevel(answers, master.questions, master.judgmentRules);
 
       // Supabaseに保存
+      var sessionId = crypto.randomUUID();
+      var createdAt = new Date().toISOString();
+
       var saveRes = await supabase.from('survey_responses').insert({
+        session_id:   sessionId,
         answers:      answers,
         stress_level: judgment.isHighStress ? 'high' : 'low',
         version:      '57'
-      }).select('session_id, created_at').single();
+      });
 
       if (saveRes.error) throw saveRes.error;
 
@@ -405,8 +409,8 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
         advice:          judgment.advice,
         stress_reaction: judgment.stress_reaction,
         environment:     judgment.environment,
-        session_id:      saveRes.data.session_id,
-        created_at:      saveRes.data.created_at,
+        session_id:      sessionId,
+        created_at:      createdAt,
         version:         '57'
       };
 
