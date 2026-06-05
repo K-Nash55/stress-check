@@ -349,6 +349,11 @@ body {
           </div>`;
         return;
       }
+
+      // URLに ?session= を自動付加（受験者がURLを保存・共有できるようにする）
+      if (stressResult.session_id && !window.location.search.includes('session=')) {
+        history.replaceState(null, '', `?session=${stressResult.session_id}`);
+      }
     }
 
     const answers    = stressResult.answers    || {};
