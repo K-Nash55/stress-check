@@ -431,8 +431,9 @@ async function buildHeader(m, src) {
   var createdAt = formatDate(m.created_at);
   var sessionId = m.session_id ? m.session_id : '-';
   var companyName = '個人受検';
-
-  if (m.company_id) {
+  if (m.is_demo) {
+    companyName = 'デモ受験';
+  } else if (m.company_id) {
     var cr = await supabase.from('companies').select('name').eq('id', m.company_id).limit(1);
     if (cr.data && cr.data.length > 0 && cr.data[0].name) companyName = cr.data[0].name;
   }
