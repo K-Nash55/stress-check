@@ -36,7 +36,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
 .hd-logo{font-family:'Shippori Mincho',serif;font-size:1.2rem;font-weight:600;flex:1}
 .hd-logo span{color:var(--green2)}
 .hd-page{color:rgba(255,255,255,.7);font-size:.82rem;white-space:nowrap}
-/* [DEV] テスト用ボタン - 本番では無効化
 #float-menu{position:fixed;bottom:80px;left:24px;z-index:40;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
 #float-btn{background:#1a1a2e;color:#fff;border:none;padding:10px 16px;border-radius:24px;cursor:pointer;font-size:13px;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.3)}
 #float-options{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
@@ -47,7 +46,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
 .float-opt.pos3{background:#2980b9;color:#fff}
 .float-opt.pos4{background:#27ae60;color:#fff}
 .float-opt.rand{background:#8e44ad;color:#fff}
-*/
 
 /* ── 画面切り替え ── */
 .screen{display:none}.screen.active{display:block}
@@ -188,7 +186,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
   </div>
 </div>
 
-<!-- [DEV] テスト用ボタン - 本番では無効化
 <div id="float-menu">
   <div id="float-options" class="hidden">
     <button onclick="runTest(1)" class="float-opt neg1">全ネガ (1)</button>
@@ -199,7 +196,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
   </div>
   <button id="float-btn" onclick="toggleFloatMenu()">🔧 テスト</button>
 </div>
--->
 
 <script>
 (function () {
@@ -440,7 +436,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
     }
   }
 
-  /* [DEV] テスト用ボタン - 本番では無効化
   // ── テストデータ ──
   async function runTest(targetRawScore) {
     if (allQuestions.length === 0) {
@@ -469,7 +464,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
   // ── グローバル公開（ボタンから呼ぶため） ──
   window.runTest = runTest;
   window.toggleFloatMenu = toggleFloatMenu;
-  */
 
   document.addEventListener('DOMContentLoaded', init);
 }());
