@@ -416,10 +416,13 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
         session_id:   sessionId,
         answers:      answers,
         stress_level: judgment.isHighStress ? 'high' : 'low',
-        version:      '57'
+        version:      '57',
+        is_demo:      !!window._demoPattern,
+        demo_pattern: window._demoPattern || null
       });
 
       if (saveRes.error) throw saveRes.error;
+      window._demoPattern = null;
 
       // sessionStorageに格納
       var stressResult = {
@@ -453,6 +456,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
 
   // ── テストデータ ──
   async function runTest(targetRawScore) {
+    window._demoPattern = targetRawScore.toString();
     if (allQuestions.length === 0) {
       alert('問題がまだ読み込まれていません');
       return;

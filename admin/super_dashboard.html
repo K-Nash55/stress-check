@@ -181,7 +181,7 @@ function renderTable() {
     pageData.forEach(function(row) {
       var dt = formatDate(row.created_at);
       var sid = row.session_id ? row.session_id.slice(0, 8) : '-';
-      var company = getCompanyName(row.company_id);
+      var company = row.is_demo ? 'デモ受験' : getCompanyName(row.company_id);
       var level = row.stress_level || '-';
       var levelClass = level === 'high' ? 'level-high' : level === 'mid' ? 'level-mid' : 'level-low';
 
@@ -238,7 +238,7 @@ async function init() {
 
   var sr = await supabase
     .from('survey_responses')
-    .select('id, session_id, company_id, stress_level, created_at')
+    .select('id, session_id, company_id, stress_level, created_at, is_demo')
     .order('created_at', { ascending: false });
   allData = sr.data || [];
   filteredData = allData;
