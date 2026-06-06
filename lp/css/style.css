@@ -326,7 +326,7 @@ em  { font-style: normal; }
   font-size: clamp(1.05rem, 2vw, 1.3rem);
   font-weight: 700;
   color: var(--text-soft);
-  margin-top: -36px;
+  margin-top: -16px;
   margin-bottom: 36px;
   letter-spacing: -0.01em;
 }
