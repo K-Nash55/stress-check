@@ -37,7 +37,9 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
 .hd-logo span{color:var(--green2)}
 .hd-page{color:rgba(255,255,255,.7);font-size:.82rem;white-space:nowrap}
 #float-menu{position:fixed;bottom:80px;left:24px;z-index:40;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
-#float-btn{background:#1a1a2e;color:#fff;border:none;padding:10px 16px;border-radius:24px;cursor:pointer;font-size:13px;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+#float-btn{background:#378ADD;color:#fff;border:none;padding:10px 16px;border-radius:16px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:80px;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+#float-btn .btn-main-text{font-size:12px;font-weight:500}
+#float-btn .btn-sub-text{font-size:10px;opacity:0.8}
 #float-options{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 #float-options.hidden{display:none}
 .float-opt{border:none;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.2);white-space:nowrap}
@@ -156,7 +158,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
       <div class="demo-hint">
         <span class="demo-hint-badge">デモモード</span>
         <div>
-          <p class="demo-hint-text">🔧 テストボタンで自動入力でサクッと体験できます</p>
+          <p class="demo-hint-text">左下の ⚡ デモモードで自動入力体験できます</p>
           <p class="demo-hint-sub">本気の回答はそれからでもOK</p>
         </div>
       </div>
@@ -204,7 +206,10 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
     <button onclick="runTest(4)" class="float-opt pos4">全ポジ (4)</button>
     <button onclick="runTest('random')" class="float-opt rand">ランダム</button>
   </div>
-  <button id="float-btn" onclick="toggleFloatMenu()">🔧 テスト</button>
+  <button id="float-btn" onclick="toggleFloatMenu()">
+    <span class="btn-main-text">⚡ デモモード</span>
+    <span class="btn-sub-text">自動入力で体験</span>
+  </button>
 </div>
 
 <script>
