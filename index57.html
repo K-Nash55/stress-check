@@ -70,7 +70,10 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
 .brand-logo{font-size:1.4rem;letter-spacing:-0.02em;margin-bottom:20px}
 .cta-copy{text-align:center;color:#526277;font-size:0.95rem;font-weight:600;margin:0 0 12px}
 .notice-box-sm{font-size:11px;color:#888;line-height:1.8;margin-top:14px;text-align:center}
-.demo-hint{font-size:12px;color:#888;text-align:center;margin-top:8px}
+.demo-hint{border:1.5px solid #378ADD;border-radius:12px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;margin-top:0}
+.demo-hint-badge{background:#378ADD;color:#fff;font-size:11px;font-weight:bold;padding:2px 8px;border-radius:6px;flex-shrink:0;margin-top:2px}
+.demo-hint-text{font-size:13px;color:var(--color-text-primary);margin:0 0 2px;line-height:1.5}
+.demo-hint-sub{font-size:11px;color:#888;margin:0}
 
 /* ── P2〜P4 回答画面 ── */
 .q-wrap{max-width:740px;margin:36px auto;padding:0 20px 100px}
@@ -151,7 +154,13 @@ body{font-family:'Noto Sans JP',sans-serif;background:radial-gradient(circle at 
 
       <p class="cta-copy">まず、自分の職場を採点してみよう。</p>
       <button class="btn-start" id="btnStart">回答をはじめる →</button>
-      <p class="demo-hint">左下の「🔧 テスト」ボタンを押すと自動入力でサクッと体験できます。本気の回答はそれからでもOK。</p>
+      <div class="demo-hint">
+        <span class="demo-hint-badge">デモモード</span>
+        <div>
+          <p class="demo-hint-text">🔧 テストボタンで自動入力でサクッと体験できます</p>
+          <p class="demo-hint-sub">本気の回答はそれからでもOK</p>
+        </div>
+      </div>
 
       <p class="notice-box-sm">
         本ツールはストレスチェック実施を支援するWebサービスです。質問や採点方法は厚生労働省が発表している調査票・全国平均データセットに基づき、実施規定・実施マニュアルに準拠しています。結果の管理・面接指導の実施は、各事業者の責任において行われます。
