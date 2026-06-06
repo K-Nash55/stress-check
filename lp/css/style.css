@@ -424,7 +424,7 @@ em  { font-style: normal; }
 .concerns {
   position: relative;
   padding: 100px 0;
-  background: linear-gradient(180deg, #FFFFFF 0%, #FFF7F5 100%);
+  background: #FFF0F0;
   border-top: 1px solid var(--border);
   overflow: hidden;
 }
@@ -456,7 +456,7 @@ em  { font-style: normal; }
 
 .concern-card {
   background: var(--white);
-  border: 2px solid transparent;
+  border: 2px solid rgba(255,107,107,0.2);
   border-radius: var(--radius-md);
   padding: 30px 26px;
   transition: transform var(--tr), box-shadow var(--tr), border-color var(--tr);
