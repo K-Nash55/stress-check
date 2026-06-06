@@ -1231,3 +1231,18 @@ em  { font-style: normal; }
   text-align: center;
   margin-top: 8px;
 }
+
+@media print {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .hero-deco,
+  .cta-deco {
+    opacity: 1 !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
