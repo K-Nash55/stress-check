@@ -269,8 +269,8 @@ em  { font-style: normal; }
 .hero-title .em-teal   { color: var(--teal); }
 
 .hero-catch {
-  font-size: clamp(1rem, 2.5vw, 1.2rem);
-  font-weight: 700;
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+  font-weight: 800;
   color: var(--text-main);
   margin-bottom: 8px;
 }
