@@ -97,6 +97,7 @@ tr.matched td { background: #E6F1FB; }
   <span class="badge">SUPER ADMIN</span>
   <h1>スーパーアドミン</h1>
   <a href="super_dashboard.html" class="nav-btn">← ダッシュボード</a>
+  <a id="result-header-btn" class="nav-btn" target="_blank" style="display:none">結果画面を開く →</a>
   <div class="test-buttons">
     <button class="test-btn neg1" onclick="runTest(1)">全ネガ (1)</button>
     <button class="test-btn neg2" onclick="runTest(2)">ややネガ (2)</button>
@@ -442,16 +443,19 @@ async function buildHeader(m, src) {
     return '<div class="hdr-item"><span class="hdr-label">' + label + '</span><span class="hdr-value">' + value + '</span></div>';
   }
 
-  var resultBtn = m.session_id
-    ? '<a href="../result.html?session=' + m.session_id + '" target="_blank" class="nav-btn" style="align-self:center">結果画面を開く →</a>'
-    : '';
+  var headerBtn = document.getElementById('result-header-btn');
+  if (m.session_id) {
+    headerBtn.href = '../result.html?session=' + m.session_id;
+    headerBtn.style.display = '';
+  } else {
+    headerBtn.style.display = 'none';
+  }
 
   document.getElementById('survey-header').innerHTML =
     item('受検日時', createdAt) +
     item('セッションID', sessionId) +
     item('会社名', companyName) +
-    item('データソース', src) +
-    resultBtn;
+    item('データソース', src);
 }
 
 // ─── 初期化 ─────────────────────────────────

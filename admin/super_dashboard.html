@@ -171,17 +171,18 @@ function renderTable() {
   var totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
 
   var html = '<table><thead><tr>'
-    + '<th>受検日時</th><th>セッションID</th><th>会社名</th>'
+    + '<th>受検日時</th><th>セッションID</th><th>会社名</th><th>バージョン</th>'
     + '<th>ストレス判定</th><th>詳細</th>'
     + '</tr></thead><tbody>';
 
   if (pageData.length === 0) {
-    html += '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:24px">データがありません</td></tr>';
+    html += '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:24px">データがありません</td></tr>';
   } else {
     pageData.forEach(function(row) {
       var dt = formatDate(row.created_at);
       var sid = row.session_id ? row.session_id.slice(0, 8) : '-';
       var company = row.is_demo ? 'デモ受験' : getCompanyName(row.company_id);
+      var versionLabel = row.version === '57' ? '57問版' : row.version === '141' ? '141問版' : '-';
       var level = row.stress_level || '-';
       var levelClass = level === 'high' ? 'level-high' : level === 'mid' ? 'level-mid' : 'level-low';
 
@@ -189,6 +190,7 @@ function renderTable() {
         + '<td>' + dt + '</td>'
         + '<td>' + sid + '</td>'
         + '<td>' + company + '</td>'
+        + '<td>' + versionLabel + '</td>'
         + '<td class="' + levelClass + '">' + level + '</td>'
         + '<td><button onclick="openDetail(\'' + row.session_id + '\')" class="detail-btn">詳細</button></td>'
         + '</tr>';
@@ -238,7 +240,7 @@ async function init() {
 
   var sr = await supabase
     .from('survey_responses')
-    .select('id, session_id, company_id, stress_level, created_at, is_demo')
+    .select('id, session_id, company_id, stress_level, created_at, is_demo, version')
     .order('created_at', { ascending: false });
   allData = sr.data || [];
   filteredData = allData;
