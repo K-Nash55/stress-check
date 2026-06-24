@@ -27,6 +27,10 @@ body { margin: 0; font-family: 'Segoe UI', 'Noto Sans JP', sans-serif; font-size
 .filter-btn:hover { background: #2c3e50; }
 .reset-btn { background: #95a5a6; color: #fff; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; }
 .reset-btn:hover { background: #7f8c8d; }
+.csv-btn { background: #27ae60; color: #fff; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; margin-left: 8px; }
+.csv-btn:hover { background: #229954; }
+.result-link { color: #2980b9; text-decoration: none; font-size: 12px; }
+.result-link:hover { text-decoration: underline; }
 .filter-sep { color: #aaa; }
 
 /* ── テーブル共通 ── */
@@ -53,6 +57,7 @@ tr:hover td { background: #f8f9fa; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase-client.js"></script>
+<script src="../js/scoring.js"></script>
 </head>
 <body>
 
@@ -78,6 +83,7 @@ tr:hover td { background: #f8f9fa; }
     <input type="date" id="filterDateTo">
     <button class="filter-btn" onclick="applyFilter()">検索</button>
     <button class="reset-btn" onclick="resetFilter()">リセット</button>
+    <button class="csv-btn" onclick="downloadCSV()">CSVダウンロード</button>
   </div>
 </div>
 
@@ -105,6 +111,7 @@ var filteredData = [];
 var companies = [];
 var currentPage = 1;
 var PAGE_SIZE = 50;
+var master = null;
 
 // ─── 会社名解決 ──────────────────────────────
 function getCompanyName(company_id) {
@@ -172,11 +179,12 @@ function renderTable() {
 
   var html = '<table><thead><tr>'
     + '<th>受検日時</th><th>セッションID</th><th>会社名</th><th>バージョン</th>'
-    + '<th>ストレス判定</th><th>詳細</th>'
+    + '<th>ストレス判定</th><th>Aポイント</th><th>Bポイント</th><th>Cポイント</th><th>A+C</th><th>タイプ</th>'
+    + '<th>結果画面</th><th>詳細</th>'
     + '</tr></thead><tbody>';
 
   if (pageData.length === 0) {
-    html += '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:24px">データがありません</td></tr>';
+    html += '<tr><td colspan="12" style="text-align:center;color:#aaa;padding:24px">データがありません</td></tr>';
   } else {
     pageData.forEach(function(row) {
       var dt = formatDate(row.created_at);
@@ -186,12 +194,33 @@ function renderTable() {
       var level = row.stress_level || '-';
       var levelClass = level === 'high' ? 'level-high' : level === 'mid' ? 'level-mid' : 'level-low';
 
+      var domainA = '-', domainB = '-', domainC = '-', domainAC = '-', typeCode = '-';
+      if (master && row.answers && Object.keys(row.answers).length > 0) {
+        var domain = calcDomainScores(row.answers, master.questions);
+        var judgment = getStressLevel(row.answers, master.questions, master.judgmentRules);
+        domainA = domain.A;
+        domainB = domain.B;
+        domainC = domain.C;
+        domainAC = domain.A + domain.C;
+        typeCode = judgment.code || '-';
+      }
+
+      var resultLink = row.session_id
+        ? '<a href="../result.html?session=' + row.session_id + '" target="_blank" class="result-link">結果画面</a>'
+        : '-';
+
       html += '<tr>'
         + '<td>' + dt + '</td>'
         + '<td>' + sid + '</td>'
         + '<td>' + company + '</td>'
         + '<td>' + versionLabel + '</td>'
         + '<td class="' + levelClass + '">' + level + '</td>'
+        + '<td class="num">' + domainA + '</td>'
+        + '<td class="num">' + domainB + '</td>'
+        + '<td class="num">' + domainC + '</td>'
+        + '<td class="num">' + domainAC + '</td>'
+        + '<td>' + typeCode + '</td>'
+        + '<td>' + resultLink + '</td>'
         + '<td><button onclick="openDetail(\'' + row.session_id + '\')" class="detail-btn">詳細</button></td>'
         + '</tr>';
     });
@@ -232,15 +261,63 @@ function nextPage() {
   if (currentPage < totalPages) { currentPage++; renderTable(); }
 }
 
+// ─── CSVダウンロード ─────────────────────────
+function downloadCSV() {
+  var dateFrom = document.getElementById('filterDateFrom').value;
+  var dateTo = document.getElementById('filterDateTo').value;
+
+  var headers = ['受検日時', 'セッションID', '会社名', 'バージョン', 'ストレス判定', 'Aポイント', 'Bポイント', 'Cポイント', 'A+C', 'タイプ'];
+
+  var rows = filteredData.map(function(row) {
+    var domainA = '', domainB = '', domainC = '', domainAC = '', typeCode = '';
+    if (master && row.answers && Object.keys(row.answers).length > 0) {
+      var domain = calcDomainScores(row.answers, master.questions);
+      var judgment = getStressLevel(row.answers, master.questions, master.judgmentRules);
+      domainA = domain.A;
+      domainB = domain.B;
+      domainC = domain.C;
+      domainAC = domain.A + domain.C;
+      typeCode = judgment.code || '';
+    }
+    return [
+      formatDate(row.created_at),
+      row.session_id || '',
+      row.is_demo ? 'デモ受験' : getCompanyName(row.company_id),
+      row.version === '57' ? '57問版' : row.version === '141' ? '141問版' : '',
+      row.stress_level || '',
+      domainA, domainB, domainC, domainAC, typeCode
+    ];
+  });
+
+  var csvLines = [headers].concat(rows).map(function(r) {
+    return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(',');
+  });
+  var csv = '﻿' + csvLines.join('\r\n');
+
+  var startLabel = dateFrom || 'all';
+  var endLabel = dateTo || 'all';
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = '受検者一覧_' + startLabel + '-' + endLabel + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 // ─── 初期化 ─────────────────────────────────
 async function init() {
+  master = await loadMaster();
+
   var cr = await supabase.from('companies').select('id, name').order('name');
   companies = cr.data || [];
   buildCompanyFilter();
 
   var sr = await supabase
     .from('survey_responses')
-    .select('id, session_id, company_id, stress_level, created_at, is_demo, version')
+    .select('id, session_id, company_id, stress_level, created_at, is_demo, version, answers')
     .order('created_at', { ascending: false });
   allData = sr.data || [];
   filteredData = allData;
