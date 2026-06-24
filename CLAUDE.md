@@ -1,5 +1,22 @@
 # CLAUDE.md
 
+## 重要：ファイルパス（最新）
+リポジトリのルートは：
+C:\Users\ken-n\Documents\stress-check-projects\stress-check
+
+主要ファイルの正しいパス：
+- LP：C:\Users\ken-n\Documents\stress-check-projects\stress-check\lp\index.html
+- 受検画面：C:\Users\ken-n\Documents\stress-check-projects\stress-check\index57.html
+- 結果画面：C:\Users\ken-n\Documents\stress-check-projects\stress-check\result.html
+- ダッシュボード：C:\Users\ken-n\Documents\stress-check-projects\stress-check\admin\super_dashboard.html
+- スーパーアドミン：C:\Users\ken-n\Documents\stress-check-projects\stress-check\admin\superadmin.html
+- 採点エンジン：C:\Users\ken-n\Documents\stress-check-projects\stress-check\js\scoring.js
+
+ファイル編集時は必ずこのパスを使用すること。
+OLD フォルダは絶対に触らないこと。
+
+確認してからpushすること。
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Overview
