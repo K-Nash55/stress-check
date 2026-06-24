@@ -87,6 +87,22 @@ tr:hover td { background: #f8f9fa; }
   </div>
 </div>
 
+<!-- 判定基準注記（開発者用） -->
+<div class="section" style="background:#f7f7f7;border:1px solid #ddd;color:#666;font-size:11px;line-height:2;padding:12px 16px;">
+  <strong style="font-size:12px;color:#555;">【判定基準（開発者用）】</strong>
+  <div style="margin-top:6px">
+    <strong>■ high判定の条件</strong><br>
+    　B（ストレス反応）77点以上　または　A+C合計76点以上 かつ B 63点以上
+  </div>
+  <div>
+    <strong>■ 参考表現</strong><br>
+    　B 63〜76点 →「やや高いストレス」　／　A+C 76点以上 →「外的要因にリスクがある状態」　／　A+C 76点未満 →「外的要因が標準的な状態」
+  </div>
+  <div>
+    <strong>■ 全国平均（参考値・断定しない）</strong>　A単独：約43点　／　C単独：約25点
+  </div>
+</div>
+
 <!-- 一覧テーブル -->
 <div class="section">
   <div id="tableArea"></div>
@@ -194,7 +210,7 @@ function renderTable() {
       var level = row.stress_level || '-';
       var levelClass = level === 'high' ? 'level-high' : level === 'mid' ? 'level-mid' : 'level-low';
 
-      var domainA = '-', domainB = '-', domainC = '-', domainAC = '-', typeCode = '-';
+      var domainA = '-', domainB = '-', domainC = '-', domainAC = '-', typeCode = '-', typeLabel = '';
       if (master && row.answers && Object.keys(row.answers).length > 0) {
         var domain = calcDomainScores(row.answers, master.questions);
         var judgment = getStressLevel(row.answers, master.questions, master.judgmentRules);
@@ -203,6 +219,7 @@ function renderTable() {
         domainC = domain.C;
         domainAC = domain.A + domain.C;
         typeCode = judgment.code || '-';
+        typeLabel = judgment.label || '';
       }
 
       var resultLink = row.session_id
@@ -219,7 +236,7 @@ function renderTable() {
         + '<td class="num">' + domainB + '</td>'
         + '<td class="num">' + domainC + '</td>'
         + '<td class="num">' + domainAC + '</td>'
-        + '<td>' + typeCode + '</td>'
+        + '<td>' + typeCode + (typeLabel ? '<br><span style="font-size:10px;color:#888">' + typeLabel + '</span>' : '') + '</td>'
         + '<td>' + resultLink + '</td>'
         + '<td><button onclick="openDetail(\'' + row.session_id + '\')" class="detail-btn">詳細</button></td>'
         + '</tr>';
@@ -266,10 +283,10 @@ function downloadCSV() {
   var dateFrom = document.getElementById('filterDateFrom').value;
   var dateTo = document.getElementById('filterDateTo').value;
 
-  var headers = ['受検日時', 'セッションID', '会社名', 'バージョン', 'ストレス判定', 'Aポイント', 'Bポイント', 'Cポイント', 'A+C', 'タイプ'];
+  var headers = ['受検日時', 'セッションID', '会社名', 'バージョン', 'ストレス判定', 'Aポイント', 'Bポイント', 'Cポイント', 'A+C', 'タイプ', 'タイプ名称'];
 
   var rows = filteredData.map(function(row) {
-    var domainA = '', domainB = '', domainC = '', domainAC = '', typeCode = '';
+    var domainA = '', domainB = '', domainC = '', domainAC = '', typeCode = '', typeLabel = '';
     if (master && row.answers && Object.keys(row.answers).length > 0) {
       var domain = calcDomainScores(row.answers, master.questions);
       var judgment = getStressLevel(row.answers, master.questions, master.judgmentRules);
@@ -278,6 +295,7 @@ function downloadCSV() {
       domainC = domain.C;
       domainAC = domain.A + domain.C;
       typeCode = judgment.code || '';
+      typeLabel = judgment.label || '';
     }
     return [
       formatDate(row.created_at),
@@ -285,7 +303,7 @@ function downloadCSV() {
       row.is_demo ? 'デモ受験' : getCompanyName(row.company_id),
       row.version === '57' ? '57問版' : row.version === '141' ? '141問版' : '',
       row.stress_level || '',
-      domainA, domainB, domainC, domainAC, typeCode
+      domainA, domainB, domainC, domainAC, typeCode, typeLabel
     ];
   });
 
