@@ -195,12 +195,12 @@ function renderTable() {
 
   var html = '<table><thead><tr>'
     + '<th>受検日時</th><th>セッションID</th><th>会社名</th><th>バージョン</th>'
-    + '<th>ストレス判定</th><th>Aポイント</th><th>Bポイント</th><th>Cポイント</th><th>A+C</th><th>タイプ</th>'
+    + '<th>ストレス判定</th><th>Aポイント</th><th>Bポイント</th><th>Cポイント</th><th>A+C</th><th>タイプ</th><th>タイプ名称</th>'
     + '<th>結果画面</th><th>詳細</th>'
     + '</tr></thead><tbody>';
 
   if (pageData.length === 0) {
-    html += '<tr><td colspan="12" style="text-align:center;color:#aaa;padding:24px">データがありません</td></tr>';
+    html += '<tr><td colspan="13" style="text-align:center;color:#aaa;padding:24px">データがありません</td></tr>';
   } else {
     pageData.forEach(function(row) {
       var dt = formatDate(row.created_at);
@@ -236,7 +236,8 @@ function renderTable() {
         + '<td class="num">' + domainB + '</td>'
         + '<td class="num">' + domainC + '</td>'
         + '<td class="num">' + domainAC + '</td>'
-        + '<td>' + typeCode + (typeLabel ? '<br><span style="font-size:10px;color:#888">' + typeLabel + '</span>' : '') + '</td>'
+        + '<td>' + typeCode + '</td>'
+        + '<td>' + typeLabel + '</td>'
         + '<td>' + resultLink + '</td>'
         + '<td><button onclick="openDetail(\'' + row.session_id + '\')" class="detail-btn">詳細</button></td>'
         + '</tr>';
