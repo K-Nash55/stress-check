@@ -141,8 +141,7 @@ sections.forEach(s => {
 const floatingCTA = document.createElement('div');
 floatingCTA.className = 'floating-cta';
 floatingCTA.innerHTML = `
-  <a href="https://stress-check-gamma.vercel.app/index57.html"
-     target="_blank" rel="noopener"
+  <a href="/check"
      class="btn btn-primary floating-cta-btn">
     <i class="fa-solid fa-clipboard-check"></i> 無料で診断する
   </a>

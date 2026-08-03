@@ -352,7 +352,7 @@ body {
         root.innerHTML = `
           <div class="state-msg">
             結果が見つかりません。URLを確認してください。<br>
-            <a class="state-link" href="index.html">← チェックを受ける</a>
+            <a class="state-link" href="/check">← チェックを受ける</a>
           </div>`;
         return;
       }
@@ -385,7 +385,7 @@ body {
         root.innerHTML = `
           <div class="state-msg">
             結果データが見つかりません。<br>
-            <a class="state-link" href="index.html">← チェックを受ける</a>
+            <a class="state-link" href="/check">← チェックを受ける</a>
           </div>`;
         return;
       }
@@ -585,7 +585,7 @@ body {
       <div class="state-msg">
         データの読み込みに失敗しました。<br>
         <small style="color:#bbb">${esc(err && err.message ? err.message : String(err))}</small><br>
-        <a class="state-link" href="index.html">← 最初からやり直す</a>
+        <a class="state-link" href="/check">← 最初からやり直す</a>
       </div>`;
   }
 
