@@ -8,6 +8,11 @@
     { "source": "/register",        "destination": "/register.html" },
     {
       "source": "/",
+      "has": [{ "type": "host", "value": "sc.findrework.online" }],
+      "destination": "/index141.html"
+    },
+    {
+      "source": "/",
       "has": [{ "type": "host", "value": "stresscheckfree.cloud" }],
       "destination": "/lp/index.html"
     },
