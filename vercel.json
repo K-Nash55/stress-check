@@ -27,8 +27,18 @@
       "destination": "/index57.html"
     },
     {
+      "source": "/check",
+      "has": [{ "type": "host", "value": "www.stresscheckfree.cloud" }],
+      "destination": "/index57.html"
+    },
+    {
       "source": "/result",
       "has": [{ "type": "host", "value": "stresscheckfree.cloud" }],
+      "destination": "/result.html"
+    },
+    {
+      "source": "/result",
+      "has": [{ "type": "host", "value": "www.stresscheckfree.cloud" }],
       "destination": "/result.html"
     }
   ],
