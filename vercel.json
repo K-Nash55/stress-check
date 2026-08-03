@@ -5,6 +5,29 @@
     { "source": "/admin/login",     "destination": "/admin/login.html" },
     { "source": "/admin/dashboard", "destination": "/admin/dashboard.html" },
     { "source": "/admin/links",     "destination": "/admin/links.html" },
-    { "source": "/register",        "destination": "/register.html" }
+    { "source": "/register",        "destination": "/register.html" },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "stresscheckfree.cloud" }],
+      "destination": "/lp/index.html"
+    },
+    {
+      "source": "/check",
+      "has": [{ "type": "host", "value": "stresscheckfree.cloud" }],
+      "destination": "/index57.html"
+    },
+    {
+      "source": "/result",
+      "has": [{ "type": "host", "value": "stresscheckfree.cloud" }],
+      "destination": "/result.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/lp",
+      "has": [{ "type": "host", "value": "stresscheckfree.cloud" }],
+      "destination": "/",
+      "permanent": false
+    }
   ]
 }
