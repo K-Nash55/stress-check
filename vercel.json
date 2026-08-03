@@ -12,6 +12,11 @@
       "destination": "/lp/index.html"
     },
     {
+      "source": "/",
+      "has": [{ "type": "host", "value": "www.stresscheckfree.cloud" }],
+      "destination": "/lp/index.html"
+    },
+    {
       "source": "/check",
       "has": [{ "type": "host", "value": "stresscheckfree.cloud" }],
       "destination": "/index57.html"
